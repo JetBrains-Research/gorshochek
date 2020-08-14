@@ -9,7 +9,7 @@ using namespace clang::tooling;
 static llvm::cl::OptionCategory TransformationCategory("Basic transformation");
 
 int main(int argc, const char **argv) {
-    // Creating a parser to parse list of files which paths are passed through argc/argv
+    // Creating a parser to parse list of files
     CommonOptionsParser OptionsParser(argc, argv, TransformationCategory);
     // Constructs a clang tool to run over a list of files.
     ClangTool Tool(OptionsParser.getCompilations(),
