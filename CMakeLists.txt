@@ -1,42 +1,32 @@
 cmake_minimum_required (VERSION 3.8)
 project (gorshochek CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -fno-strict-aliasing -fno-exceptions -fno-rtti")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -fno-exceptions -fno-rtti")
 
 set(LIBRARY_LIST
         clangASTMatchers
-        clangTooling
-        clangDriver
+        clangDynamicASTMatchers
         clangAST
+        clangDriver
         clangLex
         clangParse
         clangBasic
+        clangFrontendTool
         clangFrontend
         clangEdit
-        clangAST
         clangSerialization
         clangSema
-        clangAST
         clangAnalysis
-        clangASTMatchers
-        clangFrontendTool
-        clangDynamicASTMatchers
-        clangTooling
-        clangAST
-        clangASTMatchers
-        clangBasic
-        clangFrontend
-        clangLex
         clangRewrite
         clangRewriteFrontend
         clangTooling
         clangToolingCore
-        )
+)
 
 find_package(LLVM 9.0.0 REQUIRED CONFIG)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
@@ -71,4 +61,4 @@ target_link_libraries(${PROJECT_NAME}
         LLVMBitReader # Core, Support
         LLVMCore # Support
         LLVMSupport
-        )
+)

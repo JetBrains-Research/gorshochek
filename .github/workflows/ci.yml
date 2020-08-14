@@ -7,8 +7,6 @@ on:
 
 jobs:
   build:
-
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,5 +22,5 @@ jobs:
       - name: Build
         run: |
           mkdir cmake-build-debug && cd cmake-build-debug
-          cmake -DCMAKE_PREFIX_PATH="/usr/lib/llvm-9/cmake;/usr/lib/llvm-9/lib/cmake/clang" -DCMAKE_BUILD_TYPE=Debug ..
+          cmake -DCMAKE_PREFIX_PATH="/usr/lib/llvm-9/cmake;/usr/lib/llvm-9/lib/cmake/clang" ..
           cmake --build .
