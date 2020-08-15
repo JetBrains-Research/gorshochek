@@ -8,10 +8,7 @@ To install `clang+llvm-9` to use only inside `gorshochek` following commands sho
 git clone https://github.com/JetBrains-Research/gorshochek.git
 cd gorshochek
 
-# Install requirements
-pip install -r requirements.txt
-
-# Install clang+llvm-9
+# Install clang+llvm, cpplint
 sh scripts/install_requirements.sh
 
 # Build

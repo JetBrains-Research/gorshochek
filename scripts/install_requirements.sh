@@ -1,7 +1,8 @@
 #!/bin/bash
-# Run script from code2seq dir using command:
+# Run script from gorshochek dir using command:
 #    sh scripts/install_requirements.sh
 
+pip install -r requirements.txt
 BUILD_DIR=./build
 
 OS=$(uname -s)
