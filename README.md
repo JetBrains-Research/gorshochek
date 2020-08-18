@@ -2,8 +2,6 @@
 [WIP] A tool for C++ code modification to augment data for clone detection tools
 
 -------------
-Update usage instructions to this:
-
 ## Usage
 1. Clone or download repo from GitHub
 ```(bash)
@@ -16,7 +14,7 @@ cd gorshochek
 ```
 3. Build the project from source
 ```(bash)
-
+cd build
 cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
       -DClang_DIR=build/clang+llvm-9/lib/cmake/clang \
       -DCMAKE_CXX_COMPILER=/usr/bin/c++ ..
