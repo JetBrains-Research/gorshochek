@@ -17,7 +17,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          sh scripts/install_requirements.sh
+          pip install -r requirements.txt
+          sh scripts/install_clang.sh
       - name: Lint
         run: |
           cpplint --filter=-legal,-build main.cpp

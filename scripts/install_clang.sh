@@ -1,8 +1,7 @@
 #!/bin/bash
 # Run script from gorshochek dir using command:
-#    sh scripts/install_requirements.sh
+#    sh scripts/install_clang.sh
 
-pip install -r requirements.txt
 BUILD_DIR=./build
 
 OS=$(uname -s)
