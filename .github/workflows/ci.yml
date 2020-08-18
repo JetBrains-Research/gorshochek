@@ -10,12 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install dependencies
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install python requirements
         run: |
-          sh scripts/install_requirements.sh
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Install clang
+        run: |
+          sh scripts/install_clang.sh
       - name: Lint
         run: |
-          echo "Linting is not implemented yet"
+          cpplint --filter=-legal --recursive --exclude=build .
       - name: Build
         run: |
           mkdir cmake-build-debug && cd cmake-build-debug
