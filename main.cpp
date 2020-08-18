@@ -9,7 +9,7 @@ using clang::tooling::CommonOptionsParser, \
       clang::tooling::newFrontendActionFactory;
 using clang::SyntaxOnlyAction;
 
-static llvm::cl::OptionCategory TransformationCategory("Basic transformation");
+static OptionCategory TransformationCategory("Basic transformation");
 
 int main(int argc, const char **argv) {
     // Creating a parser to parse list of files
