@@ -3,8 +3,11 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/CommandLine.h"
 
-using namespace llvm;
-using namespace clang::tooling;
+using llvm::cl::OptionCategory;
+using clang::tooling::CommonOptionsParser, \
+      clang::tooling::ClangTool, \
+      clang::tooling::newFrontendActionFactory;
+using clang::SyntaxOnlyAction;
 
 static llvm::cl::OptionCategory TransformationCategory("Basic transformation");
 
@@ -15,5 +18,5 @@ int main(int argc, const char **argv) {
     ClangTool Tool(OptionsParser.getCompilations(),
                    OptionsParser.getSourcePathList());
     // Run the Clang Tool, creating a new FrontendAction
-    return Tool.run(newFrontendActionFactory<clang::SyntaxOnlyAction>().get());
+    return Tool.run(newFrontendActionFactory<SyntaxOnlyAction>().get());
 }
