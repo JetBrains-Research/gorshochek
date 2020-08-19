@@ -1,6 +1,6 @@
 #!/bin/bash
-# Run script from code2seq dir using command:
-#    sh scripts/install_requirements.sh
+# Run script from gorshochek dir using command:
+#    sh scripts/install_clang.sh
 
 BUILD_DIR=./build
 

@@ -11,4 +11,3 @@ int main(int argc, const char **argv) {
              << "arguments specified" << endl;
     Runner(argc, argv).run();
     return 0;
-}
