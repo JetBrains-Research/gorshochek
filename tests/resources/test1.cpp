@@ -12,6 +12,8 @@ void foo2(int n) {
         i++;
         if (i == n)
             break;
+        else
+            i++;
     }
 }
 

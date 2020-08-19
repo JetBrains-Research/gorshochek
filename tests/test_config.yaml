@@ -1,9 +1,6 @@
-config = ( { original_path  = "tests/resources/test1.cpp";
-             transformations_list = [ "Useless Comments";
-                                      "Robert Louis Stevenson"; ] },
-           { original_path  = "tests/resources/test2.cpp";
-             transformations_list = [] },
-           { original_path  = "tests/resources/test3.cpp";
-             transformations_list = [ "Useless Comments";
-                                      "Useless Comments"; ] },
-);
+output path: "tests/"
+transformations:
+  - basic transform:
+      p: 0.99
+  - basic transform:
+      p: 0.9
