@@ -4,7 +4,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include "../include/BaseTransformation.h"
-#include "../include/Common.h"
+#include "../include/TransformationFrontendAction.h"
 
 using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
     clang::StringRef, clang::Rewriter, clang::RecursiveASTVisitor,
@@ -15,14 +15,16 @@ using std::unique_ptr, std::vector, std::move;
 
 // ----------- Frontend Actions ------------ //
 
-BaseFrontendAction::BaseFrontendAction(
-    vector<BaseTransformation> transformations, string output_path):
+TransformationFrontendAction::TransformationFrontendAction(
+    vector<BaseTransformation> transformations, string output_path
+):
         ASTFrontendAction(),
         transformations(move(transformations)),
         output_path(move(output_path)) {}
 
-unique_ptr<ASTConsumer> BaseFrontendAction::CreateASTConsumer(
-        CompilerInstance &CI, StringRef file) {
+unique_ptr<ASTConsumer> TransformationFrontendAction::CreateASTConsumer(
+        CompilerInstance &CI, StringRef file
+) {
     rewriter.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
     // Seed for the random number engine
     random_device rd;
@@ -39,9 +41,9 @@ unique_ptr<ASTConsumer> BaseFrontendAction::CreateASTConsumer(
     return std::make_unique<MultiplexConsumer>(move(consumers));
 }
 
-void BaseFrontendAction::EndSourceFileAction() {
+void TransformationFrontendAction::EndSourceFileAction() {
     SourceManager &SM = rewriter.getSourceMgr();
     // Send rewritten buffer to std::out.
-    // TODO(writ to file): change llvm::outs() to file specified by output_path
+    // TODO(write to file): change llvm::outs() to file specified by output_path
     rewriter.getEditBuffer(SM.getMainFileID()).write(llvm::outs());
 }

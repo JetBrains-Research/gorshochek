@@ -1,9 +1,8 @@
-#ifndef INCLUDE_COMMON_H_
-#define INCLUDE_COMMON_H_
+#ifndef INCLUDE_APPLYTRANSFORMSFRONTENDACTION_H_
+#define INCLUDE_APPLYTRANSFORMSFRONTENDACTION_H_
 
 #include "BaseTransformation.h"
 
-#include <iostream>
 #include <vector>
 #include <string>
 #include <memory>
@@ -25,12 +24,12 @@ using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
     clang::DeclGroupRef, clang::ASTContext, clang::MultiplexConsumer;
 using std::unique_ptr, std::vector;
 
-class BaseFrontendAction : public ASTFrontendAction {
+class TransformationFrontendAction : public ASTFrontendAction {
     /* FrontendAction is an interface to create and run ASTConsumer and then save the result.
      * For each source file provided to the tool, a new FrontendAction is created. */
  public:
-    BaseFrontendAction(vector<BaseTransformation> transformations,
-                       string output_path);
+    TransformationFrontendAction(vector<BaseTransformation> transformations,
+                             string output_path);
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                               StringRef file) override;
     void EndSourceFileAction() override;
@@ -41,5 +40,5 @@ class BaseFrontendAction : public ASTFrontendAction {
     string output_path;
 };
 
-#endif  // INCLUDE_COMMON_H_
+#endif  // INCLUDE_APPLYTRANSFORMSFRONTENDACTION_H_
 
