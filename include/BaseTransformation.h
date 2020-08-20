@@ -1,8 +1,11 @@
-#ifndef GORSHOCHEK_BASETRANSFORMATION_H
-#define GORSHOCHEK_BASETRANSFORMATION_H
+#ifndef INCLUDE_BASETRANSFORMATION_H_
+#define INCLUDE_BASETRANSFORMATION_H_
 
-#include <iostream>
 #include <random>
+#include <iostream>
+#include <string>
+#include <memory>
+
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/RecursiveASTVisitor.h"
@@ -14,41 +17,39 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/raw_ostream.h"
 
-using std::unique_ptr, std::vector, std::string;
-using std::uniform_real_distribution, std::random_device, std::mt19937;
-using clang::ASTFrontendAction, \
-      clang::ASTConsumer, \
-      clang::CompilerInstance, \
-      clang::StringRef, \
-      clang::Rewriter, \
-      clang::RecursiveASTVisitor, \
-      clang::DeclGroupRef, \
-      clang::ASTContext, \
-      clang::Stmt;
+using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
+    clang::StringRef, clang::Rewriter, clang::RecursiveASTVisitor,
+    clang::DeclGroupRef, clang::ASTContext, clang::Stmt;
 using llvm::make_unique;
+using std::uniform_real_distribution, std::random_device, std::mt19937;
+using std::unique_ptr, std::vector, std::string;
 
 class BasicVisitor : public RecursiveASTVisitor<BasicVisitor> {
-public:
-    explicit BasicVisitor(Rewriter &rewriter);
+    /* RecursiveASTVisitor is a set of actions that are done
+     * when a certain node of AST is reached */
+ public:
+    explicit BasicVisitor(Rewriter  * rewriter);
     bool VisitStmt(Stmt *s);
-private:
-    Rewriter &rewriter;
+ private:
+    Rewriter * rewriter;
 };
 
-// ASTConsumer is an interface for reading an AST produced by the Clang parser.
 class BaseASTConsumer : public ASTConsumer {
-public:
-    explicit BaseASTConsumer(Rewriter &rewriter);
+    /* ASTConsumer is an interface for reading an AST produced by the Clang parser. */
+ public:
+    explicit BaseASTConsumer(Rewriter * rewriter);
     bool HandleTopLevelDecl(DeclGroupRef DR);
-private:
+ private:
     BasicVisitor visitor;
 };
 
-class BaseTransformation{
-public:
-    explicit BaseTransformation(float p): p(p) {};
-    unique_ptr<ASTConsumer> getConsumer(Rewriter &rewriter);
+class BaseTransformation {
+    /* Class for storing data about transformation specified in .yaml config */
+ public:
+    explicit BaseTransformation(float p) : p(p) {}
+    static unique_ptr<ASTConsumer> getConsumer(Rewriter * rewriter);
     float p;
 };
 
-#endif //GORSHOCHEK_BASETRANSFORMATION_H
+#endif  // INCLUDE_BASETRANSFORMATION_H_
+

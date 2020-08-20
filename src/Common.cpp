@@ -6,31 +6,23 @@
 #include "../include/BaseTransformation.h"
 #include "../include/Common.h"
 
-
-using std::unique_ptr, std::vector, std::move;
-using clang::ASTFrontendAction, \
-      clang::ASTConsumer, \
-      clang::CompilerInstance, \
-      clang::StringRef, \
-      clang::Rewriter, \
-      clang::RecursiveASTVisitor, \
-      clang::DeclGroupRef, \
-      clang::SourceManager, \
-      clang::ASTContext, \
-      clang::ASTMutationListener, \
-      clang::ASTDeserializationListener;
+using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
+    clang::StringRef, clang::Rewriter, clang::RecursiveASTVisitor,
+    clang::DeclGroupRef, clang::SourceManager, clang::ASTContext,
+    clang::ASTMutationListener, clang::ASTDeserializationListener;
 using llvm::outs;
+using std::unique_ptr, std::vector, std::move;
 
 // ----------- Frontend Actions ------------ //
 
-BaseFrontendAction::BaseFrontendAction(vector<BaseTransformation> transformations, \
-                               string output_path) : \
-                ASTFrontendAction(), \
-                transformations(transformations), \
-                output_path(output_path) {}
+BaseFrontendAction::BaseFrontendAction(
+    vector<BaseTransformation> transformations, string output_path):
+        ASTFrontendAction(),
+        transformations(move(transformations)),
+        output_path(move(output_path)) {}
 
-unique_ptr<ASTConsumer> BaseFrontendAction::CreateASTConsumer(CompilerInstance &CI,
-                                                               StringRef file) {
+unique_ptr<ASTConsumer> BaseFrontendAction::CreateASTConsumer(
+        CompilerInstance &CI, StringRef file) {
     rewriter.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
     // Seed for the random number engine
     random_device rd;
@@ -38,16 +30,18 @@ unique_ptr<ASTConsumer> BaseFrontendAction::CreateASTConsumer(CompilerInstance &
     mt19937 gen(rd());
     uniform_real_distribution<> dis(0.0, 1.0);
     vector<unique_ptr<ASTConsumer>> consumers;
-    for (auto transformation: transformations) {
+    for (auto transformation : transformations) {
         if (dis(gen) < transformation.p)
-            consumers.push_back(transformation.getConsumer(rewriter));
+            consumers.push_back(transformation.getConsumer(&rewriter));
     }
+    // MultiplexConsumer is a kind of ASTConsumer that run multiple consumers provided
+    // as vector<unique_ptr<ASTConsumer>>
     return std::make_unique<MultiplexConsumer>(move(consumers));
 }
 
 void BaseFrontendAction::EndSourceFileAction() {
     SourceManager &SM = rewriter.getSourceMgr();
-
-    // Now emit the rewritten buffer.
+    // Send rewritten buffer to std::out.
+    // TODO(writ to file): change llvm::outs() to file specified by output_path
     rewriter.getEditBuffer(SM.getMainFileID()).write(llvm::outs());
 }

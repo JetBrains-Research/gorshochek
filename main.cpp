@@ -2,7 +2,6 @@
 
 #include "include/Utils.h"
 
-
 using std::cerr, std::endl;
 
 int main(int argc, const char **argv) {
@@ -11,3 +10,4 @@ int main(int argc, const char **argv) {
              << "arguments specified" << endl;
     Runner(argc, argv).run();
     return 0;
+}

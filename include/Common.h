@@ -1,7 +1,13 @@
-#ifndef GORSHOCHEK_COMMON_H
-#define GORSHOCHEK_COMMON_H
+#ifndef INCLUDE_COMMON_H_
+#define INCLUDE_COMMON_H_
+
+#include "BaseTransformation.h"
 
 #include <iostream>
+#include <vector>
+#include <string>
+#include <memory>
+
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/RecursiveASTVisitor.h"
@@ -14,40 +20,26 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/raw_ostream.h"
 
-#include "BaseTransformation.h"
-
+using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
+    clang::StringRef, clang::Rewriter, clang::RecursiveASTVisitor,
+    clang::DeclGroupRef, clang::ASTContext, clang::MultiplexConsumer;
 using std::unique_ptr, std::vector;
-using clang::ASTFrontendAction, \
-      clang::ASTConsumer, \
-      clang::CompilerInstance, \
-      clang::StringRef, \
-      clang::Rewriter, \
-      clang::RecursiveASTVisitor, \
-      clang::DeclGroupRef, \
-      clang::ASTContext, \
-      clang::MultiplexConsumer;
 
-// For each source file provided to the tool, a new FrontendAction is created.
 class BaseFrontendAction : public ASTFrontendAction {
-public:
-    BaseFrontendAction(vector<BaseTransformation> transformations, string output_path);
+    /* FrontendAction is an interface to create and run ASTConsumer and then save the result.
+     * For each source file provided to the tool, a new FrontendAction is created. */
+ public:
+    BaseFrontendAction(vector<BaseTransformation> transformations,
+                       string output_path);
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                               StringRef file) override;
     void EndSourceFileAction() override;
-private:
+
+ private:
     Rewriter rewriter;
     vector<BaseTransformation> transformations;
     string output_path;
 };
 
-class AggregateASTConsumer : public MultiplexConsumer {
-public:
-    explicit AggregateASTConsumer(vector<BaseTransformation> transformations, Rewriter rewriter);
-    bool HandleTopLevelDecl(DeclGroupRef DR) override;
-private:
-    vector<BaseTransformation> transformations;
-    Rewriter rewriter;
-};
+#endif  // INCLUDE_COMMON_H_
 
-
-#endif //GORSHOCHEK_COMMON_H

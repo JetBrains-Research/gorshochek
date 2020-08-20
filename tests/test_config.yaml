@@ -4,3 +4,5 @@ transformations:
       p: 0.99
   - basic transform:
       p: 0.9
+  - basic transform:
+      p: 0.9
