@@ -49,7 +49,14 @@ add_definitions(
         -D__STDC_CONSTANT_MACROS
 )
 
-add_executable(${PROJECT_NAME} main.cpp src/BaseTransformation.cpp src/Utils.cpp src/Common.cpp)
+add_executable(${PROJECT_NAME}
+        main.cpp
+        src/BaseTransformation.cpp
+        src/Utils.cpp
+        src/Runner.cpp
+        src/TransformationFrontendAction.cpp
+        src/TransformationFrontendActionFactory.cpp
+        )
 
 # Installing yaml-cpp
 
