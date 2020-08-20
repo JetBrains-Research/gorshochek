@@ -1,11 +1,11 @@
-#include "../include/Utils.h"
-#include "../include/Common.h"
-
 #include <yaml-cpp/yaml.h>
 
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "../include/Utils.h"
+#include "../include/Common.h"
 
 using clang::tooling::runToolOnCode, clang::tooling::FrontendActionFactory,
     clang::tooling::CommonOptionsParser, clang::tooling::ClangTool,
