@@ -15,12 +15,12 @@ static OptionCategory TransformationCategory("Transformation");
 class Runner {
     /* Class for creating ClangTool and run ClangTool on files */
  public:
-    explicit Runner(vector<ITransformation *> transformations);
+    explicit Runner(const vector<ITransformation *> *transformations);
     // Run ClangTool on specified files
-    void run(int num_files, const char ** files, string output_path);
+    void run(int num_files, const char * files[], string output_path);
  private:
-    vector<ITransformation *> transformations;
-    mt19937 gen;
+    const vector<ITransformation *> *transformations;
+    mt19937 *gen;
 };
 
 #endif  // INCLUDE_RUNNER_H_

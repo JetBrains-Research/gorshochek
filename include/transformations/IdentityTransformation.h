@@ -12,12 +12,10 @@
 using clang::ASTConsumer;
 
 
-class IdentityASTConsumer : public ASTConsumer {
+class IdentityASTConsumer : public ASTConsumer {};
     /* ASTConsumer is an interface for reading an AST produced by the Clang parser.
-    * Identity Consumer doesnt change AST */
- public:
-    IdentityASTConsumer();
-};
+    * Identity Consumer doesn't change AST */
+
 
 class IdentityTransformation : public ITransformation {
  public:

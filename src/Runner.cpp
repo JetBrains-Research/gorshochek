@@ -13,10 +13,10 @@ using std::size_t, std::vector, std::string, std::ifstream, std::mt19937;
 
 const int SEED = 7;
 
-Runner::Runner(vector<ITransformation *> transformations):
-        transformations(move(transformations)), gen(mt19937(SEED)) {}
+Runner::Runner(const vector<ITransformation *> *transformations):
+        transformations(transformations), gen(new mt19937(SEED)) {}
 
-void Runner::run(int num_files, const char ** files, string output_path) {
+void Runner::run(int num_files, const char * files[], string output_path) {
     auto OptionsParser = CommonOptionsParser(num_files, files, TransformationCategory);
     // Constructs a clang tool to run over a list of files.
     ClangTool Tool(OptionsParser.getCompilations(),
@@ -25,7 +25,7 @@ void Runner::run(int num_files, const char ** files, string output_path) {
     // The way to create new FrontendAction is similar to newFrontendActionFactory function
     Tool.run(std::unique_ptr<FrontendActionFactory>(
                 new TransformationFrontendActionFactory(
-                    move(transformations), move(output_path), gen)).get());
+                    transformations, move(output_path), gen)).get());
 }
 
 

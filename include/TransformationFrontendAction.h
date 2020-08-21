@@ -29,18 +29,18 @@ class TransformationFrontendAction : public ASTFrontendAction {
     /* FrontendAction is an interface to create and run ASTConsumer and then save the result.
      * For each source file provided to the tool, a new FrontendAction is created. */
  public:
-    TransformationFrontendAction(vector<ITransformation *> transformations,
-                                 string output_path,
-                                 mt19937 gen);
+    TransformationFrontendAction(const vector<ITransformation *> *transformations,
+                                 const string output_path,
+                                 mt19937 *gen);
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                               StringRef file) override;
     void EndSourceFileAction() override;
 
  private:
     Rewriter rewriter;
-    vector<ITransformation *> transformations;
-    string output_path;
-    mt19937 gen;
+    const vector<ITransformation *> *transformations;
+    const string output_path;
+    mt19937 *gen;
 };
 
 #endif  // INCLUDE_TRANSFORMATIONFRONTENDACTION_H_

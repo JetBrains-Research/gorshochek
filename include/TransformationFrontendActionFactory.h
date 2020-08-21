@@ -15,14 +15,14 @@ using clang::tooling::FrontendActionFactory, clang::FrontendAction;
 class TransformationFrontendActionFactory : public FrontendActionFactory {
  public:
     TransformationFrontendActionFactory(
-            vector<ITransformation *> transformations,
-            string output_path,
-            mt19937 gen);
+            const vector<ITransformation *> *transformations,
+            const string output_path,
+            mt19937 *gen);
     FrontendAction * create() override;
  private:
-    vector<ITransformation *> transformations;
-    string output_path;
-    mt19937 gen;
+    const vector<ITransformation *> *transformations;
+    const string output_path;
+    mt19937 *gen;
 };
 
 #endif  // INCLUDE_TRANSFORMATIONFRONTENDACTIONFACTORY_H_

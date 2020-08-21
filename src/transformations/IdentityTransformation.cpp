@@ -1,9 +1,5 @@
 #include "../../include/transformations/IdentityTransformation.h"
 
-// ------------ IdentityASTConsumer ---------------
-
-IdentityASTConsumer::IdentityASTConsumer() {}
-
 // ------------ IdentityTransformation ------------
 
 IdentityTransformation::IdentityTransformation(float p) : ITransformation(p) {}
