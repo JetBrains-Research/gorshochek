@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -fno-exceptions -fno-rtti")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -fno-rtti")
 
 set(LIBRARY_LIST
         clangASTMatchers
@@ -49,7 +49,38 @@ add_definitions(
         -D__STDC_CONSTANT_MACROS
 )
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME}
+        main.cpp
+        src/ITransformation.cpp
+        src/Utils.cpp
+        src/Runner.cpp
+        src/TransformationFrontendAction.cpp
+        src/TransformationFrontendActionFactory.cpp
+        src/transformations/IdentityTransformation.cpp
+        )
+
+# Installing yaml-cpp
+
+include(FetchContent)
+FetchContent_Declare(
+        yaml-cpp
+        GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+        GIT_SHALLOW	ON
+        GIT_TAG yaml-cpp-0.6.3
+)
+FetchContent_GetProperties(yaml-cpp)
+if(NOT yaml-cpp_POPULATED)
+    message(STATUS "Populating yaml-cpp...")
+    FetchContent_Populate(yaml-cpp)
+    # Add here options for yaml-cpp building
+    set(YAML_CPP_BUILD_TESTS OFF)
+    add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
+    message(STATUS "Done.")
+endif()
+
+include_directories(BEFORE SYSTEM ${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR}/include)
+target_link_libraries(${PROJECT_NAME} yaml-cpp)
+
 target_link_libraries(${PROJECT_NAME} ${LIBRARY_LIST})
 
 target_link_libraries(${PROJECT_NAME}

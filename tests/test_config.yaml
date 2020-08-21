@@ -1,0 +1,8 @@
+output path: "tests/"
+transformations:
+  - identity transform:
+      p: 0.99
+  - identity transform:
+      p: 0.9
+  - identity transform:
+      p: 0.9
