@@ -51,11 +51,13 @@ add_definitions(
 
 add_executable(${PROJECT_NAME}
         main.cpp
-        src/BaseTransformation.cpp
+        src/ITransformation.cpp
         src/Utils.cpp
         src/Runner.cpp
         src/TransformationFrontendAction.cpp
         src/TransformationFrontendActionFactory.cpp
+        src/transformations/BasicTransformation.cpp
+        src/transformations/IdentityTransformation.cpp
         )
 
 # Installing yaml-cpp

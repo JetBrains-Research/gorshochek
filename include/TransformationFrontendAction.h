@@ -1,11 +1,12 @@
-#ifndef INCLUDE_APPLYTRANSFORMSFRONTENDACTION_H_
-#define INCLUDE_APPLYTRANSFORMSFRONTENDACTION_H_
+#ifndef INCLUDE_TRANSFORMATIONFRONTENDACTION_H_
+#define INCLUDE_TRANSFORMATIONFRONTENDACTION_H_
 
-#include "BaseTransformation.h"
+#include "ITransformation.h"
 
 #include <vector>
 #include <string>
 #include <memory>
+#include <random>
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -22,23 +23,25 @@
 using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
     clang::StringRef, clang::Rewriter, clang::RecursiveASTVisitor,
     clang::DeclGroupRef, clang::ASTContext, clang::MultiplexConsumer;
-using std::unique_ptr, std::vector;
+using std::unique_ptr, std::vector, std::string, std::vector, std::mt19937;
 
 class TransformationFrontendAction : public ASTFrontendAction {
     /* FrontendAction is an interface to create and run ASTConsumer and then save the result.
      * For each source file provided to the tool, a new FrontendAction is created. */
  public:
-    TransformationFrontendAction(vector<BaseTransformation> transformations,
-                             string output_path);
+    TransformationFrontendAction(vector<ITransformation *> transformations,
+                                 string output_path,
+                                 mt19937 gen);
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                               StringRef file) override;
     void EndSourceFileAction() override;
 
  private:
     Rewriter rewriter;
-    vector<BaseTransformation> transformations;
+    vector<ITransformation *> transformations;
     string output_path;
+    mt19937 gen;
 };
 
-#endif  // INCLUDE_APPLYTRANSFORMSFRONTENDACTION_H_
+#endif  // INCLUDE_TRANSFORMATIONFRONTENDACTION_H_
 

@@ -3,7 +3,7 @@
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "llvm/Support/raw_ostream.h"
 
-#include "../include/BaseTransformation.h"
+#include "../include/ITransformation.h"
 #include "../include/TransformationFrontendAction.h"
 
 using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
@@ -11,30 +11,27 @@ using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
     clang::DeclGroupRef, clang::SourceManager, clang::ASTContext,
     clang::ASTMutationListener, clang::ASTDeserializationListener;
 using llvm::outs;
-using std::unique_ptr, std::vector, std::move;
+using std::unique_ptr, std::vector, std::move, std::uniform_real_distribution;
 
 // ----------- Frontend Actions ------------ //
 
 TransformationFrontendAction::TransformationFrontendAction(
-    vector<BaseTransformation> transformations, string output_path
+    vector<ITransformation *> transformations, string output_path, mt19937 gen
 ):
         ASTFrontendAction(),
         transformations(move(transformations)),
-        output_path(move(output_path)) {}
+        output_path(move(output_path)),
+        gen(gen) {}
 
 unique_ptr<ASTConsumer> TransformationFrontendAction::CreateASTConsumer(
         CompilerInstance &CI, StringRef file
 ) {
     rewriter.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
-    // Seed for the random number engine
-    random_device rd;
-    // Standard mersenne_twister_engine seeded with rd()
-    mt19937 gen(rd());
-    uniform_real_distribution<> dis(0.0, 1.0);
+    uniform_real_distribution<double> dis(0.0, 1.0);
     vector<unique_ptr<ASTConsumer>> consumers;
     for (auto transformation : transformations) {
-        if (dis(gen) < transformation.p)
-            consumers.push_back(transformation.getConsumer(&rewriter));
+        if (dis(gen) < transformation->getProbability())
+            consumers.push_back(transformation->getConsumer(&rewriter));
     }
     // MultiplexConsumer is a kind of ASTConsumer that run multiple consumers provided
     // as vector<unique_ptr<ASTConsumer>>

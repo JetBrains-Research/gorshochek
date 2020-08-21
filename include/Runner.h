@@ -3,24 +3,24 @@
 
 #include <string>
 #include <vector>
+#include <random>
 
-#include "BaseTransformation.h"
+#include "ITransformation.h"
 
 using clang::tooling::ClangTool, llvm::cl::OptionCategory;
-using std::string, std::vector;
+using std::string, std::vector, std::mt19937;
 
 static OptionCategory TransformationCategory("Transformation");
 
 class Runner {
-    /* Class for creating ClangTool form .yaml config specified in argv as a first argument
-     * and run ClangTool on files specified in rest arguments in argv */
-public:
-    Runner(int argc, const char **argv);
+    /* Class for creating ClangTool and run ClangTool on files */
+ public:
+    explicit Runner(vector<ITransformation *> transformations);
     // Run ClangTool on specified files
-    void run();
-private:
-    int argc;
-    const char **argv;
+    void run(int num_files, const char ** files, string output_path);
+ private:
+    vector<ITransformation *> transformations;
+    mt19937 gen;
 };
 
-#endif  //INCLUDE_RUNNER_H_
+#endif  // INCLUDE_RUNNER_H_

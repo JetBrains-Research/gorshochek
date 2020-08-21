@@ -1,5 +1,5 @@
-#ifndef INCLUDE_TRANSFORMATIONFONTENDACTIONFACTORY_H_
-#define INCLUDE_TRANSFORMATIONFONTENDACTIONFACTORY_H_
+#ifndef INCLUDE_TRANSFORMATIONFRONTENDACTIONFACTORY_H_
+#define INCLUDE_TRANSFORMATIONFRONTENDACTIONFACTORY_H_
 
 #include <string>
 #include <vector>
@@ -13,12 +13,16 @@
 using clang::tooling::FrontendActionFactory, clang::FrontendAction;
 
 class TransformationFrontendActionFactory : public FrontendActionFactory {
-public:
-    TransformationFrontendActionFactory(vector<BaseTransformation> transformations, string output_path);
+ public:
+    TransformationFrontendActionFactory(
+            vector<ITransformation *> transformations,
+            string output_path,
+            mt19937 gen);
     FrontendAction * create() override;
-private:
-    vector<BaseTransformation> transformations;
+ private:
+    vector<ITransformation *> transformations;
     string output_path;
+    mt19937 gen;
 };
 
-#endif  //INCLUDE_TRANSFORMATIONFONTENDACTIONFACTORY_H_
+#endif  // INCLUDE_TRANSFORMATIONFRONTENDACTIONFACTORY_H_

@@ -1,47 +1,31 @@
-#include <yaml-cpp/yaml.h>
-
 #include <string>
 #include <vector>
+#include <random>
 
 #include "../include/Runner.h"
-#include "../include/Utils.h"
 #include "../include/TransformationFrontendAction.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
 using clang::tooling::FrontendActionFactory,
 clang::tooling::CommonOptionsParser, clang::tooling::ClangTool,
 clang::FrontendAction;
-using std::size_t, std::vector, std::string, std::ifstream;
+using std::size_t, std::vector, std::string, std::ifstream, std::mt19937;
 
-Runner::Runner(int argc, const char **argv) : argc(argc), argv(argv) {}
+const int SEED = 7;
 
-void Runner::run() {
-    string config_path = argv[1];
-    // Parsing config to get original files paths and transformations for them
-    vector<BaseTransformation> transformations = getTransformationsFromYaml(config_path);
-    // Getting output path where to save transformed code
-    YAML::Node config = YAML::LoadFile(config_path);
-    auto output_path = config["output path"].as<string>();
-    // Constructing specific input for CommonOptionsParser
-    vector<const char *> args;
-    for (int arg_index = 0; arg_index < argc; ++arg_index) {
-        if (arg_index != 1)
-            args.push_back(argv[arg_index]);
-    }
-    argc--;
-    const char **argv_ = args.data();
+Runner::Runner(vector<ITransformation *> transformations):
+        transformations(move(transformations)), gen(mt19937(SEED)) {}
 
-    auto OptionsParser = CommonOptionsParser(argc, argv_, TransformationCategory);
+void Runner::run(int num_files, const char ** files, string output_path) {
+    auto OptionsParser = CommonOptionsParser(num_files, files, TransformationCategory);
     // Constructs a clang tool to run over a list of files.
     ClangTool Tool(OptionsParser.getCompilations(),
                    OptionsParser.getSourcePathList());
     // Run the Clang Tool, creating a new FrontendAction
+    // The way to create new FrontendAction is similar to newFrontendActionFactory function
     Tool.run(std::unique_ptr<FrontendActionFactory>(
                 new TransformationFrontendActionFactory(
-                    move(transformations), move(output_path)
-                )
-            ).get()
-    );
+                    move(transformations), move(output_path), gen)).get());
 }
 
 
