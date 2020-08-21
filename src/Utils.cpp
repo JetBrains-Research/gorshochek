@@ -17,7 +17,9 @@ const char * CONFIG_OUTPUT_PATH_KEY = "output path";
 vector<ITransformation *> *getTransformationsFromYaml(const string &config_path) {
     YAML::Node config = YAML::LoadFile(config_path);
     if (!config[CONFIG_TRANSFORMATIONS_KEY]) {
-        cerr << "Invalid config" << endl;
+        cerr << "Specify transformations in yaml config inside \""
+             << CONFIG_TRANSFORMATIONS_KEY
+             << "\" key" << endl;
     }
     auto transformations = new vector<ITransformation *>;
     for (auto transform_data : config[CONFIG_TRANSFORMATIONS_KEY]) {
@@ -25,9 +27,7 @@ vector<ITransformation *> *getTransformationsFromYaml(const string &config_path)
             auto p = transform_data["identity transform"]["p"].as<float>();
             transformations->push_back(new IdentityTransformation(p));
         } else {
-            cerr << "Specify transformations in yaml config inside \""
-                 << CONFIG_TRANSFORMATIONS_KEY
-                 << "\" key" << endl;
+            cerr << "Unknown transformation";
         }
     }
     return transformations;
@@ -36,7 +36,9 @@ vector<ITransformation *> *getTransformationsFromYaml(const string &config_path)
 string getOutputPathFromYaml(const string &config_path) {
     YAML::Node config = YAML::LoadFile(config_path);
     if (!config[CONFIG_OUTPUT_PATH_KEY]) {
-        cerr << "Invalid config" << endl;
+        cerr << "Specify output path in yaml config inside \""
+             << CONFIG_OUTPUT_PATH_KEY
+             << "\" key" << endl;
     }
     return config[CONFIG_OUTPUT_PATH_KEY].as<string>();
 }
