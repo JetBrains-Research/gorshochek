@@ -20,7 +20,7 @@ class ITransformation {
  public:
     explicit ITransformation(float p);
     virtual ~ITransformation();
-    virtual unique_ptr<ASTConsumer> getConsumer(Rewriter * rewriter);
+    virtual unique_ptr<ASTConsumer> getConsumer(Rewriter * rewriter) = 0;
     float getProbability();
  private:
     float p;
