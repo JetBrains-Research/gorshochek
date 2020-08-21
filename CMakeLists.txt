@@ -56,7 +56,6 @@ add_executable(${PROJECT_NAME}
         src/Runner.cpp
         src/TransformationFrontendAction.cpp
         src/TransformationFrontendActionFactory.cpp
-        src/transformations/BasicTransformation.cpp
         src/transformations/IdentityTransformation.cpp
         )
 
