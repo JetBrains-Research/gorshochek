@@ -26,12 +26,11 @@ jobs:
           cpplint --filter=-legal --recursive --exclude=build --exclude=tests/resources --exclude=tests/etalon --linelength=120 .
       - name: Build
         run: |
-          cd build
           cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
                 -DClang_DIR=build/clang+llvm-9/lib/cmake/clang \
                 -DCMAKE_C_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-9/bin/clang"
-                -DCMAKE_CXX_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-9/bin/clang++" ..
-          cmake --build .
+                -DCMAKE_CXX_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-9/bin/clang++" .
+          cmake --build build/
       - name: Test
         run: |
           pytest ..
