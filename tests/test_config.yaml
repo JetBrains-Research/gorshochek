@@ -1,4 +1,4 @@
-output path: "tests/"
+output path: "/Users/maximzubkov/Desktop/JetBrains/gorshochek/tests/transformed"
 transformations:
   - identity transform:
       p: 0.99
