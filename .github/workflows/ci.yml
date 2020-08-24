@@ -27,7 +27,10 @@ jobs:
       - name: Build
         run: |
           mkdir cmake-build-debug && cd cmake-build-debug
-          cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm -DClang_DIR=build/clang+llvm-9/lib/cmake/clang ..
+          cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
+                -DClang_DIR=build/clang+llvm-9/lib/cmake/clang \
+                -DCMAKE_C_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-9/bin/clang"
+                -DCMAKE_CXX_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-9/bin/clang++" ..
           cmake --build .
       - name: Test
         run: |
