@@ -23,7 +23,7 @@ jobs:
           sh scripts/install_clang.sh
       - name: Lint
         run: |
-          cpplint --filter=-legal --recursive --exclude=build --exclude=tests/resources --linelength=120 .
+          cpplint --filter=-legal --recursive --exclude=build --exclude=tests/resources --exclude=tests/etalon --linelength=120 .
       - name: Build
         run: |
           mkdir cmake-build-debug && cd cmake-build-debug
@@ -31,4 +31,4 @@ jobs:
           cmake --build .
       - name: Test
         run: |
-          echo "Tests are not implemented yet"
+          pytest ..
