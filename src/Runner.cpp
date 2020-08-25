@@ -10,7 +10,8 @@
 using clang::tooling::FrontendActionFactory,
 clang::tooling::CommonOptionsParser, clang::tooling::ClangTool,
 clang::FrontendAction;
-using std::size_t, std::vector, std::string, std::ifstream, std::mt19937;
+using std::size_t, std::vector, std::string,
+std::ifstream, std::mt19937, std::copy;
 namespace fs = std::filesystem;
 
 const int SEED = 7;
@@ -21,13 +22,13 @@ Runner::Runner(const vector<ITransformation *> *transformations,
         n_transformations(n_transformations),
         gen(new mt19937(SEED)) {}
 
-void Runner::createOutputFolders(int num_files, const char * input_files[], const string& output_path) {
+void Runner::createOutputFolders(int num_files, char * input_files[], const string& output_path) {
     fs::path output_dir(output_path);
     if (!fs::exists(output_dir)) {
         fs::create_directory(output_dir);
     }
     // Skipping the first arg which in argv is current program
-    for (size_t file_index = 1; file_index < num_files; ++file_index) {
+    for (size_t file_index = 0; file_index < num_files; ++file_index) {
         fs::path current_file_path(input_files[file_index]);
         fs::path transformations_path = fs::path(output_path) / current_file_path.stem();
         if (!fs::exists(transformations_path)) {
@@ -36,9 +37,14 @@ void Runner::createOutputFolders(int num_files, const char * input_files[], cons
         }
     }
 }
-void Runner::run(int num_files, const char * files[], const string output_path) {
+void Runner::run(int num_files, char ** files, const string& output_path) {
     createOutputFolders(num_files, files, output_path);
-    auto OptionsParser = CommonOptionsParser(num_files, files, TransformationCategory);
+    int argc = num_files + 1;
+    const char * argv[num_files + 1];
+    copy(files, files + num_files, argv + 1);
+    argv[0] = "./gorshochek";
+    auto OptionsParser = CommonOptionsParser(argc, argv,
+                                             TransformationCategory);
     // Constructs a clang tool to run over a list of files.
     ClangTool Tool(OptionsParser.getCompilations(),
                    OptionsParser.getSourcePathList());

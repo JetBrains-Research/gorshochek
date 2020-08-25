@@ -9,3 +9,7 @@ ITransformation::~ITransformation() {}
 float ITransformation::getProbability() {
     return p;
 }
+
+string ITransformation::getName() {
+    return string(name);
+}

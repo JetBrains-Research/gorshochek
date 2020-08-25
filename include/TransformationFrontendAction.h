@@ -7,6 +7,7 @@
 #include <string>
 #include <memory>
 #include <random>
+#include <filesystem>
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -24,6 +25,7 @@ using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
     clang::StringRef, clang::Rewriter, clang::RecursiveASTVisitor,
     clang::DeclGroupRef, clang::ASTContext, clang::MultiplexConsumer;
 using std::unique_ptr, std::vector, std::string, std::vector, std::mt19937;
+namespace fs = std::filesystem;
 
 class TransformationFrontendAction : public ASTFrontendAction {
     /* FrontendAction is an interface to create and run ASTConsumer and then save the result.
@@ -41,6 +43,8 @@ class TransformationFrontendAction : public ASTFrontendAction {
     const vector<ITransformation *> *transformations;
     const string output_path;
     mt19937 *gen;
+    fs::path getTransformationsPath();
+    static bool isFileCpp(fs::path path);
 };
 
 #endif  // INCLUDE_TRANSFORMATIONFRONTENDACTION_H_

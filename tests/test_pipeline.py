@@ -24,7 +24,7 @@ def test_pipeline() -> None:
         actual_num_transforms = len(listdir(actual_file_dir))
         assert actual_num_transforms == expected_num_transforms, \
             f"Num transformed files is not equal to num expected"
-        for i in range(expected_num_transforms):
+        for i in range(expected_num_transforms - 1):
             expected_transform_path = path.join(expected_file_dir, f"transformation_{i}.cpp")
             actual_transform_path = path.join(actual_file_dir, f"transformation_{i}.cpp")
             with open(expected_transform_path, "r") as expected:

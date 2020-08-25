@@ -12,7 +12,7 @@
 
 
 using clang::ASTConsumer, clang::Rewriter;
-using std::unique_ptr;
+using std::unique_ptr, std::string;
 
 
 class ITransformation {
@@ -22,8 +22,11 @@ class ITransformation {
     virtual ~ITransformation();
     virtual unique_ptr<ASTConsumer> getConsumer(Rewriter * rewriter) = 0;
     float getProbability();
+    string getName();
  private:
     float p;
+ protected:
+    static char * name;
 };
 
 #endif  // INCLUDE_ITRANSFORMATION_H_

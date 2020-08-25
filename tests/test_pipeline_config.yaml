@@ -2,8 +2,8 @@ output path: "tests/resources/actual"
 n transformations: 2
 transformations:
   - identity transform:
-      p: 0.99
+      p: 1.0
   - identity transform:
-      p: 0.9
+      p: 1.0
   - identity transform:
-      p: 0.9
+      p: 1.0
