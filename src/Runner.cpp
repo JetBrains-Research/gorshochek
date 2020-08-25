@@ -2,7 +2,6 @@
 #include <vector>
 #include <random>
 #include <filesystem>
-#include <iostream>
 
 #include "../include/Runner.h"
 #include "../include/TransformationFrontendAction.h"
