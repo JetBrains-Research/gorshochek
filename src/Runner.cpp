@@ -22,13 +22,13 @@ Runner::Runner(const vector<ITransformation *> *transformations,
         n_transformations(n_transformations),
         gen(new mt19937(SEED)) {}
 
-void Runner::createOutputFolders(int num_files, const char * input_files[], string& output_path){
+void Runner::createOutputFolders(int num_files, const char * input_files[], string& output_path) {
     fs::path output_dir(output_path);
     if (!fs::exists(output_dir)) {
         fs::create_directory(output_dir);
     }
     // Skipping the first arg which in argv is current program
-    for (size_t file_index = 1; file_index < num_files; ++file_index){
+    for (size_t file_index = 1; file_index < num_files; ++file_index) {
         fs::path current_file_path(input_files[file_index]);
         fs::path transformations_path = fs::path(output_path) / current_file_path.stem();
         if (!fs::exists(transformations_path)) {
@@ -37,7 +37,7 @@ void Runner::createOutputFolders(int num_files, const char * input_files[], stri
         }
     }
 }
-void Runner::run(int num_files, const char * files[], string output_path) {
+void Runner::run(int num_files, const char * files[], const string output_path) {
     createOutputFolders(num_files, files, output_path);
     auto OptionsParser = CommonOptionsParser(num_files, files, TransformationCategory);
     // Constructs a clang tool to run over a list of files.

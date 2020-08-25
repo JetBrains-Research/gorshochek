@@ -20,7 +20,7 @@ class Runner {
     // Run ClangTool on specified files
     void run(int num_files, const char * files[], string output_path);
  private:
-    static void createOutputFolders(int num_files, const char * input_files[], string& output_path);
+    static void createOutputFolders(int num_files, const char * input_files[], const string& output_path);
     const vector<ITransformation *> *transformations;
     size_t n_transformations;
     mt19937 *gen;
