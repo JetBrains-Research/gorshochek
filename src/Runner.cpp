@@ -22,7 +22,7 @@ Runner::Runner(const vector<ITransformation *> *transformations,
         n_transformations(n_transformations),
         gen(new mt19937(SEED)) {}
 
-void Runner::createOutputFolders(int num_files, const char * input_files[], string& output_path) {
+void Runner::createOutputFolders(int num_files, const char * input_files[], const string& output_path) {
     fs::path output_dir(output_path);
     if (!fs::exists(output_dir)) {
         fs::create_directory(output_dir);
