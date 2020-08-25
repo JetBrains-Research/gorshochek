@@ -1,0 +1,9 @@
+output path: "tests/resources/actual"
+n transformations: 2
+transformations:
+  - identity transform:
+      p: 1.0
+  - identity transform:
+      p: 1.0
+  - identity transform:
+      p: 1.0

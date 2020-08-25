@@ -8,10 +8,11 @@
 #include "../include/transformations/IdentityTransformation.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
-using std::string, std::cerr, std::endl;
+using std::string, std::cerr, std::endl, std::size_t;
 
 const char * CONFIG_TRANSFORMATIONS_KEY = "transformations";
 const char * CONFIG_OUTPUT_PATH_KEY = "output path";
+const char * CONFIG_NUM_TRANSFORMATIONS_KEY = "n transformations";
 
 
 vector<ITransformation *> *getTransformationsFromYaml(const string &config_path) {
@@ -41,4 +42,14 @@ string getOutputPathFromYaml(const string &config_path) {
              << "\" key" << endl;
     }
     return config[CONFIG_OUTPUT_PATH_KEY].as<string>();
+}
+
+size_t getNumTransformationsFromYaml(const string &config_path) {
+    YAML::Node config = YAML::LoadFile(config_path);
+    if (!config[CONFIG_NUM_TRANSFORMATIONS_KEY]) {
+        cerr << "Specify num transformations in yaml config inside \""
+             << CONFIG_NUM_TRANSFORMATIONS_KEY
+             << "\" key" << endl;
+    }
+    return config[CONFIG_NUM_TRANSFORMATIONS_KEY].as<size_t>();
 }
