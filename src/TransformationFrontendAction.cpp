@@ -15,7 +15,7 @@ using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
 using llvm::outs;
 using llvm::sys::fs::F_None;
 using std::unique_ptr, std::vector, std::move, std::uniform_real_distribution,
-std::error_code, std::to_string;
+std::error_code, std::to_string, std::distance, std::size_t;
 namespace fs = std::filesystem;
 
 // ----------- Frontend Actions ------------ //
@@ -49,19 +49,9 @@ unique_ptr<ASTConsumer> TransformationFrontendAction::CreateASTConsumer(
 void TransformationFrontendAction::EndSourceFileAction() {
     SourceManager &SM = rewriter.getSourceMgr();
     fs::path current_file_path(this->getCurrentFile().str());
-    fs::path output_dir(output_path);
-    if (!fs::exists(output_dir)) {
-        fs::create_directory(output_dir);
-    }
     fs::path transformations_path = fs::path(output_path) / current_file_path.stem();
-    int cur_transform_index = 0;
-    if (!fs::exists(transformations_path)) {
-        fs::create_directory(transformations_path);
-        fs::copy(current_file_path, transformations_path / fs::path("transformation_0.cpp"));
-    }
-    for (const auto & entry : fs::directory_iterator(transformations_path)) {
-        cur_transform_index++;
-    }
+    size_t cur_transform_index = (size_t)distance(fs::directory_iterator{transformations_path},
+                                                  fs::directory_iterator{});
     fs::path cur_transform_path = transformations_path / fs::path("transformation_" + \
                                                                   to_string(cur_transform_index) + \
                                                                   ".cpp");
