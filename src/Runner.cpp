@@ -27,7 +27,6 @@ void Runner::createOutputFolders(int num_files, char * input_files[], const stri
     if (!fs::exists(output_dir)) {
         fs::create_directory(output_dir);
     }
-    // Skipping the first arg which in argv is current program
     for (size_t file_index = 0; file_index < num_files; ++file_index) {
         fs::path current_file_path(input_files[file_index]);
         fs::path transformations_path = fs::path(output_path) / current_file_path.stem();
