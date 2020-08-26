@@ -10,13 +10,8 @@ using std::unique_ptr, std::find, std::vector, std::string;
 RemoveCommentsConsumer::RemoveCommentsConsumer(Rewriter * rewriter) : rewriter(rewriter) {}
 
 void RemoveCommentsConsumer::HandleTranslationUnit(ASTContext &ctx) {
-    SourceManager& sm = ctx.getSourceManager();
     RawCommentList & commentList = ctx.getRawCommentList();
-    auto comments = commentList.getComments();
-
-    for (auto const & comment : comments) {
-        std::string raw = comment->getRawText(sm);
-        std::string brief = comment->getBriefText(ctx);
+    for (auto const & comment : commentList.getComments()) {
         rewriter->RemoveText(comment->getSourceRange());
     }
 }
