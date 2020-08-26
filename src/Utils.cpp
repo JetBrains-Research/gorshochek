@@ -6,6 +6,7 @@
 
 #include "../include/Utils.h"
 #include "../include/transformations/IdentityTransformation.h"
+#include "../include/transformations/AddCommentsTransformation.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
 using std::string, std::cerr, std::endl, std::size_t;
@@ -27,6 +28,9 @@ vector<ITransformation *> *getTransformationsFromYaml(const string &config_path)
         if (transform_data["identity transform"]) {
             auto p = transform_data["identity transform"]["p"].as<float>();
             transformations->push_back(new IdentityTransformation(p));
+        } else if (transform_data["add comments"]) {
+            auto p = transform_data["add comments"]["p"].as<float>();
+            transformations->push_back(new AddCommentsTransformation(p));
         } else {
             cerr << "Unknown transformation";
         }

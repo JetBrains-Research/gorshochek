@@ -60,6 +60,7 @@ add_executable(${PROJECT_NAME}
         src/TransformationFrontendAction.cpp
         src/TransformationFrontendActionFactory.cpp
         src/transformations/IdentityTransformation.cpp
+        src/transformations/AddCommentsTransformation.cpp
         )
 
 # Installing yaml-cpp
