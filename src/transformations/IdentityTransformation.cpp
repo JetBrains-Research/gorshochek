@@ -2,9 +2,7 @@
 
 // ------------ IdentityTransformation ------------
 
-IdentityTransformation::IdentityTransformation(float p) : ITransformation(p) {}
-
-char * IdentityTransformation::ITransformation::name = "identity";
+IdentityTransformation::IdentityTransformation(float p) : ITransformation(p, "identity") {}
 
 IdentityTransformation::~IdentityTransformation() {}
 

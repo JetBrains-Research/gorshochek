@@ -1,15 +1,16 @@
 #include "../include/ITransformation.h"
 
+using std::move;
 // ------------ ITransformation ------------
 
-ITransformation::ITransformation(float p) : p(p) {}
+ITransformation::ITransformation(float p, string name) : p(p), name(move(name)) {}
 
 ITransformation::~ITransformation() {}
 
-float ITransformation::getProbability() {
+float ITransformation::getProbability() const {
     return p;
 }
 
-string ITransformation::getName() {
-    return string(name);
+string const & ITransformation::getName() const {
+    return name;
 }
