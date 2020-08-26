@@ -18,15 +18,14 @@ using std::unique_ptr, std::string;
 class ITransformation {
     /* Class for storing data about transformation and creating ASTConsumer instances */
  public:
-    explicit ITransformation(float p);
+    explicit ITransformation(float p, string name);
     virtual ~ITransformation();
     virtual unique_ptr<ASTConsumer> getConsumer(Rewriter * rewriter) = 0;
-    float getProbability();
-    string getName();
+    float getProbability() const;
+    string const & getName() const;
  private:
     float p;
- protected:
-    static char * name;
+    string name;
 };
 
 #endif  // INCLUDE_ITRANSFORMATION_H_
