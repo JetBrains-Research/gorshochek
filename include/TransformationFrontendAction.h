@@ -44,7 +44,7 @@ class TransformationFrontendAction : public ASTFrontendAction {
     const string output_path;
     mt19937 *gen;
     fs::path getTransformationsPath();
-    static bool isFileCpp(fs::path path);
+    static bool isFileCpp(fs::path const &path);
 };
 
 #endif  // INCLUDE_TRANSFORMATIONFRONTENDACTION_H_
