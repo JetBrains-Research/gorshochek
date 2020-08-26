@@ -32,7 +32,7 @@ vector<ITransformation *> *getTransformationsFromYaml(const string &config_path)
         } else if (transform_data["add comments"]) {
             auto p = transform_data["add comments"]["p"].as<float>();
             vector<string> statements;
-            for (auto stmt: transform_data["add comments"]["statements"]) {
+            for (auto stmt : transform_data["add comments"]["statements"]) {
                 statements.push_back(stmt.as<string>());
             }
             transformations->push_back(new AddCommentsTransformation(p, statements));

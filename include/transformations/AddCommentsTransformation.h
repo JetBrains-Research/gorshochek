@@ -26,10 +26,10 @@ using std::unique_ptr, std::vector, std::string;
 class AddCommentsVisitor : public RecursiveASTVisitor<AddCommentsVisitor> {
     /* RecursiveASTVisitor is a set of actions that are done
      * when a certain node of AST is reached */
-public:
+ public:
     explicit AddCommentsVisitor(Rewriter * rewriter, vector<string> statements);
     bool VisitStmt(Stmt *s);
-private:
+ private:
     Rewriter * rewriter;
     vector<string> statements;
     bool containStatement(string const &stmt);
@@ -45,19 +45,19 @@ private:
 
 class AddCommentsASTConsumer : public ASTConsumer {
     /* ASTConsumer is an interface for reading an AST produced by the Clang parser. */
-public:
+ public:
     explicit AddCommentsASTConsumer(Rewriter * rewriter, vector<string> statements);
     bool HandleTopLevelDecl(DeclGroupRef DR);
-private:
+ private:
     AddCommentsVisitor visitor;
 };
 
 class AddCommentsTransformation : public ITransformation {
-public:
+ public:
     explicit AddCommentsTransformation(float p, vector<string> statements);
     ~AddCommentsTransformation();
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
-private:
+ private:
     vector<string> statements;
 };
 

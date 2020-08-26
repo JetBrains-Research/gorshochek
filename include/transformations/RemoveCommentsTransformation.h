@@ -1,10 +1,9 @@
-#ifndef INCLUDE_TRANSFORMATIONS_REMOVECOMMENTS_H_
-#define INCLUDE_TRANSFORMATIONS_REMOVECOMMENTS_H_
+#ifndef INCLUDE_TRANSFORMATIONS_REMOVECOMMENTSTRANSFORMATION_H_
+#define INCLUDE_TRANSFORMATIONS_REMOVECOMMENTSTRANSFORMATION_H_
 
 #include <string>
 #include <vector>
 #include <memory>
-#include <iostream>
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -24,19 +23,19 @@ clang::DeclGroupRef, clang::Stmt, clang::ASTContext;
 using std::unique_ptr, std::vector, std::string;
 
 class RemoveCommentsConsumer : public ASTConsumer {
-public:
+ public:
     explicit RemoveCommentsConsumer(Rewriter * rewriter);
-    void HandleTranslationUnit(ASTContext &ctx);
-private:
+    void HandleTranslationUnit(ASTContext &ctx); // NOLINT.
+ private:
     Rewriter * rewriter;
 };
 
 class RemoveCommentsTransformation : public ITransformation {
-public:
+ public:
     explicit RemoveCommentsTransformation(float p);
     ~RemoveCommentsTransformation();
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
 };
 
-#endif  // INCLUDE_TRANSFORMATIONS_REMOVECOMMENTS_H_
+#endif  // INCLUDE_TRANSFORMATIONS_REMOVECOMMENTSTRANSFORMATION_H_
 

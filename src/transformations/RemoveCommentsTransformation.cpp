@@ -14,10 +14,9 @@ void RemoveCommentsConsumer::HandleTranslationUnit(ASTContext &ctx) {
     RawCommentList & commentList = ctx.getRawCommentList();
     auto comments = commentList.getComments();
 
-    for (auto const& comment: comments) {
+    for (auto const & comment : comments) {
         std::string raw = comment->getRawText(sm);
         std::string brief = comment->getBriefText(ctx);
-        std::cout << raw << std::endl;
         rewriter->RemoveText(comment->getSourceRange());
     }
 }
