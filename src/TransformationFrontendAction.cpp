@@ -18,6 +18,7 @@ using llvm::sys::fs::F_None;
 using std::unique_ptr, std::vector, std::move, std::uniform_real_distribution,
 std::error_code, std::to_string, std::count_if, std::size_t, std::ofstream, \
 std::endl;
+using std::ios_base;
 namespace fs = std::filesystem;
 
 // ----------- Frontend Actions ------------ //
@@ -43,7 +44,7 @@ unique_ptr<ASTConsumer> TransformationFrontendAction::CreateASTConsumer(
     auto di = fs::directory_iterator{transformations_path};
     size_t cur_transform_index = (size_t)count_if(fs::begin(di), fs::end(di), isFileCpp);
     fs::path description_path = transformations_path / "description.txt";
-    ofstream description(description_path);
+    ofstream description(description_path, ios_base::app);
     description << "transformation_" << cur_transform_index << endl;
     for (auto transformation : *transformations) {
         if (dis(*gen) < transformation->getProbability()) {
@@ -64,7 +65,7 @@ fs::path TransformationFrontendAction::getTransformationsPath() {
 }
 
 
-bool TransformationFrontendAction::isFileCpp(fs::path path) {
+bool TransformationFrontendAction::isFileCpp(fs::path const &path) {
     return path.extension() == ".cpp";
 }
 
