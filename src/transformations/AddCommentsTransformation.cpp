@@ -23,7 +23,7 @@ bool AddCommentsVisitor::VisitStmt(Stmt *s) {
     } else if (isa<ForStmt>(s)) {
         auto ForStatement = cast<ForStmt>(s);
         if (containStatement(forInside)) {
-            rewriter->InsertText(ForStatement->getBody()->getBeginLoc(), "/* 'for' inside */",
+            rewriter->InsertText(ForStatement->getBody()->getBeginLoc(), "/* 'for' inside */\n",
                                  true, true);
         }
         if (containStatement(forBegin)) {

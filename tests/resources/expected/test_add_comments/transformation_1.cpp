@@ -3,7 +3,8 @@ void foo(int n) {
     int j = 0;
     /* 'for' begin */
     for (int i = 0; i < n; i++)
-        /* 'for' inside */j += i + 1;
+        /* 'for' inside */
+        j += i + 1;
     /* 'while' begin */
     while (j - 1 > 0) /* 'while' inside */
     {
