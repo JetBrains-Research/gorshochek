@@ -25,16 +25,16 @@ transformations:
       p: 0.9
   - add comments:
       p: 0.2
-      statements: ["ifCondition", "ifBegin", "ifInside"]
+      statements: ["forInside", "ifBegin", "ifInside"]
   ...
 ```
 
 Applying transformations is a randomized process. Therefore, each transformation has an attribute
 `p` which determines the probability of certain transformation to be applied. 
 
-- `ouput path` -- path to dir where transformed code will be saved
+- `output path` -- path to dir where transformed code will be saved
 - `transformations` -- a fixed set of transformations
-- `n transfromations` determines how many times transformations should be applied to each file. 
+- `n transformations` determines how many times transformations should be applied to each file. 
 Since transformations is applied with some probability `p`, running the same transformations multiple 
 times will produce different transformed code.
 
@@ -60,7 +60,7 @@ We use `FrontendAction` together with `MultiplexConsumer` which allows to run mu
 <!-- ITRANSFORMATION -->
 ### ITransformation
 
-Base class for transformations, which performs storing data about transformation (e.g probobility `p`) and 
+Base class for transformations, which performs storing data about transformation (e.g probability `p`) and 
 creating `ASTConsumer` instances.
 
 
