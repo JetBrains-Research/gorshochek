@@ -17,7 +17,6 @@ cd gorshochek
 cd build
 cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
       -DClang_DIR=build/clang+llvm-9/lib/cmake/clang \
-      -DCMAKE_CXX_COMPILER=/usr/bin/c++ 
       -DCMAKE_C_COMPILER=path-to-gorshochek/build/clang+llvm-9/bin/clang
       -DCMAKE_CXX_COMPILER=path-to-gorshochek/build/clang+llvm-9/bin/clang++ ..
 # It is essential to specify the full path to gorshochek
@@ -26,11 +25,12 @@ cmake --build .
 4. Run the tool with the needed configuration on C++ files
 ```(bash)
 # You can specify as many files as you need
-./build/gorshochek config file1.cpp file2.cpp
+./build/gorshochek config.yaml file1.cpp file2.cpp
 ```
 Config should be `.yaml` file having the following structure:
 ```
 output path: "path-to-store-transformations"
+n_transformations: 3
 transformations:
   - identity transform:
       p: 0.99
@@ -52,12 +52,13 @@ output_path
 │   └── transformation_2.cpp
 ...
 ```
+More examples cam be found in `tests` folder
 
 --------------
 ## Transformations
 
 - [x] Identity transformation
-- [ ] Add, remove comments
+- [x] Add, remove comments
 - [ ] Useless variables, functions, defines
 - [ ] Rename variables, functions
 - [ ] Random change between `x++`, `++x`, `x+=1`, `x=x+1`
@@ -69,3 +70,19 @@ output_path
 - [ ] Replace `printf` with `std::cout`
 - [ ] Swap `if` and `else` blocks and change the corresponding condition inside `if`
 - [ ] Add wrappers for functions
+
+--------------
+## Documentations
+
+For more detailed documentation can be found in [DOCS.md](DOCS.md)
+
+---------------
+## Contribution
+
+If want to contribute to the project and add new transformation (e.g. `Example`, note that `Example` 
+is just a name of a transformation) the following classes should be implemented:
+- `ExampleTransformation` derived from `ITransformation` --  class that aggregates all the sufficient
+information from `config.yaml` and creates and instances of `ExampleASTConsumer` using 
+`getConsumer` method
+- `ExampleASTConsumer` derived from `ASTConsumer`
+- `ExampleASTVisitor` derived from `RecursiveASTVisitor<Example>`

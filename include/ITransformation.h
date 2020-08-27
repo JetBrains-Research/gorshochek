@@ -31,7 +31,8 @@ class ITransformation {
     virtual ~ITransformation();
     /**
      * ASTConsumer is an interface for interacting with AST, this abstraction layer allows
-     * to be independent of the AST producer
+     * to be independent of the AST producer. This method produces vector of pointers
+     * to the ASTConsumer which then are taken by MultiplexConsumer
      * @param rewriter   An instance of class clang::Rewriter which performs all
      *                   transformations on the code
      * @return           Pointer to ASTConsumer
