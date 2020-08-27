@@ -1,22 +1,23 @@
 from os import path, listdir
 import subprocess
 import shutil
+from typing import List
 
-config_path = path.join("tests", "test_pipeline_config.yaml")
+configs_dir_path = path.join("tests", "configs")
 expected_path = path.join("tests", "resources", "expected")
 actual_path = path.join("tests", "resources", "actual")
 input_path = path.join("tests", "resources", "input")
 build = path.join("build", "gorshochek")
 
 
-def test_pipeline() -> None:
+def _test(files: List, config_path: str) -> None:
     input_files_paths = [
-        path.join("tests", "resources", "input", file) for file in listdir(input_path)
+        path.join("tests", "resources", "input", file) for file in files
     ]
     subprocess.check_call([build, config_path] + input_files_paths)
     assert path.exists(actual_path), f"Transformed files folder \"{actual_path}\" does not exists"
 
-    for file in listdir(input_path):
+    for file in files:
         file_name, _ = file.rsplit(".")
         expected_file_dir = path.join(expected_path, file_name)
         actual_file_dir = path.join(actual_path, file_name)
@@ -33,3 +34,20 @@ def test_pipeline() -> None:
                 transformed_data = transformed.read()
             assert transformed_data == expected_data, "Actual and expected files mismatch "
     shutil.rmtree(actual_path)
+
+
+def test_pipeline() -> None:
+    config_path = path.join(configs_dir_path, "test_pipeline_config.yaml")
+    files = ["test1.cpp", "test2.cpp", "test3.cpp"]
+    _test(files, config_path)
+
+
+def test_remove_comments() -> None:
+    config_path = path.join(configs_dir_path, "test_remove_comments_config.yaml")
+    files = ["test_remove_comments.cpp"]
+    _test(files, config_path)
+
+def test_add_comments() -> None:
+    config_path = path.join(configs_dir_path, "test_add_comments_config.yaml")
+    files = ["test_add_comments.cpp"]
+    _test(files, config_path)

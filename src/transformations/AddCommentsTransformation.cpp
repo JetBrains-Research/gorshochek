@@ -31,17 +31,17 @@ bool AddCommentsVisitor::VisitStmt(Stmt *s) {
                                  true, true);
         }
         if (containStatement(forBegin)) {
-            rewriter->InsertText(ForStatement->getBeginLoc(), "/* 'for' begin */",
+            rewriter->InsertText(ForStatement->getBeginLoc(), "/* 'for' begin */\n",
                                  true, true);
         }
     } else if (isa<WhileStmt>(s)) {
         auto WhileStatement = cast<WhileStmt>(s);
         if (containStatement(whileInside)) {
-            rewriter->InsertText(WhileStatement->getBody()->getBeginLoc(), "/* 'while' inside */",
+            rewriter->InsertText(WhileStatement->getBody()->getBeginLoc(), "/* 'while' inside */\n",
                                  true, true);
         }
         if (containStatement(whileBegin)) {
-            rewriter->InsertText(WhileStatement->getBeginLoc(), "/* 'while' begin */",
+            rewriter->InsertText(WhileStatement->getBeginLoc(), "/* 'while' begin */\n",
                                  true, true);
         }
     }
