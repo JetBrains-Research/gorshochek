@@ -6,8 +6,8 @@ using std::unique_ptr, std::find, std::vector, std::string;
 
 // ------------ AddCommentsVisitor ------------
 
-AddCommentsVisitor::AddCommentsVisitor(Rewriter * rewriter, vector<string> statements) :
-                                       rewriter(rewriter), statements(move(statements)) {}
+AddCommentsVisitor::AddCommentsVisitor(Rewriter * rewriter, vector<string> * statements) :
+                                       rewriter(rewriter), statements(statements) {}
 
 bool AddCommentsVisitor::VisitStmt(Stmt *s) {
     if (isa<IfStmt>(s)) {
@@ -45,13 +45,13 @@ bool AddCommentsVisitor::VisitStmt(Stmt *s) {
 }
 
 bool AddCommentsVisitor::containStatement(string const &stmt) {
-    return find(statements.begin(), statements.end(), stmt) != statements.end();
+    return find(statements->begin(), statements->end(), stmt) != statements->end();
 }
 
 // ------------ AddCommentsASTConsumer ------------
 
-AddCommentsASTConsumer::AddCommentsASTConsumer(Rewriter * rewriter, vector<string> statements) :
-                                               visitor(rewriter, move(statements)) {}
+AddCommentsASTConsumer::AddCommentsASTConsumer(Rewriter * rewriter, vector<string> * statements) :
+                                               visitor(rewriter, statements) {}
 
 bool AddCommentsASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
     for (auto b : DR) {
@@ -64,9 +64,9 @@ bool AddCommentsASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
 
 // ------------ AddCommentsTransformation ------------
 
-AddCommentsTransformation::AddCommentsTransformation(float p, vector<string> statements) :
+AddCommentsTransformation::AddCommentsTransformation(float p, vector<string> * statements) :
                                                      ITransformation(p, "add comments"),
-                                                     statements(move(statements)) {}
+                                                     statements(statements) {}
 
 AddCommentsTransformation::~AddCommentsTransformation() {}
 

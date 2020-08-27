@@ -27,11 +27,11 @@ class AddCommentsVisitor : public RecursiveASTVisitor<AddCommentsVisitor> {
     /* RecursiveASTVisitor is a set of actions that are done
      * when a certain node of AST is reached */
  public:
-    explicit AddCommentsVisitor(Rewriter * rewriter, vector<string> statements);
+    explicit AddCommentsVisitor(Rewriter * rewriter, vector<string> * statements);
     bool VisitStmt(Stmt *s);
  private:
     Rewriter * rewriter;
-    vector<string> statements;
+    vector<string> * statements;
     bool containStatement(string const &stmt);
 
     const string ifBegin = "ifBegin";
@@ -45,7 +45,7 @@ class AddCommentsVisitor : public RecursiveASTVisitor<AddCommentsVisitor> {
 class AddCommentsASTConsumer : public ASTConsumer {
     /* ASTConsumer is an interface for reading an AST produced by the Clang parser. */
  public:
-    explicit AddCommentsASTConsumer(Rewriter * rewriter, vector<string> statements);
+    explicit AddCommentsASTConsumer(Rewriter * rewriter, vector<string> * statements);
     bool HandleTopLevelDecl(DeclGroupRef DR);
  private:
     AddCommentsVisitor visitor;
@@ -53,11 +53,11 @@ class AddCommentsASTConsumer : public ASTConsumer {
 
 class AddCommentsTransformation : public ITransformation {
  public:
-    explicit AddCommentsTransformation(float p, vector<string> statements);
+    explicit AddCommentsTransformation(float p, vector<string> * statements);
     ~AddCommentsTransformation();
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
  private:
-    vector<string> statements;
+    vector<string> * statements;
 };
 
 #endif  // INCLUDE_TRANSFORMATIONS_ADDCOMMENTSTRANSFORMATION_H_
