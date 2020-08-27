@@ -31,7 +31,7 @@ vector<ITransformation *> *getTransformationsFromYaml(const string &config_path)
             transformations->push_back(new IdentityTransformation(p));
         } else if (transform_data["add comments"]) {
             auto p = transform_data["add comments"]["p"].as<float>();
-            auto statements = new vector<string>;
+            const auto statements = new vector<string>;
             for (auto stmt : transform_data["add comments"]["statements"]) {
                 statements->push_back(stmt.as<string>());
             }

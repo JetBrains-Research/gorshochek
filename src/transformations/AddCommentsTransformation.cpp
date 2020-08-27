@@ -6,7 +6,7 @@ using std::unique_ptr, std::find, std::vector, std::string;
 
 // ------------ AddCommentsVisitor ------------
 
-AddCommentsVisitor::AddCommentsVisitor(Rewriter * rewriter, vector<string> * statements) :
+AddCommentsVisitor::AddCommentsVisitor(Rewriter * rewriter, const vector<string> * statements) :
                                        rewriter(rewriter), statements(statements) {}
 
 bool AddCommentsVisitor::VisitStmt(Stmt *s) {
@@ -50,7 +50,7 @@ bool AddCommentsVisitor::containStatement(string const &stmt) {
 
 // ------------ AddCommentsASTConsumer ------------
 
-AddCommentsASTConsumer::AddCommentsASTConsumer(Rewriter * rewriter, vector<string> * statements) :
+AddCommentsASTConsumer::AddCommentsASTConsumer(Rewriter * rewriter, const vector<string> * statements) :
                                                visitor(rewriter, statements) {}
 
 bool AddCommentsASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
@@ -64,7 +64,7 @@ bool AddCommentsASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
 
 // ------------ AddCommentsTransformation ------------
 
-AddCommentsTransformation::AddCommentsTransformation(float p, vector<string> * statements) :
+AddCommentsTransformation::AddCommentsTransformation(float p, const vector<string> * statements) :
                                                      ITransformation(p, "add comments"),
                                                      statements(statements) {}
 
