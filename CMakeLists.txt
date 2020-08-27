@@ -6,9 +6,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -fno-rtti -mmacosx-version-min=10.15")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall \
+                                            -fparse-all-comments \
+                                            -fno-strict-aliasing \
+                                            -fno-rtti \
+                                            -mmacosx-version-min=10.15")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -fno-rtti")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall \
+                                            -fparse-all-comments \
+                                            -fno-strict-aliasing \
+                                            -fno-rtti")
 endif()
 
 set(LIBRARY_LIST
@@ -60,6 +67,8 @@ add_executable(${PROJECT_NAME}
         src/TransformationFrontendAction.cpp
         src/TransformationFrontendActionFactory.cpp
         src/transformations/IdentityTransformation.cpp
+        src/transformations/AddCommentsTransformation.cpp
+        src/transformations/RemoveCommentsTransformation.cpp
         )
 
 # Installing yaml-cpp

@@ -1,0 +1,12 @@
+output path: "tests/resources/actual"
+n transformations: 1
+transformations:
+  - add comments:
+      p: 1.0
+      statements: ["ifCondition", "ifBegin", "ifInside", "elseInside"]
+  - add comments:
+      p: 1.0
+      statements: ["forBegin", "forInside"]
+  - add comments:
+      p: 1.0
+      statements: [ "whileBegin", "whileInside"]
