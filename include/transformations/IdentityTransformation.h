@@ -14,6 +14,9 @@ using clang::ASTConsumer;
 
 class IdentityTransformation : public ITransformation {
  public:
+    /**
+     * Identity transformations does not change code
+     */
     explicit IdentityTransformation(float p);
     ~IdentityTransformation();
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);

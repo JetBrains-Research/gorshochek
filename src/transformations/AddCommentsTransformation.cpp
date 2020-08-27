@@ -54,8 +54,8 @@ AddCommentsASTConsumer::AddCommentsASTConsumer(Rewriter * rewriter, const vector
                                                visitor(rewriter, statements) {}
 
 bool AddCommentsASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
-    for (auto b : DR) {
-        // Traverse the declaration using our AST visitor.
+    for (clang::Decl * b : DR) {
+        // Traverse each declaration in DeclGroup using our AST visitor.
         visitor.TraverseDecl(b);
         b->dump();
     }
