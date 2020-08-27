@@ -61,7 +61,7 @@ unique_ptr<ASTConsumer> TransformationFrontendAction::CreateASTConsumer(
 
 fs::path TransformationFrontendAction::getTransformationsPath() {
     fs::path current_file_path(this->getCurrentFile().str());
-    return fs::path(output_path) / current_file_path.stem();
+    return ".." / fs::path(output_path) / current_file_path.stem();
 }
 
 

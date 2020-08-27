@@ -38,10 +38,12 @@ void Runner::createOutputFolders(int num_files, char * input_files[], const stri
 }
 void Runner::run(int num_files, char ** files, const string& output_path) {
     createOutputFolders(num_files, files, output_path);
-    int argc = num_files + 1;
-    const char * argv[num_files + 1];
-    copy(files, files + num_files, argv + 1);
+    int argc = num_files + 3;
+    const char * argv[num_files + 3];
     argv[0] = "./gorshochek";
+    argv[1] = "-p";
+    argv[2] = "build";
+    copy(files, files + num_files, argv + 3);
     auto OptionsParser = CommonOptionsParser(argc, argv,
                                              TransformationCategory);
     // Constructs a clang tool to run over a list of files.
