@@ -57,7 +57,7 @@ output_path
 ## Transformations
 
 - [x] Identity transformation
-- [ ] Add, remove comments
+- [x] Add, remove comments
 - [ ] Useless variables, functions, defines
 - [ ] Rename variables, functions
 - [ ] Random change between `x++`, `++x`, `x+=1`, `x=x+1`
