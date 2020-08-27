@@ -47,6 +47,7 @@ def test_remove_comments() -> None:
     files = ["test_remove_comments.cpp"]
     _test(files, config_path)
 
+
 def test_add_comments() -> None:
     config_path = path.join(configs_dir_path, "test_add_comments_config.yaml")
     files = ["test_add_comments.cpp"]
