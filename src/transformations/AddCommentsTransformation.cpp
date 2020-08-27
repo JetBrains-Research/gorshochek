@@ -12,10 +12,6 @@ AddCommentsVisitor::AddCommentsVisitor(Rewriter * rewriter, vector<string> state
 bool AddCommentsVisitor::VisitStmt(Stmt *s) {
     if (isa<IfStmt>(s)) {
         auto IfStatement = cast<IfStmt>(s);
-        if (containStatement(ifCondition)) {
-            rewriter->InsertText(IfStatement->getCond()->getExprLoc(), "/* 'if' cond */",
-                                 true, false);
-        }
         if (containStatement(ifInside)) {
             rewriter->InsertText(IfStatement->getThen()->getBeginLoc(), "/* 'if' inside */\n",
                                  true, true);

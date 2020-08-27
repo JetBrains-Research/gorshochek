@@ -1,5 +1,5 @@
 output path: "tests/resources/actual"
-n transformations: 2
+n transformations: 1
 transformations:
   - add comments:
       p: 1.0

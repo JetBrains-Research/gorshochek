@@ -34,7 +34,6 @@ class AddCommentsVisitor : public RecursiveASTVisitor<AddCommentsVisitor> {
     vector<string> statements;
     bool containStatement(string const &stmt);
 
-    const string ifCondition = "ifCondition";
     const string ifBegin = "ifBegin";
     const string ifInside = "ifInside";
     const string forBegin = "forBegin";
