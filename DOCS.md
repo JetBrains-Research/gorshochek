@@ -32,7 +32,7 @@ transformations:
 Applying transformations is a randomized process. Therefore, each transformation has an attribute
 `p` which determines the probability of certain transformation to be applied. 
 
-- `output path` -- path to dir where transformed code will be saved
+- `output path` -- relative path to dir where transformed code will be saved
 - `transformations` -- a fixed set of transformations
 - `n transformations` determines how many times transformations should be applied to each file. 
 Since transformations is applied with some probability `p`, running the same transformations multiple 

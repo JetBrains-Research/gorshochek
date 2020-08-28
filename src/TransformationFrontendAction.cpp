@@ -25,7 +25,7 @@ namespace fs = std::filesystem;
 
 TransformationFrontendAction::TransformationFrontendAction(
     const vector<ITransformation *> *transformations,
-    const string output_path,
+    string const & output_path,
     mt19937 *gen
 ):
         ASTFrontendAction(),

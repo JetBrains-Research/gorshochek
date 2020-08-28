@@ -23,7 +23,7 @@ class Runner {
      * Method for creating folders for transformations and their descriptions
      * @param num_files     Number of files to be transformed
      * @param input_files   Paths to files to be transformed
-     * @param output_path   Path to the output dir where transfromed code will be stored
+     * @param output_path   Path to the output dir where transformed code will be stored
      */
     static void createOutputFolders(int num_files, char * input_files[], const string& output_path);
     const vector<ITransformation * > * transformations;

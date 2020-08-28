@@ -52,7 +52,7 @@ output_path
 │   └── transformation_2.cpp
 ...
 ```
-More examples cam be found in `tests` folder
+More examples can be found in `tests` folder
 
 --------------
 ## Transformations
@@ -74,7 +74,7 @@ More examples cam be found in `tests` folder
 --------------
 ## Documentations
 
-For more detailed documentation can be found in [DOCS.md](DOCS.md)
+More detailed documentation can be found in [DOCS.md](DOCS.md)
 
 ---------------
 ## Contribution

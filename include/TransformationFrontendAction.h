@@ -32,12 +32,12 @@ namespace fs = std::filesystem;
 class TransformationFrontendAction : public ASTFrontendAction {
  public:
     TransformationFrontendAction(const vector<ITransformation *> *transformations,
-                                 const string output_path,
+                                 string const & output_path,
                                  mt19937 *gen);
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                               StringRef file) override;
     /**
-     * At the end of each file EndSourceFileAction is called, inside the method we
+     * At the end of each file EndSourceFileAction is called, inside this method we
      * dump the transformed code on the disk
      */
     void EndSourceFileAction() override;
@@ -45,7 +45,7 @@ class TransformationFrontendAction : public ASTFrontendAction {
  private:
     Rewriter rewriter;
     const vector<ITransformation *> *transformations;
-    const string output_path;
+    string const & output_path;
     mt19937 *gen;
     fs::path getTransformationsPath();
     static bool isFileCpp(fs::path const &path);
