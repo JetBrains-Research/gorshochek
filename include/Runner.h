@@ -12,16 +12,21 @@ using std::string, std::vector, std::mt19937, std::size_t;
 
 static OptionCategory TransformationCategory("Transformation");
 
+/// Class for creating ClangTool and run ClangTool on provided files
 class Runner {
-    /* Class for creating ClangTool and run ClangTool on files */
  public:
-    explicit Runner(const vector<ITransformation *> *transformations,
+    explicit Runner(const vector<ITransformation * > * transformations,
                     size_t n_transformations);
-    // Run ClangTool on specified files
     void run(int num_files, char ** files, const string& output_path);
  private:
+    /**
+     * Method for creating folders for transformations and their descriptions
+     * @param num_files     Number of files to be transformed
+     * @param input_files   Paths to files to be transformed
+     * @param output_path   Path to the output dir where transformed code will be stored
+     */
     static void createOutputFolders(int num_files, char * input_files[], const string& output_path);
-    const vector<ITransformation *> *transformations;
+    const vector<ITransformation * > * transformations;
     size_t n_transformations;
     mt19937 *gen;
 };

@@ -27,21 +27,25 @@ using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
 using std::unique_ptr, std::vector, std::string, std::vector, std::mt19937;
 namespace fs = std::filesystem;
 
+/// FrontendAction is an interface to create and run ASTConsumer and then save the result.
+/// For each source file provided to the tool, a new FrontendAction is created.
 class TransformationFrontendAction : public ASTFrontendAction {
-    /* FrontendAction is an interface to create and run ASTConsumer and then save the result.
-     * For each source file provided to the tool, a new FrontendAction is created. */
  public:
     TransformationFrontendAction(const vector<ITransformation *> *transformations,
-                                 const string output_path,
+                                 string const & output_path,
                                  mt19937 *gen);
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                               StringRef file) override;
+    /**
+     * At the end of each file EndSourceFileAction is called, inside this method we
+     * dump the transformed code on the disk
+     */
     void EndSourceFileAction() override;
 
  private:
     Rewriter rewriter;
     const vector<ITransformation *> *transformations;
-    const string output_path;
+    string const & output_path;
     mt19937 *gen;
     fs::path getTransformationsPath();
     static bool isFileCpp(fs::path const &path);

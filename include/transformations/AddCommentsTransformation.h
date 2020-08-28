@@ -23,15 +23,23 @@ using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
 clang::DeclGroupRef, clang::Stmt;
 using std::unique_ptr, std::vector, std::string;
 
+/// RecursiveASTVisitor is a set of actions that are done
+/// when a certain node of AST is reached
 class AddCommentsVisitor : public RecursiveASTVisitor<AddCommentsVisitor> {
-    /* RecursiveASTVisitor is a set of actions that are done
-     * when a certain node of AST is reached */
  public:
     explicit AddCommentsVisitor(Rewriter * rewriter, const vector<string> * statements);
+    /**
+     * This function is called a certain clang::Stmt is visited
+     */
     bool VisitStmt(Stmt *s);
  private:
     Rewriter * rewriter;
     const vector<string> * statements;
+    /**
+     * Check if vector statements contains a specific statement
+     * @param stmt   Statement to be checked
+     * @return
+     */
     bool containStatement(string const &stmt);
 
     const string ifBegin = "ifBegin";
@@ -43,9 +51,15 @@ class AddCommentsVisitor : public RecursiveASTVisitor<AddCommentsVisitor> {
 };
 
 class AddCommentsASTConsumer : public ASTConsumer {
-    /* ASTConsumer is an interface for reading an AST produced by the Clang parser. */
  public:
     explicit AddCommentsASTConsumer(Rewriter * rewriter, const vector<string> * statements);
+    /**
+     * HandleTopLevelDecl handles all the declaration (or definition),
+     * e.g. a variable, typedef, function, struct, etc
+     * @param DR     Iterating through DeclGroupRef we are getting all the declarations
+     *               belongs to current DeclGroup
+     * @return       true to continue parsing, or false to abort parsing.
+     */
     bool HandleTopLevelDecl(DeclGroupRef DR);
  private:
     AddCommentsVisitor visitor;
@@ -57,6 +71,12 @@ class AddCommentsTransformation : public ITransformation {
     ~AddCommentsTransformation();
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
  private:
+    /**
+     * Along with probability, the AddCommentsTransformation class constructor also accepts
+     * statements which contains places where a comment should be inserted,
+     * e.g ["forBegin", "ifInside"] will add specific comment to the body of each "if"
+     * and before each "for"
+     */
     const vector<string> * statements;
 };
 

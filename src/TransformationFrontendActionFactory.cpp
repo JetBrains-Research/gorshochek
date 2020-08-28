@@ -2,7 +2,7 @@
 
 TransformationFrontendActionFactory::TransformationFrontendActionFactory(
         const vector<ITransformation *> *transformations,
-        const string output_path,
+        string const & output_path,
         mt19937 *gen
 ) :
     transformations(transformations), output_path(output_path), gen(gen) {}
