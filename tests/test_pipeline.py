@@ -7,12 +7,16 @@ configs_dir_path = path.join("tests", "configs")
 expected_path = path.join("tests", "resources", "expected")
 actual_path = path.join("tests", "resources", "actual")
 input_path = path.join("tests", "resources", "input")
+tricky_path = path.join("scripts", "..", "tests", "..", "tests", "resources", "input")
 build = path.join("build", "gorshochek")
 
 
 def _test(files: List, config_path: str) -> None:
+    num_regular = len(files) // 2
     input_files_paths = [
-        path.join("tests", "resources", "input", file) for file in files
+        path.join(input_path, file) for file in files[:-num_regular]
+    ] + [
+        path.join(tricky_path, file) for file in files[-num_regular:]
     ]
     subprocess.check_call([build, config_path] + input_files_paths)
     assert path.exists(actual_path), f"Transformed files folder \"{actual_path}\" does not exists"

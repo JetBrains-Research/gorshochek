@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Frontend/CompilerInstance.h"
@@ -16,8 +17,8 @@ using clang::ASTFrontendAction, clang::ASTConsumer, clang::CompilerInstance,
 using llvm::outs;
 using llvm::sys::fs::F_None;
 using std::unique_ptr, std::vector, std::move, std::uniform_real_distribution,
-std::error_code, std::to_string, std::count_if, std::size_t, std::ofstream, \
-std::endl;
+std::error_code, std::to_string, std::count_if, std::size_t, std::ofstream,
+std::cerr, std::endl;
 using std::ios_base;
 namespace fs = std::filesystem;
 
@@ -61,7 +62,16 @@ unique_ptr<ASTConsumer> TransformationFrontendAction::CreateASTConsumer(
 
 fs::path TransformationFrontendAction::getTransformationsPath() {
     fs::path current_file_path(this->getCurrentFile().str());
-    return ".." / fs::path(output_path) / current_file_path.stem();
+    fs::path current_path = fs::current_path();
+    fs::path path_to_gorshochek;
+    if (current_path.filename().compare("build") == 0) {
+        path_to_gorshochek = fs::path("..");
+    } else if (current_path.filename().compare("yaml-cpp-build") == 0) {
+        path_to_gorshochek = fs::path("..") / fs::path("..") / fs::path("..");
+    } else {
+        cerr << "Unexpected current directory" << current_path.string() << endl;
+    }
+    return path_to_gorshochek / fs::path(output_path) / current_file_path.stem();
 }
 
 
