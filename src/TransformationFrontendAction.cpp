@@ -68,7 +68,6 @@ fs::path TransformationFrontendAction::getTransformationsPath() {
         path_to_gorshochek = fs::path("..");
     } else if (current_path.filename().compare("yaml-cpp-build") == 0) {
         path_to_gorshochek = fs::path("..") / fs::path("..") / fs::path("..");
-        std::cout << "yes";
     } else {
         cerr << "Unexpected current directory" << current_path.string() << endl;
     }
