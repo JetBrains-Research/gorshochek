@@ -10,11 +10,18 @@ using clang::FunctionDecl, clang::VarDecl, clang::CXXMethodDecl;
 RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const vector<string> * entities,
                                              const int seed) :
         rewriter(rewriter), entities(entities) {
-    gen = new mt19937;
-    gen->seed(static_cast<mt19937::result_type>(seed));
-    token_len_generator = uniform_int_distribution<int>(1, max_token_len);
-    tokens_num_generator = uniform_int_distribution<int> (1, max_tokens);
-    char_generator = uniform_int_distribution<int> (0, num_lat_chars - 1);
+    gen = new mt19937(seed);
+    token_len_generator = createUniformIntGenerator(max_token_len);
+    tokens_num_generator = createUniformIntGenerator(max_tokens);
+    char_generator = createUniformIntGenerator(num_lat_chars);
+}
+
+discrete_distribution<int> RenameEntitiesVisitor::createUniformIntGenerator(const int num_elements) {
+    vector<double> weights;
+    for (int i = 0; i < num_elements; ++i) {
+        weights.push_back(100 / num_elements);
+    }
+    return discrete_distribution<int> (weights.begin(), weights.end());
 }
 
 bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
@@ -41,9 +48,9 @@ bool RenameEntitiesVisitor::containsEntity(string entity) {
 
 string RenameEntitiesVisitor::randomSnakeCaseName() {
     string newName = "";
-    int num_tokens = tokens_num_generator(*gen);
+    int num_tokens = tokens_num_generator(*gen) + 1;
     for (int tok_idx = 0; tok_idx < num_tokens; ++tok_idx) {
-        int token_len = token_len_generator(*gen);
+        int token_len = token_len_generator(*gen) + 1;
         for (int ch_idx = 0; ch_idx < token_len; ++ch_idx) {
             char newChar = 'a' + char_generator(*gen);
             newName += newChar;

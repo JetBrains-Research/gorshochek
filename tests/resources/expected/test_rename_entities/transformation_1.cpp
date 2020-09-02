@@ -1,10 +1,10 @@
-void v(int *x) {
+void ai(int *x) {
     *x += 5;
 }
 
 class Class {
 public:
-    void w(int &S) {
+    void ddk(int &S) {
         int totalset = 33;
         for(int i=0; i<S;){
             int count = 0;
@@ -13,15 +13,15 @@ public:
     }
 };
 
-int wu_r(int x) {
+int j(int x) {
     int z = x + 4;
     auto d = Class();
-    v(&z);
+    ai(&z);
     if (z < 1) {
-        d.w(z);
+        d.ddk(z);
         return x - 2;
     } else {
-        v(&x);
+        ai(&x);
         return 0;
     }
 }
@@ -29,15 +29,15 @@ int wu_r(int x) {
 
 int main(void) {
     int result = -1, val = 4;
-    int omega = wu_r(result);
-    v(&val);
+    int omega = j(result);
+    ai(&val);
     int x = 0;
-    v(&x);
-    if (wu_r(val) > 3) {
-        v(&omega);
+    ai(&x);
+    if (j(val) > 3) {
+        ai(&omega);
     }
     auto o = Class();
-    o.w(val);
-    o.w(result);
+    o.ddk(val);
+    o.ddk(result);
     return result;
 }

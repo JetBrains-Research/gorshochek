@@ -25,7 +25,7 @@ using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
 clang::ASTContext, clang::CallExpr, clang::Decl, clang::ValueDecl, clang::DeclRefExpr,
 clang::MemberExpr, clang::FieldDecl;
 using std::unique_ptr, std::vector, std::map, std::string, std::mt19937,
-std::uniform_int_distribution;
+std::discrete_distribution;
 
 /// RecursiveASTVisitor is a set of actions that are done
 /// when a certain node of AST is reached. RenameEntitiesVisitor in particular
@@ -46,13 +46,14 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
     const int max_tokens = 2;
     const int max_token_len = 3;
     const int num_lat_chars = 26;
-    uniform_int_distribution<int> token_len_generator;
-    uniform_int_distribution<int> tokens_num_generator;
-    uniform_int_distribution<int> char_generator;
+    discrete_distribution<int> token_len_generator;
+    discrete_distribution<int> tokens_num_generator;
+    discrete_distribution<int> char_generator;
 
     mt19937 * gen;
     map<Decl *, string> decl2name;
     bool containsEntity(string entity);
+    discrete_distribution<int> createUniformIntGenerator(const int num_elements);
     string randomSnakeCaseName();
 };
 
