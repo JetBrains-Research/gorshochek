@@ -8,6 +8,7 @@
 #include "../include/transformations/IdentityTransformation.h"
 #include "../include/transformations/AddCommentsTransformation.h"
 #include "../include/transformations/RemoveCommentsTransformation.h"
+#include "../include/transformations/RenameEntitiesTransformation.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
 using std::string, std::cerr, std::endl, std::size_t;
@@ -36,6 +37,14 @@ vector<ITransformation *> *getTransformationsFromYaml(const string &config_path)
                 statements->push_back(stmt.as<string>());
             }
             transformations->push_back(new AddCommentsTransformation(p, statements));
+        } else if (transform_data["rename entities"]) {
+            auto p = transform_data["rename entities"]["p"].as<float>();
+            auto seed = transform_data["rename entities"]["seed"].as<int>();
+            const auto entities = new vector<string>;
+            for (auto ent : transform_data["rename entities"]["entities to rename"]) {
+                entities->push_back(ent.as<string>());
+            }
+            transformations->push_back(new RenameEntitiesTransformation(p, entities, seed));
         } else if (transform_data["remove comments"]) {
             auto p = transform_data["remove comments"]["p"].as<float>();
             transformations->push_back(new RemoveCommentsTransformation(p));

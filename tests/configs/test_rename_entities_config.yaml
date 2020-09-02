@@ -1,0 +1,7 @@
+output path: "tests/resources/actual"
+n transformations: 1
+transformations:
+  - rename entities:
+      p: 1.0
+      seed: 9
+      entities to rename: ["functions"]
