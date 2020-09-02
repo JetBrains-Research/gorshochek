@@ -11,7 +11,7 @@ RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const vector<s
                                              const int seed) :
         rewriter(rewriter), entities(entities) {
     gen = new mt19937;
-    gen->seed(seed);
+    gen->seed(static_cast<mt19937::result_type>(seed));
     token_len_generator = uniform_int_distribution<int>(1, max_token_len);
     tokens_num_generator = uniform_int_distribution<int> (1, max_tokens);
     char_generator = uniform_int_distribution<int> (0, num_lat_chars - 1);
