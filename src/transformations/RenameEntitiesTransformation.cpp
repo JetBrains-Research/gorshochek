@@ -9,7 +9,9 @@ using clang::FunctionDecl, clang::VarDecl, clang::CXXMethodDecl;
 
 RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const vector<string> * entities,
                                              const int seed) :
-        rewriter(rewriter), entities(entities), gen(new mt19937(seed)) {
+        rewriter(rewriter), entities(entities) {
+    gen = new mt19937;
+    gen->seed(seed);
     token_len_generator = uniform_int_distribution<int>(1, max_token_len);
     tokens_num_generator = uniform_int_distribution<int> (1, max_tokens);
     char_generator = uniform_int_distribution<int> (0, num_lat_chars - 1);
