@@ -35,7 +35,7 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
                     rewriter->ReplaceText(decl->getLocation(), name.length(), randomName);
                     decl2name[decl] = randomName;
                 }
-                rewriter->ReplaceText(de->getEndLoc(), name.length(), decl2name[decl]);
+                rewriter->ReplaceText(de->getExprLoc(), name.length(), decl2name[decl]);
             }
         }
     }
