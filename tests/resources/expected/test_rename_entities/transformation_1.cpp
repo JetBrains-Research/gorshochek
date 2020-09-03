@@ -1,43 +1,43 @@
-void ai(int *x) {
-    *x += 5;
+void c_m(int *a) {
+    *a += 5;
 }
 
 class Class {
 public:
-    void ddk(int &S) {
-        int totalset = 33;
-        for(int i=0; i<S;){
-            int count = 0;
-            i += count;
+    void bp_e(int &k) {
+        int j = 33;
+        for(int w=0; w<k;){
+            int sd_y = j;
+            w += sd_y;
         }
     }
 };
 
-int j(int x) {
-    int z = x + 4;
-    auto d = Class();
-    ai(&z);
-    if (z < 1) {
-        d.ddk(z);
-        return x - 2;
+int kh_z(int qo_tj) {
+    int zr = qo_tj + 4;
+    auto dx = Class();
+    c_m(&zr);
+    if (zr < 1) {
+        dx.bp_e(zr);
+        return qo_tj - 2;
     } else {
-        ai(&x);
+        c_m(&qo_tj);
         return 0;
     }
 }
 
 
 int main(void) {
-    int result = -1, val = 4;
-    int omega = j(result);
-    ai(&val);
-    int x = 0;
-    ai(&x);
-    if (j(val) > 3) {
-        ai(&omega);
+    int h = -1, ge = 4;
+    int a_mb = kh_z(h);
+    c_m(&ge);
+    int q = 0;
+    c_m(&q);
+    if (kh_z(ge) > 3) {
+        c_m(&a_mb);
     }
-    auto o = Class();
-    o.ddk(val);
-    o.ddk(result);
-    return result;
+    auto af_io = Class();
+    af_io.bp_e(ge);
+    af_io.bp_e(h);
+    return h;
 }

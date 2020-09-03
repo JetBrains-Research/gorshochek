@@ -4,4 +4,4 @@ transformations:
   - rename entities:
       p: 1.0
       seed: 9
-      entities to rename: ["functions"]
+      entities to rename: ["functions", "variables"]
