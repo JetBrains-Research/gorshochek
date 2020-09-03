@@ -1,43 +1,43 @@
-void c_m(int *a) {
-    *a += 5;
+void math_(int *xi) {
+    *xi += 5;
 }
 
 class Class {
 public:
-    void bp_e(int &k) {
-        int j = 33;
-        for(int w=0; w<k;){
-            int sd_y = j;
-            w += sd_y;
+    void f(int &S1) {
+        int tt = 33;
+        for(int j=0; j<S1;){
+            int c = tt;
+            j += c;
         }
     }
 };
 
-int kh_z(int qo_tj) {
-    int zr = qo_tj + 4;
-    auto dx = Class();
-    c_m(&zr);
-    if (zr < 1) {
-        dx.bp_e(zr);
-        return qo_tj - 2;
+int jo(int xi) {
+    int zi = xi + 4;
+    auto doo = Class();
+    math_(&zi);
+    if (zi < 1) {
+        doo.f(zi);
+        return xi - 2;
     } else {
-        c_m(&qo_tj);
+        math_(&xi);
         return 0;
     }
 }
 
 
 int main(void) {
-    int h = -1, ge = 4;
-    int a_mb = kh_z(h);
-    c_m(&ge);
-    int q = 0;
-    c_m(&q);
-    if (kh_z(ge) > 3) {
-        c_m(&a_mb);
+    int res = -1, value = 4;
+    int om = jo(res);
+    math_(&value);
+    int xi = 0;
+    math_(&xi);
+    if (jo(value) > 3) {
+        math_(&om);
     }
-    auto af_io = Class();
-    af_io.bp_e(ge);
-    af_io.bp_e(h);
-    return h;
+    auto oo = Class();
+    oo.f(value);
+    oo.f(res);
+    return res;
 }

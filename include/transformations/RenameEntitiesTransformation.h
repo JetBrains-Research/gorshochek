@@ -32,8 +32,9 @@ std::discrete_distribution;
 /// random name
 class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> {
  public:
-    explicit RenameEntitiesVisitor(Rewriter * rewriter, const vector<string> * entities,
-                                   const int seed);
+    explicit RenameEntitiesVisitor(Rewriter * rewriter, const bool rename_func, const bool rename_var,
+                                   const int seed, const int max_tokens, const int max_token_len,
+                                   const bool test = false);
     /**
      * This function is called a certain clang::CallExpr is visited. Here get all the functions
      * calls/declarations and rename them
@@ -47,26 +48,45 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
 
  private:
     Rewriter * rewriter;
-    const vector<string> * entities;
 
-    const int max_tokens = 2;
-    const int max_token_len = 2;
+    const bool rename_func = false;
+    const bool rename_var = false;
+
+    const bool test = false;
+
     const int num_lat_chars = 26;
     discrete_distribution<int> token_len_generator;
     discrete_distribution<int> tokens_num_generator;
     discrete_distribution<int> char_generator;
 
+    const map<string, string> testMapping = {
+            {"do_math", "math_"},
+            {"join", "jo"},
+            {"result", "res"},
+            {"val", "value"},
+            {"count", "c"},
+            {"S", "S1"},
+            {"ffff", "f"},
+            {"z", "zi"},
+            {"x", "xi"},
+            {"d", "doo"},
+            {"omega", "om"},
+            {"o", "oo"},
+            {"i", "j"},
+            {"totalset", "tt"}
+    };
+
     mt19937 * gen;
     map<Decl *, string> decl2name;
-    bool containsEntity(string entity);
     discrete_distribution<int> createUniformIntGenerator(const int num_elements);
     string randomSnakeCaseName();
 };
 
 class RenameEntitiesASTConsumer : public ASTConsumer {
  public:
-    explicit RenameEntitiesASTConsumer(Rewriter * rewriter, const vector<string> * entities,
-                                       const int seed);
+    explicit RenameEntitiesASTConsumer(Rewriter * rewriter, const bool rename_func, const bool rename_var,
+                                       const int seed, const int max_tokens, const int max_token_len,
+                                       const bool test);
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT.
  private:
     RenameEntitiesVisitor visitor;
@@ -74,8 +94,9 @@ class RenameEntitiesASTConsumer : public ASTConsumer {
 
 class RenameEntitiesTransformation : public ITransformation {
  public:
-    explicit RenameEntitiesTransformation(float p, const vector<string> * entities,
-                                          const int seed);
+    explicit RenameEntitiesTransformation(float p, const bool rename_func, const bool rename_var,
+                                          const int seed, const int max_tokens, const int max_token_len,
+                                          const bool test);
     ~RenameEntitiesTransformation();
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
  private:
@@ -83,8 +104,14 @@ class RenameEntitiesTransformation : public ITransformation {
      * Along with probability, the RenameEntitiesTransformation class constructor also accepts
      * entities which are going to renamed to random name
      */
-    const vector<string> * entities;
+    const bool rename_func = false;
+    const bool rename_var = false;
+
     const int seed;
+    const int max_tokens;
+    const int max_token_len;
+
+    const bool test = false;
 };
 
 #endif  // INCLUDE_TRANSFORMATIONS_RENAMEENTITIESTRANSFORMATION_H_
