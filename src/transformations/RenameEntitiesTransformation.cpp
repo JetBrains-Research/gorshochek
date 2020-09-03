@@ -1,9 +1,8 @@
 #include "../../include/transformations/RenameEntitiesTransformation.h"
-#include <iostream>
 
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string;
-using clang::FunctionDecl, clang::VarDecl, clang::CXXMethodDecl;
+using clang::FunctionDecl, clang::VarDecl, clang::DeclRefExpr;
 
 // ------------ RenameEntitiesVisitor ------------
 
@@ -24,6 +23,25 @@ discrete_distribution<int> RenameEntitiesVisitor::createUniformIntGenerator(cons
     return discrete_distribution<int> (weights.begin(), weights.end());
 }
 
+bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
+    if (containsEntity("variables")) {
+        if (isa<DeclRefExpr>(stmt)) {
+            auto * de = cast<DeclRefExpr>(stmt);
+            auto * decl = de->getDecl();
+            if (isa<VarDecl>(decl)) {
+                string name = de->getNameInfo().getAsString();
+                if (decl2name.find(decl) == decl2name.end()) {
+                    string randomName = randomSnakeCaseName();
+                    rewriter->ReplaceText(decl->getLocation(), name.length(), randomName);
+                    decl2name[decl] = randomName;
+                }
+                rewriter->ReplaceText(de->getEndLoc(), name.length(), decl2name[decl]);
+            }
+        }
+    }
+    return true;
+}
+
 bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
     if (containsEntity("functions") && call->getDirectCallee()) {
         FunctionDecl * f  = call->getDirectCallee();
@@ -33,11 +51,7 @@ bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
             rewriter->ReplaceText(f->getLocation(), name.length(), randomName);
             decl2name[f] = randomName;
         }
-        if (isa<CXXMethodDecl>(f)) {
-            rewriter->ReplaceText(call->getExprLoc(), name.length(), decl2name[f]);
-        } else {
-            rewriter->ReplaceText(call->getBeginLoc(), name.length(), decl2name[f]);
-        }
+        rewriter->ReplaceText(call->getExprLoc(), name.length(), decl2name[f]);
     }
     return true;
 }

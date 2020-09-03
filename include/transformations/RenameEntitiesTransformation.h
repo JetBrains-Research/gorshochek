@@ -22,8 +22,7 @@
 #include "../ITransformation.h"
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
-clang::ASTContext, clang::CallExpr, clang::Decl, clang::ValueDecl, clang::DeclRefExpr,
-clang::MemberExpr, clang::FieldDecl;
+clang::ASTContext, clang::CallExpr, clang::Decl, clang::Stmt;
 using std::unique_ptr, std::vector, std::map, std::string, std::mt19937,
 std::discrete_distribution;
 
@@ -36,15 +35,22 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
     explicit RenameEntitiesVisitor(Rewriter * rewriter, const vector<string> * entities,
                                    const int seed);
     /**
-     * This function is called a certain clang::CallExpr is visited
+     * This function is called a certain clang::CallExpr is visited. Here get all the functions
+     * calls/declarations and rename them
      */
     bool VisitCallExpr(CallExpr * call);
+    /**
+     * This function is called a certain clang::Stmt is visited. Here get all the variables
+     * calls/declarations and rename them
+     */
+    bool VisitStmt(Stmt * stmt);
+
  private:
     Rewriter * rewriter;
     const vector<string> * entities;
 
     const int max_tokens = 2;
-    const int max_token_len = 3;
+    const int max_token_len = 2;
     const int num_lat_chars = 26;
     discrete_distribution<int> token_len_generator;
     discrete_distribution<int> tokens_num_generator;
