@@ -7,23 +7,15 @@ using clang::FunctionDecl, clang::VarDecl, clang::DeclRefExpr;
 // ------------ RenameEntitiesVisitor ------------
 
 RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const bool rename_func, const bool rename_var,
-                                             const int seed, const int max_tokens,
-                                             const int max_token_len, const bool test):
-        rewriter(rewriter), rename_func(rename_func), rename_var(rename_var), test(test) {
-    gen = new mt19937(seed);
-    token_len_generator = createUniformIntGenerator(max_token_len);
-    tokens_num_generator = createUniformIntGenerator(max_tokens);
-    char_generator = createUniformIntGenerator(num_lat_chars);
-}
-
-discrete_distribution<int> RenameEntitiesVisitor::createUniformIntGenerator(const int num_elements) {
-    vector<double> probabilities;
-    for (int i = 0; i < num_elements; ++i) {
-        // Here we create a discrete uniform distribution with probability
-        // equals to 100 / num_elements
-        probabilities.push_back(100 / num_elements);
-    }
-    return discrete_distribution<int> (probabilities.begin(), probabilities.end());
+                                             discrete_distribution<int> token_len_generator,
+                                             discrete_distribution<int> tokens_num_generator,
+                                             discrete_distribution<int> char_generator,
+                                             mt19937 * gen, const bool test):
+        rewriter(rewriter), rename_func(rename_func), rename_var(rename_var),
+        token_len_generator(token_len_generator),
+        tokens_num_generator(tokens_num_generator),
+        char_generator(char_generator),
+        gen(gen), test(test) {
 }
 
 bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
@@ -34,7 +26,7 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
             if (isa<VarDecl>(decl)) {
                 string name = de->getNameInfo().getAsString();
                 if (decl2name.find(decl) == decl2name.end()) {
-                    string randomName = test ? testMapping.at(name) : randomSnakeCaseName();
+                    string randomName = test ? "test_" + name : randomSnakeCaseName();
                     rewriter->ReplaceText(decl->getLocation(), name.length(), randomName);
                     decl2name[decl] = randomName;
                 }
@@ -50,7 +42,7 @@ bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
         FunctionDecl * f  = call->getDirectCallee();
         string name = f->getNameInfo().getName().getAsString();
         if (decl2name.find(f) == decl2name.end()) {
-            string randomName = test ? testMapping.at(name) : randomSnakeCaseName();
+            string randomName = test ? "test_" + name : randomSnakeCaseName();
             rewriter->ReplaceText(f->getLocation(), name.length(), randomName);
             decl2name[f] = randomName;
         }
@@ -78,9 +70,13 @@ string RenameEntitiesVisitor::randomSnakeCaseName() {
 // ------------ RenameEntitiesASTConsumer ------------
 
 RenameEntitiesASTConsumer::RenameEntitiesASTConsumer(Rewriter * rewriter, const bool rename_func, const bool rename_var,
-                                                     const int seed, const int max_tokens,
-                                                     const int max_token_len, const bool test):
-        visitor(rewriter, rename_func, rename_var, seed, max_tokens, max_token_len, test) {}
+                                                     discrete_distribution<int> token_len_generator,
+                                                     discrete_distribution<int> tokens_num_generator,
+                                                     discrete_distribution<int> char_generator,
+                                                     mt19937 * gen, const bool test):
+        visitor(rewriter, rename_func, rename_var,
+                token_len_generator, tokens_num_generator,
+                char_generator, gen, test) {}
 
 void RenameEntitiesASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
@@ -94,14 +90,28 @@ RenameEntitiesTransformation::RenameEntitiesTransformation(float p, const bool r
         ITransformation(p, "rename entities"),
         rename_func(rename_func),
         rename_var(rename_var),
-        seed(seed),
-        max_tokens(max_tokens),
-        max_token_len(max_token_len),
-        test(test) {}
+        test(test) {
+    gen = new mt19937(seed);
+    token_len_generator = createUniformIntGenerator(max_token_len);
+    tokens_num_generator = createUniformIntGenerator(max_tokens);
+    char_generator = createUniformIntGenerator(num_lat_chars);
+}
+
+
+discrete_distribution<int> RenameEntitiesTransformation::createUniformIntGenerator(const int num_elements) {
+    vector<double> probabilities;
+    for (int i = 0; i < num_elements; ++i) {
+        // Here we create a discrete uniform distribution with probability
+        // equals to 100 / num_elements
+        probabilities.push_back(100 / num_elements);
+    }
+    return discrete_distribution<int> (probabilities.begin(), probabilities.end());
+}
 
 RenameEntitiesTransformation::~RenameEntitiesTransformation() {}
 
 unique_ptr<ASTConsumer> RenameEntitiesTransformation::getConsumer(Rewriter * rewriter) {
     return llvm::make_unique<RenameEntitiesASTConsumer>(rewriter, rename_func, rename_var,
-                                                        seed, max_tokens, max_token_len, test);
+                                                        token_len_generator, tokens_num_generator,
+                                                        char_generator, gen, test);
 }

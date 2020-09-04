@@ -33,8 +33,10 @@ std::discrete_distribution;
 class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> {
  public:
     explicit RenameEntitiesVisitor(Rewriter * rewriter, const bool rename_func, const bool rename_var,
-                                   const int seed, const int max_tokens, const int max_token_len,
-                                   const bool test = false);
+                                   discrete_distribution<int> token_len_generator,
+                                   discrete_distribution<int> tokens_num_generator,
+                                   discrete_distribution<int> char_generator,
+                                   mt19937 * gen, const bool test = false);
     /**
      * This function is called a certain clang::CallExpr is visited. Here get all the functions
      * calls/declarations and rename them
@@ -52,41 +54,25 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
     const bool rename_func = false;
     const bool rename_var = false;
 
-    const bool test = false;
-
-    const int num_lat_chars = 26;
     discrete_distribution<int> token_len_generator;
     discrete_distribution<int> tokens_num_generator;
     discrete_distribution<int> char_generator;
 
-    const map<string, string> testMapping = {
-            {"do_math", "math_"},
-            {"join", "jo"},
-            {"result", "res"},
-            {"val", "value"},
-            {"count", "c"},
-            {"S", "S1"},
-            {"ffff", "f"},
-            {"z", "zi"},
-            {"x", "xi"},
-            {"d", "doo"},
-            {"omega", "om"},
-            {"o", "oo"},
-            {"i", "j"},
-            {"totalset", "tt"}
-    };
-
     mt19937 * gen;
+
+    const bool test = false;
+
     map<Decl *, string> decl2name;
-    discrete_distribution<int> createUniformIntGenerator(const int num_elements);
     string randomSnakeCaseName();
 };
 
 class RenameEntitiesASTConsumer : public ASTConsumer {
  public:
     explicit RenameEntitiesASTConsumer(Rewriter * rewriter, const bool rename_func, const bool rename_var,
-                                       const int seed, const int max_tokens, const int max_token_len,
-                                       const bool test);
+                                       discrete_distribution<int> token_len_generator,
+                                       discrete_distribution<int> tokens_num_generator,
+                                       discrete_distribution<int> char_generator,
+                                       mt19937 * gen, const bool test);
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT.
  private:
     RenameEntitiesVisitor visitor;
@@ -99,6 +85,7 @@ class RenameEntitiesTransformation : public ITransformation {
                                           const bool test);
     ~RenameEntitiesTransformation();
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
+
  private:
     /**
      * Along with probability, the RenameEntitiesTransformation class constructor also accepts
@@ -107,11 +94,25 @@ class RenameEntitiesTransformation : public ITransformation {
     const bool rename_func = false;
     const bool rename_var = false;
 
-    const int seed;
-    const int max_tokens;
-    const int max_token_len;
-
     const bool test = false;
+
+    const int num_lat_chars = 26;
+
+    discrete_distribution<int> token_len_generator;
+    discrete_distribution<int> tokens_num_generator;
+    discrete_distribution<int> char_generator;
+
+    mt19937 * gen;
+
+    /**
+     * This function creates discrete uniform distribution. Such a strange way to generate
+     * random variables is essential to guarantee the same behaviour of random module on different OS.
+     * This way of generated random values is suggested in the following post:
+     * http://anadoxin.org/blog/c-shooting-yourself-in-the-foot-4.html
+     * @param num_elements    the number of elements in the distribution
+     * @return                discrete uniform distribution (i.e. with equal probabilities of each output)
+     */
+    discrete_distribution<int> createUniformIntGenerator(const int num_elements);
 };
 
 #endif  // INCLUDE_TRANSFORMATIONS_RENAMEENTITIESTRANSFORMATION_H_
