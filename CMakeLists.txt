@@ -69,6 +69,7 @@ add_executable(${PROJECT_NAME}
         src/transformations/IdentityTransformation.cpp
         src/transformations/AddCommentsTransformation.cpp
         src/transformations/RemoveCommentsTransformation.cpp
+        src/transformations/RenameEntitiesTransformation.cpp
         )
 
 # Installing yaml-cpp

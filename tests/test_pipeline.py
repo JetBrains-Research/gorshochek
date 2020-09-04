@@ -56,3 +56,9 @@ def test_add_comments() -> None:
     config_path = path.join(configs_dir_path, "test_add_comments_config.yaml")
     files = ["test_add_comments.cpp"]
     _test(files, config_path)
+
+
+def test_rename_entities() -> None:
+    config_path = path.join(configs_dir_path, "test_rename_entities_config.yaml")
+    files = ["test_rename_entities.cpp"]
+    _test(files, config_path)
