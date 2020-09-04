@@ -105,10 +105,7 @@ class RenameEntitiesTransformation : public ITransformation {
     mt19937 * gen;
 
     /**
-     * This function creates discrete uniform distribution. Such a strange way to generate
-     * random variables is essential to guarantee the same behaviour of random module on different OS.
-     * This way of generated random values is suggested in the following post:
-     * http://anadoxin.org/blog/c-shooting-yourself-in-the-foot-4.html
+     * This function creates discrete uniform distribution.
      * @param num_elements    the number of elements in the distribution
      * @return                discrete uniform distribution (i.e. with equal probabilities of each output)
      */

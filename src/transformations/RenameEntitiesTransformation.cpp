@@ -99,6 +99,12 @@ RenameEntitiesTransformation::RenameEntitiesTransformation(float p, const bool r
 
 
 discrete_distribution<int> RenameEntitiesTransformation::createUniformIntGenerator(const int num_elements) {
+    /**
+     * Such a strange way to generate random variables is essential to guarantee
+     * the same behaviour of random module on different OS.
+     * This way of generated random values is suggested in the following post:
+     * http://anadoxin.org/blog/c-shooting-yourself-in-the-foot-4.html
+     */
     vector<double> probabilities;
     for (int i = 0; i < num_elements; ++i) {
         // Here we create a discrete uniform distribution with probability
