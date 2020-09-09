@@ -32,6 +32,7 @@ def _test(files: List, config_path: str) -> None:
         for i in range(expected_num_transforms - 1):
             expected_transform_path = path.join(expected_file_dir, f"transformation_{i}.cpp")
             actual_transform_path = path.join(actual_file_dir, f"transformation_{i}.cpp")
+            subprocess.check_call(["clang++", actual_transform_path, "-o", path.join(actual_path, f"{i}.o")])
             with open(expected_transform_path, "r") as expected:
                 expected_data = expected.read()
             with open(actual_transform_path, "r") as transformed:
