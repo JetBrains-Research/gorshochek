@@ -7,6 +7,7 @@ configs_dir_path = path.join("tests", "configs")
 expected_path = path.join("tests", "resources", "expected")
 actual_path = path.join("tests", "resources", "actual")
 input_path = path.join("tests", "resources", "input")
+clang_path = path.join("build", "clang+llvm-9", "bin", "clang++")
 tricky_path = path.join("scripts", "..", "tests", "..", "tests", "resources", "input")
 build = path.join("build", "gorshochek")
 
@@ -32,7 +33,7 @@ def _test(files: List, config_path: str) -> None:
         for i in range(expected_num_transforms - 1):
             expected_transform_path = path.join(expected_file_dir, f"transformation_{i}.cpp")
             actual_transform_path = path.join(actual_file_dir, f"transformation_{i}.cpp")
-            subprocess.check_call(["build/clang+llvm-9/bin/clang++", actual_transform_path, "-o", path.join(actual_path, f"{i}.o")])
+            subprocess.check_call([clang_path, actual_transform_path, "-o", path.join(actual_path, f"{i}.o")])
             with open(expected_transform_path, "r") as expected:
                 expected_data = expected.read()
             with open(actual_transform_path, "r") as transformed:
