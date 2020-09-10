@@ -37,7 +37,7 @@ public:
      * This function is called a certain clang::FunctionDecl is visited. Here get all the functions
      * declarations, and store them
      */
-    bool VisitFuncDecl(FunctionDecl * call);
+    bool VisitFunctionDecl(FunctionDecl * decl);
     /**
      * This function is called a certain clang::CallExpr is visited. Here get all the functions
      * calls and find unused ones
@@ -51,7 +51,9 @@ private:
 
     const bool test = false;
 
-    map<Decl *, string> decl2name;
+    vector<FunctionDecl *> funcdecls;
+
+    bool isFuncDeclProcessed(FunctionDecl * decl);
 };
 
 class ReorderFuncDeclsASTConsumer : public ASTConsumer {

@@ -7,11 +7,22 @@ using clang::FunctionDecl, clang::VarDecl, clang::DeclRefExpr;
 ReorderFuncDeclsVisitor::ReorderFuncDeclsVisitor(Rewriter * rewriter, mt19937 * gen, const bool test) :
                                                  rewriter(rewriter), gen(gen), test(test) {}
 
-bool ReorderFuncDeclsVisitor::VisitFuncDecl(FunctionDecl * call) {
+bool ReorderFuncDeclsVisitor::VisitFunctionDecl(FunctionDecl * decl) {
     return true;
 }
 
+bool ReorderFuncDeclsVisitor::isFuncDeclProcessed(FunctionDecl * decl) {
+    return find(funcdecls.begin(), funcdecls.end(), decl) != funcdecls.end();
+}
+
 bool ReorderFuncDeclsVisitor::VisitCallExpr(CallExpr * call) {
+    FunctionDecl * decl = call->getCalleeDecl()->getAsFunction();
+    if (decl->getName() != "main") {
+        if (!isFuncDeclProcessed(decl)) {
+            funcdecls.push_back(decl);
+            rewriter->ReplaceText(decl->getBody()->getSourceRange(), ";");
+        }
+    }
     return true;
 }
 
