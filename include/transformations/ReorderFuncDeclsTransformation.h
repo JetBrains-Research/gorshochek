@@ -22,7 +22,7 @@
 #include "../ITransformation.h"
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
-clang::ASTContext, clang::CallExpr, clang::Decl, clang::FunctionDecl;
+clang::ASTContext, clang::CallExpr, clang::SourceLocation, clang::FunctionDecl;
 using std::unique_ptr, std::vector, std::map, std::string, std::mt19937,
 std::discrete_distribution;
 
@@ -43,6 +43,7 @@ public:
      * calls and find unused ones
      */
     bool VisitCallExpr(CallExpr * call);
+    void rewriteFunctions();
 
 private:
     Rewriter * rewriter;
@@ -52,8 +53,10 @@ private:
     const bool test = false;
 
     vector<FunctionDecl *> funcdecls;
+    FunctionDecl * mainDecl;
 
     bool isFuncDeclProcessed(FunctionDecl * decl);
+    static bool compare(FunctionDecl * a, FunctionDecl * b);
 };
 
 class ReorderFuncDeclsASTConsumer : public ASTConsumer {

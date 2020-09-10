@@ -1,6 +1,15 @@
-void foo1(int n);
-void foo2(int n);
-void foo3(int n);
+void foo1(int n) ;
+
+void foo2(int n) ;
+
+void foo3(int n) ;
+
+int main() {
+    foo1(1);
+    foo2(2);
+    foo3(3);
+    return 0;
+}
 
 void foo3(int n) {
     foo1(3);
@@ -15,9 +24,3 @@ void foo1(int n) {
     int x = 9;
 }
 
-int main() {
-    foo1(1);
-    foo2(2);
-    foo3(3);
-    return 0;
-}
