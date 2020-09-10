@@ -17,3 +17,8 @@ void foo(int n) {
             i++;
     }
 }
+
+int main() {
+    foo(2);
+    return 0;
+}

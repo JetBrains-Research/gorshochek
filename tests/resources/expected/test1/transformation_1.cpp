@@ -24,3 +24,10 @@ void foo3(int n) {
         i++;
     }
 }
+
+int main(){
+    foo1(1);
+    foo2(2);
+    foo3(3);
+    return 0;
+}

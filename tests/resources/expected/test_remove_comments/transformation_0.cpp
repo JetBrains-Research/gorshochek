@@ -21,3 +21,10 @@ public:
         /// The end of
     }
 };
+
+int main() {
+    auto c = Class();
+    int x = 2;
+    c.ffff(x);
+    return 0;
+}
