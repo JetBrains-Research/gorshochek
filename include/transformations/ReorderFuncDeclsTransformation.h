@@ -33,8 +33,13 @@ class ReorderFuncDeclsVisitor : public RecursiveASTVisitor<ReorderFuncDeclsVisit
  public:
     explicit ReorderFuncDeclsVisitor(Rewriter * rewriter, mt19937 * gen, const bool test = false);
     /**
+     * This function is called a certain clang::FunctionDecl is visited. We used it to find
+     * Location of main function
+     */
+    bool VisitFunctionDecl(FunctionDecl * decl);
+    /**
      * This function is called a certain clang::CallExpr is visited. Here get all the functions
-     * calls and find unused ones
+     * calls
      */
     bool VisitCallExpr(CallExpr * call);
     /**
