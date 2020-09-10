@@ -1,3 +1,4 @@
+import inspect
 import shutil
 import subprocess
 from os import path, listdir
@@ -6,6 +7,7 @@ from typing import List
 import pytest
 
 configs_dir_path = path.join("tests", "configs")
+logs_file = path.join("tests", "clang_logs.txt")
 expected_path = path.join("tests", "resources", "expected")
 actual_path = path.join("tests", "resources", "actual")
 input_path = path.join("tests", "resources", "input")
@@ -15,16 +17,18 @@ build = path.join("build", "gorshochek")
 
 
 def _test(files: List, config_path: str) -> None:
+    # Getting the caller function name
+    test_name = inspect.stack()[1].function
     num_regular = len(files) // 2
     input_files_paths = [
-        path.join(input_path, file) for file in files[:-num_regular]
-    ] + [
-        path.join(tricky_path, file) for file in files[-num_regular:]
-    ]
+                            path.join(input_path, file) for file in files[:-num_regular]
+                        ] + [
+                            path.join(tricky_path, file) for file in files[-num_regular:]
+                        ]
     try:
         subprocess.check_call([build, config_path] + input_files_paths)
     except subprocess.CalledProcessError:
-        pytest.fail(f"Running gorshochek with config \"{config_path}\" " +
+        pytest.fail(f"Running gorshochek with config \"{config_path}\"\n" +
                     f"on files [{', '.join(input_files_paths)}] ended with non-zero code")
     assert path.exists(actual_path), f"Transformed files folder \"{actual_path}\" does not exists"
 
@@ -40,9 +44,18 @@ def _test(files: List, config_path: str) -> None:
             expected_transform_path = path.join(expected_file_dir, f"transformation_{i}.cpp")
             actual_transform_path = path.join(actual_file_dir, f"transformation_{i}.cpp")
             try:
-                subprocess.check_call([clang_path, actual_transform_path, "-o", path.join(actual_path, f"{i}.o")])
-            except subprocess.CalledProcessError:
-                pytest.fail("Compilation exited with non-zero code")
+                subprocess.check_output([clang_path, actual_transform_path, "-o",
+                                         path.join(actual_path, f"{i}.o")],
+                                        universal_newlines=True,
+                                        stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError as e:
+                with open(logs_file, "a+") as logs:
+                    output = "\n\t".join(e.output.split("\n")[:-1])
+                    logs.write(f"- Test: {test_name}\n" +
+                               f"  File: {file_name}\n" +
+                               f"  Transformation: transformation_{i}.cpp:\n\t" + output + "\n")
+                pytest.fail(f"During test {test_name} compilation of {test_name}/transformation_{i}.cpp\n" +
+                            "exited with non-zero code, for more details go to tests/clang_log.txt")
             with open(expected_transform_path, "r") as expected:
                 expected_data = expected.read()
             with open(actual_transform_path, "r") as transformed:
