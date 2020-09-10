@@ -1,5 +1,5 @@
-#ifndef GORSHOCHEK_REORDERFUNCDECLSTRANSFORMATION_H
-#define GORSHOCHEK_REORDERFUNCDECLSTRANSFORMATION_H
+#ifndef INCLUDE_TRANSFORMATIONS_REORDERFUNCDECLSTRANSFORMATION_H_
+#define INCLUDE_TRANSFORMATIONS_REORDERFUNCDECLSTRANSFORMATION_H_
 
 
 #include <string>
@@ -30,7 +30,7 @@ std::discrete_distribution;
 /// when a certain node of AST is reached. ReorderFuncDeclsVisitor in particular
 /// visits all functions declarations unused and reorder them
 class ReorderFuncDeclsVisitor : public RecursiveASTVisitor<ReorderFuncDeclsVisitor> {
-public:
+ public:
     explicit ReorderFuncDeclsVisitor(Rewriter * rewriter, mt19937 * gen, const bool test = false);
     /**
      * This function is called a certain clang::CallExpr is visited. Here get all the functions
@@ -43,7 +43,7 @@ public:
      */
     void rewriteFunctions();
 
-private:
+ private:
     Rewriter * rewriter;
 
     mt19937 * gen;
@@ -58,23 +58,23 @@ private:
 };
 
 class ReorderFuncDeclsASTConsumer : public ASTConsumer {
-public:
+ public:
     explicit ReorderFuncDeclsASTConsumer(Rewriter * rewriter, mt19937 * gen, const bool test);
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT.
-private:
+ private:
     ReorderFuncDeclsVisitor visitor;
 };
 
 class ReorderFuncDeclsTransformation : public ITransformation {
-public:
+ public:
     explicit ReorderFuncDeclsTransformation(float p, const int seed, const bool test);
     ~ReorderFuncDeclsTransformation();
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
 
-private:
+ private:
     mt19937 * gen;
 
     const bool test = false;
 };
 
-#endif //GORSHOCHEK_REORDERFUNCDECLSTRANSFORMATION_H
+#endif  // INCLUDE_TRANSFORMATIONS_REORDERFUNCDECLSTRANSFORMATION_H_
