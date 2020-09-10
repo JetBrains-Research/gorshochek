@@ -1,7 +1,9 @@
-from os import path, listdir
-import subprocess
 import shutil
+import subprocess
+from os import path, listdir
 from typing import List
+
+import pytest
 
 configs_dir_path = path.join("tests", "configs")
 expected_path = path.join("tests", "resources", "expected")
@@ -19,7 +21,11 @@ def _test(files: List, config_path: str) -> None:
     ] + [
         path.join(tricky_path, file) for file in files[-num_regular:]
     ]
-    subprocess.check_call([build, config_path] + input_files_paths)
+    try:
+        subprocess.check_call([build, config_path] + input_files_paths)
+    except subprocess.CalledProcessError:
+        pytest.fail(f"Running gorshochek with config \"{config_path}\" " +
+                    f"on files [{', '.join(input_files_paths)}] ended with non-zero code")
     assert path.exists(actual_path), f"Transformed files folder \"{actual_path}\" does not exists"
 
     for file in files:
@@ -33,7 +39,10 @@ def _test(files: List, config_path: str) -> None:
         for i in range(expected_num_transforms - 1):
             expected_transform_path = path.join(expected_file_dir, f"transformation_{i}.cpp")
             actual_transform_path = path.join(actual_file_dir, f"transformation_{i}.cpp")
-            subprocess.check_call([clang_path, actual_transform_path, "-o", path.join(actual_path, f"{i}.o")])
+            try:
+                subprocess.check_call([clang_path, actual_transform_path, "-o", path.join(actual_path, f"{i}.o")])
+            except subprocess.CalledProcessError:
+                pytest.fail("Compilation exited with non-zero code")
             with open(expected_transform_path, "r") as expected:
                 expected_data = expected.read()
             with open(actual_transform_path, "r") as transformed:
