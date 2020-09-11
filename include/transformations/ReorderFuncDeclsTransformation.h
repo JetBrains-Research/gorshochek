@@ -28,7 +28,8 @@ std::discrete_distribution;
 
 /// RecursiveASTVisitor is a set of actions that are done
 /// when a certain node of AST is reached. ReorderFuncDeclsVisitor in particular
-/// visits all functions declarations unused and reorder them
+/// visits all functions declarations, leave only declarations and reorder definitions
+/// after main
 class ReorderFuncDeclsVisitor : public RecursiveASTVisitor<ReorderFuncDeclsVisitor> {
  public:
     explicit ReorderFuncDeclsVisitor(Rewriter * rewriter, mt19937 * gen, const bool test = false);
@@ -37,11 +38,6 @@ class ReorderFuncDeclsVisitor : public RecursiveASTVisitor<ReorderFuncDeclsVisit
      * Location of main function
      */
     bool VisitFunctionDecl(FunctionDecl * decl);
-    /**
-     * This function is called a certain clang::CallExpr is visited. Here get all the functions
-     * calls
-     */
-    bool VisitCallExpr(CallExpr * call);
     /**
      * This function is called after visiting all the clang::CallExpr, it reorder functions and place
      * their definition after main function

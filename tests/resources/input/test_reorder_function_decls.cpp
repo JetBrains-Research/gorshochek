@@ -11,9 +11,20 @@ void foo3(int n) {
     foo2(4);
 }
 
+void t();
+
 int main() {
     foo1(1);
     foo2(2);
     foo3(3);
+    t();
     return 0;
+}
+
+void t() {
+    char d;
+}
+
+void foo() {
+    int x;
 }
