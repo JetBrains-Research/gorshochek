@@ -12,9 +12,9 @@ RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const bool ren
                                              discrete_distribution<int> char_generator,
                                              mt19937 * gen, const bool test):
         rewriter(rewriter), rename_func(rename_func), rename_var(rename_var),
-        token_len_generator(token_len_generator),
-        tokens_num_generator(tokens_num_generator),
-        char_generator(char_generator),
+        token_len_generator(move(token_len_generator)),
+        tokens_num_generator(move(tokens_num_generator)),
+        char_generator(move(char_generator)),
         gen(gen), test(test) {
 }
 
@@ -52,7 +52,7 @@ bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
 }
 
 string RenameEntitiesVisitor::randomSnakeCaseName() {
-    string newName = "";
+    string newName;
     int num_tokens = tokens_num_generator(*gen) + 1;
     for (int tok_idx = 0; tok_idx < num_tokens; ++tok_idx) {
         int token_len = token_len_generator(*gen) + 1;
@@ -75,8 +75,8 @@ RenameEntitiesASTConsumer::RenameEntitiesASTConsumer(Rewriter * rewriter, const 
                                                      discrete_distribution<int> char_generator,
                                                      mt19937 * gen, const bool test):
         visitor(rewriter, rename_func, rename_var,
-                token_len_generator, tokens_num_generator,
-                char_generator, gen, test) {}
+                move(token_len_generator), move(tokens_num_generator),
+                move(char_generator), gen, test) {}
 
 void RenameEntitiesASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
@@ -84,16 +84,14 @@ void RenameEntitiesASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
 
 // ------------ RenameEntitiesTransformation ------------
 
-RenameEntitiesTransformation::RenameEntitiesTransformation(float p, const bool rename_func, const bool rename_var,
-                                                           const int seed, const int max_tokens,
-                                                           const int max_token_len, const bool test):
-        ITransformation(p, "rename entities"),
-        rename_func(rename_func),
-        rename_var(rename_var),
-        test(test) {
-    gen = new mt19937(seed);
-    token_len_generator = createUniformIntGenerator(max_token_len);
-    tokens_num_generator = createUniformIntGenerator(max_tokens);
+RenameEntitiesTransformation::RenameEntitiesTransformation(const YAML::Node & config):
+        ITransformation(config, "rename entities"),
+        rename_func(config["rename functions"] != nullptr && config["rename functions"].as<bool>()),
+        rename_var(config["rename variables"] != nullptr && config["rename variables"].as<bool>()),
+        test(config["test"] != nullptr && config["test"].as<bool>()) {
+    gen = new mt19937(config["seed"].as<int>());
+    token_len_generator = createUniformIntGenerator(config["max tokens"].as<int>());
+    tokens_num_generator = createUniformIntGenerator(config["max token len"].as<int>());
     char_generator = createUniformIntGenerator(num_lat_chars);
 }
 
@@ -105,19 +103,21 @@ discrete_distribution<int> RenameEntitiesTransformation::createUniformIntGenerat
      * This way of generated random values is suggested in the following post:
      * http://anadoxin.org/blog/c-shooting-yourself-in-the-foot-4.html
      */
-    vector<double> probabilities;
+    auto probabilities = vector<double>(num_elements);
     for (int i = 0; i < num_elements; ++i) {
         // Here we create a discrete uniform distribution with probability
         // equals to 100 / num_elements
-        probabilities.push_back(100 / num_elements);
+        probabilities[i] = 100.0 / num_elements;
     }
     return discrete_distribution<int> (probabilities.begin(), probabilities.end());
 }
-
-RenameEntitiesTransformation::~RenameEntitiesTransformation() {}
 
 unique_ptr<ASTConsumer> RenameEntitiesTransformation::getConsumer(Rewriter * rewriter) {
     return llvm::make_unique<RenameEntitiesASTConsumer>(rewriter, rename_func, rename_var,
                                                         token_len_generator, tokens_num_generator,
                                                         char_generator, gen, test);
+}
+
+ITransformation * RenameEntitiesTransformation::buildFromConfig(const YAML::Node & config) {
+    return new RenameEntitiesTransformation(config);
 }

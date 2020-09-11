@@ -11,12 +11,18 @@
 #include "../include/transformations/RenameEntitiesTransformation.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
-using std::string, std::cerr, std::endl, std::size_t;
+using std::string, std::function, std::cerr, std::endl, std::size_t;
 
 const char * CONFIG_TRANSFORMATIONS_KEY = "transformations";
 const char * CONFIG_OUTPUT_PATH_KEY = "output path";
 const char * CONFIG_NUM_TRANSFORMATIONS_KEY = "n transformations";
 
+const map<string, function<ITransformation *(const YAML::Node &)>> transformFactory = {
+        {"identity transform", IdentityTransformation::buildFromConfig },
+        {"add comments", AddCommentsTransformation::buildFromConfig },
+        {"remove comments", RemoveCommentsTransformation::buildFromConfig },
+        {"rename entities", RenameEntitiesTransformation::buildFromConfig },
+};
 
 vector<ITransformation *> *getTransformationsFromYaml(const string &config_path) {
     YAML::Node config = YAML::LoadFile(config_path);
@@ -26,42 +32,16 @@ vector<ITransformation *> *getTransformationsFromYaml(const string &config_path)
              << "\" key" << endl;
     }
     auto transformations = new vector<ITransformation *>;
-    for (auto transform_data : config[CONFIG_TRANSFORMATIONS_KEY]) {
-        if (transform_data["identity transform"]) {
-            auto identity_config = transform_data["identity transform"];
-            auto p = identity_config["p"].as<float>();
-            transformations->push_back(new IdentityTransformation(p));
-        } else if (transform_data["add comments"]) {
-            auto add_comments_config = transform_data["add comments"];
-            auto p = add_comments_config["p"].as<float>();
-            const auto statements = new vector<string>;
-            for (auto stmt : add_comments_config["statements"]) {
-                statements->push_back(stmt.as<string>());
+    for (const auto & transform_data : config[CONFIG_TRANSFORMATIONS_KEY]) {
+        bool isTransformUnknown = true;
+        for (const auto & transform : transformFactory) {
+            auto transform_name = transform.first;
+            if (transform_data[transform_name]) {
+                transformations->push_back(transform.second(transform_data[transform_name]));
+                isTransformUnknown = false;
             }
-            transformations->push_back(new AddCommentsTransformation(p, statements));
-        } else if (transform_data["rename entities"]) {
-            auto rename_config = transform_data["rename entities"];
-            auto p = rename_config["p"].as<float>();
-            auto seed = rename_config["seed"].as<int>();
-            auto max_tokens = rename_config["max tokens"].as<int>();
-            auto max_token_len = rename_config["max token len"].as<int>();
-            bool rename_func = false, rename_var = false, test = false;
-            if (rename_config["rename functions"]) {
-                rename_func = rename_config["rename functions"].as<bool>();
-            }
-            if (rename_config["rename variables"]) {
-                rename_var = rename_config["rename variables"].as<bool>();
-            }
-            if (rename_config["test"]) {
-                test = rename_config["test"].as<bool>();
-            }
-            transformations->push_back(new RenameEntitiesTransformation(p, rename_func, rename_var, seed,
-                                                                        max_tokens, max_token_len, test));
-        } else if (transform_data["remove comments"]) {
-            auto remove_comments_config = transform_data["remove comments"];
-            auto p = remove_comments_config["p"].as<float>();
-            transformations->push_back(new RemoveCommentsTransformation(p));
-        } else {
+        }
+        if (isTransformUnknown) {
             cerr << "Unknown transformation";
         }
     }

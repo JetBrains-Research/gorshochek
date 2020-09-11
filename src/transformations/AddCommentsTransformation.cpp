@@ -64,12 +64,19 @@ bool AddCommentsASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
 
 // ------------ AddCommentsTransformation ------------
 
-AddCommentsTransformation::AddCommentsTransformation(float p, const vector<string> * statements) :
-                                                     ITransformation(p, "add comments"),
-                                                     statements(statements) {}
-
-AddCommentsTransformation::~AddCommentsTransformation() {}
+AddCommentsTransformation::AddCommentsTransformation(const YAML::Node & config) :
+                                                     ITransformation(config, "add comments") {
+    const auto stmts = new vector<string>;
+    for (auto stmt : config["statements"]) {
+        stmts->push_back(stmt.as<string>());
+    }
+    statements = stmts;
+}
 
 unique_ptr<ASTConsumer> AddCommentsTransformation::getConsumer(Rewriter * rewriter) {
     return llvm::make_unique<AddCommentsASTConsumer>(rewriter, statements);
+}
+
+ITransformation * AddCommentsTransformation::buildFromConfig(const YAML::Node & config) {
+    return new AddCommentsTransformation(config);
 }

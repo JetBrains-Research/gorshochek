@@ -1,6 +1,8 @@
 #ifndef INCLUDE_TRANSFORMATIONS_REMOVECOMMENTSTRANSFORMATION_H_
 #define INCLUDE_TRANSFORMATIONS_REMOVECOMMENTSTRANSFORMATION_H_
 
+#include <yaml-cpp/yaml.h>
+
 #include <string>
 #include <vector>
 #include <memory>
@@ -32,9 +34,10 @@ class RemoveCommentsConsumer : public ASTConsumer {
 
 class RemoveCommentsTransformation : public ITransformation {
  public:
-    explicit RemoveCommentsTransformation(float p);
-    ~RemoveCommentsTransformation();
+    explicit RemoveCommentsTransformation(const YAML::Node & config);
+    ~RemoveCommentsTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
+    static ITransformation * buildFromConfig(const YAML::Node & config);
 };
 
 #endif  // INCLUDE_TRANSFORMATIONS_REMOVECOMMENTSTRANSFORMATION_H_

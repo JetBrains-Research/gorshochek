@@ -1,6 +1,8 @@
 #ifndef INCLUDE_TRANSFORMATIONS_IDENTITYTRANSFORMATION_H_
 #define INCLUDE_TRANSFORMATIONS_IDENTITYTRANSFORMATION_H_
 
+#include <yaml-cpp/yaml.h>
+
 #include <string>
 #include <memory>
 
@@ -17,9 +19,10 @@ class IdentityTransformation : public ITransformation {
     /**
      * Identity transformations does not change code
      */
-    explicit IdentityTransformation(float p);
-    ~IdentityTransformation();
+    explicit IdentityTransformation(const YAML::Node & config);
+    ~IdentityTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
+    static ITransformation * buildFromConfig(const YAML::Node & config);
 };
 
 #endif  // INCLUDE_TRANSFORMATIONS_IDENTITYTRANSFORMATION_H_
