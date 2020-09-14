@@ -9,6 +9,7 @@
 #include "../include/transformations/AddCommentsTransformation.h"
 #include "../include/transformations/RemoveCommentsTransformation.h"
 #include "../include/transformations/RenameEntitiesTransformation.h"
+#include "../include/transformations/ReorderFuncDeclsTransformation.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
 using std::string, std::function, std::cerr, std::endl, std::size_t;
