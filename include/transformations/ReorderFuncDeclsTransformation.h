@@ -70,7 +70,7 @@ class ReorderFuncDeclsASTConsumer : public ASTConsumer {
 class ReorderFuncDeclsTransformation : public ITransformation {
  public:
     explicit ReorderFuncDeclsTransformation(const YAML::Node & config);
-    ~ReorderFuncDeclsTransformation();
+    ~ReorderFuncDeclsTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
     static ITransformation * buildFromConfig(const YAML::Node & config);
 

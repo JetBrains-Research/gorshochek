@@ -3,9 +3,8 @@
 using std::move;
 // ------------ ITransformation ------------
 
-ITransformation::ITransformation(const YAML::Node & config, string name) : name(move(name)) {
-    p = config["p"].as<float>();
-}
+ITransformation::ITransformation(const YAML::Node & config, string name) :
+        p(config["p"].as<float>()), name(move(name)) {}
 
 float ITransformation::getProbability() const {
     return p;

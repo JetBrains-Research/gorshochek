@@ -67,8 +67,6 @@ ReorderFuncDeclsTransformation::ReorderFuncDeclsTransformation(const YAML::Node 
         gen(new mt19937(config["seed"].as<int>())),
         test(config["test"] != nullptr && config["test"].as<bool>()) {}
 
-ReorderFuncDeclsTransformation::~ReorderFuncDeclsTransformation() {}
-
 unique_ptr<ASTConsumer> ReorderFuncDeclsTransformation::getConsumer(Rewriter *rewriter) {
     return llvm::make_unique<ReorderFuncDeclsASTConsumer>(rewriter, gen, test);
 }
