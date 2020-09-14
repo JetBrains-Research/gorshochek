@@ -9,6 +9,7 @@
 #include "../include/transformations/AddCommentsTransformation.h"
 #include "../include/transformations/RemoveCommentsTransformation.h"
 #include "../include/transformations/RenameEntitiesTransformation.h"
+#include "../include/transformations/ReorderFuncDeclsTransformation.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
 using std::string, std::cerr, std::endl, std::size_t;
@@ -61,6 +62,15 @@ vector<ITransformation *> *getTransformationsFromYaml(const string &config_path)
             auto remove_comments_config = transform_data["remove comments"];
             auto p = remove_comments_config["p"].as<float>();
             transformations->push_back(new RemoveCommentsTransformation(p));
+        } else if (transform_data["reorder function decls"]) {
+            auto reorder_function_decls_config = transform_data["reorder function decls"];
+            auto p = reorder_function_decls_config["p"].as<float>();
+            auto seed = reorder_function_decls_config["seed"].as<int>();
+            bool test = false;
+            if (reorder_function_decls_config["test"]) {
+                test = reorder_function_decls_config["test"].as<bool>();
+            }
+            transformations->push_back(new ReorderFuncDeclsTransformation(p, seed, test));
         } else {
             cerr << "Unknown transformation";
         }

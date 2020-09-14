@@ -1,0 +1,7 @@
+output path: "tests/resources/actual"
+n transformations: 1
+transformations:
+  - reorder function decls:
+      p: 1.0
+      seed: 9
+      test: true
