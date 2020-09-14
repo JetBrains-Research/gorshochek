@@ -62,12 +62,17 @@ void ReorderFuncDeclsASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.rewriteFunctions();
 }
 
-ReorderFuncDeclsTransformation::ReorderFuncDeclsTransformation(float p, const int seed, const bool test) :
-                                                               ITransformation(p, "reorder function decls"),
-                                                               gen(new mt19937(seed)), test(test) {}
+ReorderFuncDeclsTransformation::ReorderFuncDeclsTransformation(const YAML::Node & config) :
+        ITransformation(config, "reorder function decls"),
+        gen(new mt19937(config["seed"].as<int>())),
+        test(config["test"] != nullptr && config["test"].as<bool>()) {}
 
 ReorderFuncDeclsTransformation::~ReorderFuncDeclsTransformation() {}
 
 unique_ptr<ASTConsumer> ReorderFuncDeclsTransformation::getConsumer(Rewriter *rewriter) {
     return llvm::make_unique<ReorderFuncDeclsASTConsumer>(rewriter, gen, test);
+}
+
+ITransformation * ReorderFuncDeclsTransformation::buildFromConfig(const YAML::Node & config) {
+    return new ReorderFuncDeclsTransformation(config);
 }

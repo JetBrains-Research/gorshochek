@@ -1,6 +1,7 @@
 #ifndef INCLUDE_TRANSFORMATIONS_REORDERFUNCDECLSTRANSFORMATION_H_
 #define INCLUDE_TRANSFORMATIONS_REORDERFUNCDECLSTRANSFORMATION_H_
 
+#include <yaml-cpp/yaml.h>
 
 #include <string>
 #include <vector>
@@ -68,9 +69,10 @@ class ReorderFuncDeclsASTConsumer : public ASTConsumer {
 
 class ReorderFuncDeclsTransformation : public ITransformation {
  public:
-    explicit ReorderFuncDeclsTransformation(float p, const int seed, const bool test);
+    explicit ReorderFuncDeclsTransformation(const YAML::Node & config);
     ~ReorderFuncDeclsTransformation();
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
+    static ITransformation * buildFromConfig(const YAML::Node & config);
 
  private:
     mt19937 * gen;

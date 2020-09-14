@@ -23,6 +23,7 @@ const map<string, function<ITransformation *(const YAML::Node &)>> transformFact
         {"add comments", AddCommentsTransformation::buildFromConfig },
         {"remove comments", RemoveCommentsTransformation::buildFromConfig },
         {"rename entities", RenameEntitiesTransformation::buildFromConfig },
+        {"reorder function decls", ReorderFuncDeclsTransformation::buildFromConfig }
 };
 
 vector<ITransformation *> *getTransformationsFromYaml(const string &config_path) {
