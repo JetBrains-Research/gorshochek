@@ -60,10 +60,10 @@ More examples can be found in `tests` folder
 - [x] Identity transformation
 - [x] Add, remove comments
 - [ ] Useless variables, functions, defines
-- [ ] Rename variables, functions
+- [x] Rename variables, functions
 - [ ] Random change between `x++`, `++x`, `x+=1`, `x=x+1`
 - [ ] Change the signature of functions by making all the variables global
-- [ ] Rearranging function declarations
+- [x] Rearranging function declarations
 - [ ] Replace `for` with `while` and vice versa 
 - [ ] Replace `for` loop iteration using indexing with `for` loop with `auto`
 - [ ] Change types from `int` to `long int` and so on
