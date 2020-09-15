@@ -34,7 +34,7 @@ class RemoveCommentsConsumer : public ASTConsumer {
 
 class RemoveCommentsTransformation : public ITransformation {
  public:
-    explicit RemoveCommentsTransformation(const YAML::Node & config);
+    explicit RemoveCommentsTransformation(const float p);
     ~RemoveCommentsTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
     static ITransformation * buildFromConfig(const YAML::Node & config);

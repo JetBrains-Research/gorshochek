@@ -68,7 +68,7 @@ class AddCommentsASTConsumer : public ASTConsumer {
 
 class AddCommentsTransformation : public ITransformation {
  public:
-    explicit AddCommentsTransformation(const YAML::Node & config);
+    explicit AddCommentsTransformation(const float p, const vector<string> * statements);
     ~AddCommentsTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
     static ITransformation * buildFromConfig(const YAML::Node & config);

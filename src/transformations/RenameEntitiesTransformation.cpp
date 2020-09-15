@@ -84,14 +84,17 @@ void RenameEntitiesASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
 
 // ------------ RenameEntitiesTransformation ------------
 
-RenameEntitiesTransformation::RenameEntitiesTransformation(const YAML::Node & config):
-        ITransformation(config, "rename entities"),
-        rename_func(config["rename functions"] != nullptr && config["rename functions"].as<bool>()),
-        rename_var(config["rename variables"] != nullptr && config["rename variables"].as<bool>()),
-        test(config["test"] != nullptr && config["test"].as<bool>()) {
-    gen = new mt19937(config["seed"].as<int>());
-    token_len_generator = createUniformIntGenerator(config["max tokens"].as<int>());
-    tokens_num_generator = createUniformIntGenerator(config["max token len"].as<int>());
+RenameEntitiesTransformation::RenameEntitiesTransformation(const float p, const bool rename_functions,
+                                                           const bool rename_variables, const int seed,
+                                                           const int max_tokens, const int max_token_len,
+                                                           const bool test):
+        ITransformation(p, "rename entities"),
+        rename_func(rename_functions),
+        rename_var(rename_variables),
+        test(test) {
+    gen = new mt19937(seed);
+    token_len_generator = createUniformIntGenerator(max_tokens);
+    tokens_num_generator = createUniformIntGenerator(max_token_len);
     char_generator = createUniformIntGenerator(num_lat_chars);
 }
 
@@ -119,5 +122,13 @@ unique_ptr<ASTConsumer> RenameEntitiesTransformation::getConsumer(Rewriter * rew
 }
 
 ITransformation * RenameEntitiesTransformation::buildFromConfig(const YAML::Node & config) {
-    return new RenameEntitiesTransformation(config);
+    const auto p = config["p"].as<float>();
+    const auto rename_func = config["rename functions"] != nullptr && config["rename functions"].as<bool>();
+    const auto rename_var = config["rename variables"] != nullptr && config["rename variables"].as<bool>();
+    const auto test = config["test"] != nullptr && config["test"].as<bool>();
+    const auto seed = config["seed"].as<int>();
+    const auto max_tokens = config["max tokens"].as<int>();
+    const auto max_token_len = config["max token len"].as<int>();
+    return new RenameEntitiesTransformation(p, rename_func, rename_var, seed,
+                                            max_tokens, max_token_len, test);
 }

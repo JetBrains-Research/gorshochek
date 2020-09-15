@@ -19,7 +19,7 @@ class IdentityTransformation : public ITransformation {
     /**
      * Identity transformations does not change code
      */
-    explicit IdentityTransformation(const YAML::Node & config);
+    explicit IdentityTransformation(const float p);
     ~IdentityTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
     static ITransformation * buildFromConfig(const YAML::Node & config);
