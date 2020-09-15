@@ -84,17 +84,17 @@ void RenameEntitiesASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
 
 // ------------ RenameEntitiesTransformation ------------
 
-RenameEntitiesTransformation::RenameEntitiesTransformation(const float p, const bool rename_functions,
-                                                           const bool rename_variables, const int seed,
+RenameEntitiesTransformation::RenameEntitiesTransformation(const float p, const bool rename_func,
+                                                           const bool rename_var, const int seed,
                                                            const int max_tokens, const int max_token_len,
                                                            const bool test):
         ITransformation(p, "rename entities"),
-        rename_func(rename_functions),
-        rename_var(rename_variables),
+        rename_func(rename_func),
+        rename_var(rename_var),
         test(test) {
     gen = new mt19937(seed);
-    token_len_generator = createUniformIntGenerator(max_tokens);
-    tokens_num_generator = createUniformIntGenerator(max_token_len);
+    token_len_generator = createUniformIntGenerator(max_token_len);
+    tokens_num_generator = createUniformIntGenerator(max_tokens);
     char_generator = createUniformIntGenerator(num_lat_chars);
 }
 
