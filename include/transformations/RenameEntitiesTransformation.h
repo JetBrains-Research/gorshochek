@@ -1,6 +1,7 @@
 #ifndef INCLUDE_TRANSFORMATIONS_RENAMEENTITIESTRANSFORMATION_H_
 #define INCLUDE_TRANSFORMATIONS_RENAMEENTITIESTRANSFORMATION_H_
 
+#include <yaml-cpp/yaml.h>
 
 #include <string>
 #include <vector>
@@ -80,11 +81,13 @@ class RenameEntitiesASTConsumer : public ASTConsumer {
 
 class RenameEntitiesTransformation : public ITransformation {
  public:
-    explicit RenameEntitiesTransformation(float p, const bool rename_func, const bool rename_var,
-                                          const int seed, const int max_tokens, const int max_token_len,
+    explicit RenameEntitiesTransformation(const float p, const bool rename_func,
+                                          const bool rename_var, const int seed,
+                                          const int max_tokens, const int max_token_len,
                                           const bool test);
-    ~RenameEntitiesTransformation();
+    ~RenameEntitiesTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
+    static ITransformation * buildFromConfig(const YAML::Node & config);
 
  private:
     /**
@@ -109,7 +112,7 @@ class RenameEntitiesTransformation : public ITransformation {
      * @param num_elements    the number of elements in the distribution
      * @return                discrete uniform distribution (i.e. with equal probabilities of each output)
      */
-    discrete_distribution<int> createUniformIntGenerator(const int num_elements);
+    static discrete_distribution<int> createUniformIntGenerator(const int num_elements);
 };
 
 #endif  // INCLUDE_TRANSFORMATIONS_RENAMEENTITIESTRANSFORMATION_H_

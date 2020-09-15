@@ -1,6 +1,7 @@
 #ifndef INCLUDE_TRANSFORMATIONS_ADDCOMMENTSTRANSFORMATION_H_
 #define INCLUDE_TRANSFORMATIONS_ADDCOMMENTSTRANSFORMATION_H_
 
+#include <yaml-cpp/yaml.h>
 
 #include <string>
 #include <vector>
@@ -67,9 +68,11 @@ class AddCommentsASTConsumer : public ASTConsumer {
 
 class AddCommentsTransformation : public ITransformation {
  public:
-    explicit AddCommentsTransformation(float p, const vector<string> * statements);
-    ~AddCommentsTransformation();
+    explicit AddCommentsTransformation(const float p, const vector<string> * statements);
+    ~AddCommentsTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
+    static ITransformation * buildFromConfig(const YAML::Node & config);
+
  private:
     /**
      * Along with probability, the AddCommentsTransformation class constructor also accepts

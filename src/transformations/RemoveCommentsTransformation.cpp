@@ -18,11 +18,14 @@ void RemoveCommentsConsumer::HandleTranslationUnit(ASTContext &ctx) {
 
 // ------------ RemoveCommentsTransformation ------------
 
-RemoveCommentsTransformation::RemoveCommentsTransformation(float p) :
+RemoveCommentsTransformation::RemoveCommentsTransformation(const float p) :
                                                            ITransformation(p, "remove comments") {}
-
-RemoveCommentsTransformation::~RemoveCommentsTransformation() {}
 
 unique_ptr<ASTConsumer> RemoveCommentsTransformation::getConsumer(Rewriter * rewriter) {
     return llvm::make_unique<RemoveCommentsConsumer>(rewriter);
+}
+
+ITransformation * RemoveCommentsTransformation::buildFromConfig(const YAML::Node & config) {
+    const auto p = config["p"].as<float>();
+    return new RemoveCommentsTransformation(p);
 }

@@ -1,6 +1,8 @@
 #ifndef INCLUDE_ITRANSFORMATION_H_
 #define INCLUDE_ITRANSFORMATION_H_
 
+#include <yaml-cpp/yaml.h>
+
 #include <string>
 #include <memory>
 
@@ -27,8 +29,8 @@ class ITransformation {
      * @param name      The name of a transformation is used to log applied transformations
      *                  in file description.txt
      */
-    explicit ITransformation(float p, string name);
-    virtual ~ITransformation();
+    explicit ITransformation(const float p, const string name);
+    virtual ~ITransformation() = default;
     /**
      * ASTConsumer is an interface for interacting with AST, this abstraction layer allows
      * to be independent of the AST producer. This method produces vector of pointers
@@ -40,10 +42,11 @@ class ITransformation {
     virtual unique_ptr<ASTConsumer> getConsumer(Rewriter * rewriter) = 0;
     float getProbability() const;
     string const & getName() const;
+    static ITransformation * buildFromConfig(const YAML::Node & config, const string name);
 
  private:
-    float p;
-    string name;
+    const float p;
+    const string name;
 };
 
 #endif  // INCLUDE_ITRANSFORMATION_H_
