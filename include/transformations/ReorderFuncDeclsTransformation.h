@@ -53,7 +53,6 @@ class ReorderFuncDeclsVisitor : public RecursiveASTVisitor<ReorderFuncDeclsVisit
     const bool test = false;
 
     vector<FunctionDecl *> funcdecls;
-    FunctionDecl * mainDecl;
 
     bool isFuncDeclProcessed(FunctionDecl * decl);
     static bool compare(FunctionDecl * a, FunctionDecl * b);
