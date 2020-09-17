@@ -17,8 +17,9 @@ bool IfElseSwapVisitor::VisitStmt(Stmt *s) {
         auto ifStmt = cast<IfStmt>(s);
         if (ifStmt->hasElseStorage()) {
             auto elseStmt = ifStmt->getElse();
-            // Checking if "else if" visited
+            // Checking if visitor come to "else if"
             if ((!isa<IfStmt>(elseStmt))) {
+                // Checking if visitor come to "else" part of "else if"
                 if (isNotVisited(ifStmt)) {
                     // Rewriting if conditions, e.g condition "if(x == 0)" will be transformed to "if(!(x == 0))"
                     rewriter->InsertTextAfter(ifStmt->getCond()->getBeginLoc(), "!(");
@@ -28,7 +29,7 @@ bool IfElseSwapVisitor::VisitStmt(Stmt *s) {
                     ifRange.setBegin(ifRange.getBegin());
                     ifRange.setEnd(ifRange.getEnd().getLocWithOffset(1));
                     auto ifBodyText = Lexer::getSourceText(CharSourceRange::getCharRange(ifRange), sm, opt);
-                    std::cout << ifBodyText.str() << std::endl;
+                    // If no brackets found then we add a small offset
                     if (ifBodyText.str()[0] != '{') {
                         ifRange.setEnd(ifRange.getEnd().getLocWithOffset(1));
                         ifBodyText = Lexer::getSourceText(CharSourceRange::getCharRange(ifRange), sm, opt);
@@ -37,11 +38,12 @@ bool IfElseSwapVisitor::VisitStmt(Stmt *s) {
                     elseRange.setBegin(elseRange.getBegin());
                     elseRange.setEnd(elseRange.getEnd().getLocWithOffset(1));
                     auto elseBodyText = Lexer::getSourceText(CharSourceRange::getCharRange(elseRange), sm, opt);
-                    std::cout << elseBodyText.str() << std::endl;
+                    // If no brackets found then we add a small offset
                     if (elseBodyText.str()[0] != '{') {
                         elseRange.setEnd(elseRange.getEnd().getLocWithOffset(1));
                         elseBodyText = Lexer::getSourceText(CharSourceRange::getCharRange(elseRange), sm, opt);
                     }
+                    // Swap if and else parts
                     rewriter->ReplaceText(elseRange, ifBodyText);
                     rewriter->ReplaceText(ifRange, elseBodyText);
                 }
