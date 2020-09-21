@@ -42,21 +42,25 @@ void IfElseSwapVisitor::swapBodies(IfStmt * ifStmt) {
     rewriter->ReplaceText(ifRange, elseBodyText);
 }
 
+void IfElseSwapVisitor::processIfStmt(IfStmt * ifStmt) {
+    auto elseStmt = ifStmt->getElse();
+    // Checking if visitor come to "else if"
+    if ((!isa<IfStmt>(elseStmt))) {
+        // Checking if visitor come to "else" part of "else if"
+        if (isNotVisited(ifStmt)) {
+            rewriteCondition(ifStmt);
+            swapBodies(ifStmt);
+        }
+    } else {
+        visitedIfStmt.push_back(cast<IfStmt>(elseStmt));
+    }
+}
+
 bool IfElseSwapVisitor::VisitStmt(Stmt *s) {
     if (isa<IfStmt>(s)) {
         auto ifStmt = cast<IfStmt>(s);
         if (ifStmt->hasElseStorage()) {
-            auto elseStmt = ifStmt->getElse();
-            // Checking if visitor come to "else if"
-            if ((!isa<IfStmt>(elseStmt))) {
-                // Checking if visitor come to "else" part of "else if"
-                if (isNotVisited(ifStmt)) {
-                    rewriteCondition(ifStmt);
-                    swapBodies(ifStmt);
-                }
-            } else {
-                visitedIfStmt.push_back(cast<IfStmt>(elseStmt));
-            }
+            processIfStmt(ifStmt);
         }
     }
     return true;

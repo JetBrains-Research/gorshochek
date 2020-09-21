@@ -41,6 +41,7 @@ class IfElseSwapVisitor : public RecursiveASTVisitor<IfElseSwapVisitor> {
     bool isNotVisited(IfStmt * s);
     void swapBodies(IfStmt * ifStmt);
     void rewriteCondition(IfStmt * ifStmt);
+    void processIfStmt(IfStmt * ifStmt);
     string getBodyAsString(SourceRange * range);
 };
 
