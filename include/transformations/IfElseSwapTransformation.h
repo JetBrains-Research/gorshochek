@@ -21,7 +21,7 @@
 #include "../ITransformation.h"
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::IfStmt,
-clang::DeclGroupRef, clang::Stmt, clang::SourceManager, clang::LangOptions;
+clang::DeclGroupRef, clang::Stmt, clang::SourceManager, clang::LangOptions, clang::SourceRange;
 using std::unique_ptr, std::vector, std::string;
 
 /// RecursiveASTVisitor is a set of actions that are done
@@ -39,6 +39,9 @@ class IfElseSwapVisitor : public RecursiveASTVisitor<IfElseSwapVisitor> {
     LangOptions opt;
     vector<IfStmt *> visitedIfStmt;
     bool isNotVisited(IfStmt * s);
+    void swapBodies(IfStmt * ifStmt);
+    void rewriteCondition(IfStmt * ifStmt);
+    string getBodyAsString(SourceRange * range);
 };
 
 class IfElseSwapASTConsumer : public ASTConsumer {
