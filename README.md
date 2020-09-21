@@ -68,7 +68,7 @@ More examples can be found in `tests` folder
 - [ ] Replace `for` loop iteration using indexing with `for` loop with `auto`
 - [ ] Change types from `int` to `long int` and so on
 - [ ] Replace `printf` with `std::cout`
-- [ ] Swap `if` and `else` blocks and change the corresponding condition inside `if`
+- [x] Swap `if` and `else` blocks and change the corresponding condition inside `if`
 - [ ] Add wrappers for functions
 
 --------------
@@ -85,4 +85,4 @@ is just a name of a transformation) the following classes should be implemented:
 information from `config.yaml` and creates and instances of `ExampleASTConsumer` using 
 `getConsumer` method
 - `ExampleASTConsumer` derived from `ASTConsumer`
-- `ExampleASTVisitor` derived from `RecursiveASTVisitor<Example>`
+- `ExampleASTVisitor` derived from `RecursiveASTVisitor<ExampleASTVisitor>`
