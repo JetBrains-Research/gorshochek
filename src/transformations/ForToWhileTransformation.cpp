@@ -5,7 +5,7 @@ using clang::Lexer, clang::CharSourceRange;
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string;
 
-// ------------ AddCommentsVisitor ------------
+// ------------ ForToWhileVisitor ------------
 
 ForToWhileVisitor::ForToWhileVisitor(Rewriter * rewriter) :
         rewriter(rewriter), sm(rewriter->getSourceMgr()), opt(rewriter->getLangOpts()) {}
