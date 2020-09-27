@@ -12,6 +12,7 @@
 #include "../include/transformations/ReorderFuncDeclsTransformation.h"
 #include "../include/transformations/IfElseSwapTransformation.h"
 #include "../include/transformations/ForToWhileTransformation.h"
+#include "../include/transformations/WhileToForTransformation.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
 using std::string, std::function, std::cerr, std::endl, std::size_t;
@@ -27,7 +28,8 @@ const map<string, function<ITransformation *(const YAML::Node &)>> transformFact
         {"rename entities", RenameEntitiesTransformation::buildFromConfig },
         {"reorder function decls", ReorderFuncDeclsTransformation::buildFromConfig },
         {"if else swap", IfElseSwapTransformation::buildFromConfig },
-        {"for to while", ForToWhileTransformation::buildFromConfig }
+        {"for to while", ForToWhileTransformation::buildFromConfig },
+        {"while to for", WhileToForTransformation::buildFromConfig }
 };
 
 vector<ITransformation *> *getTransformationsFromYaml(const string &config_path) {

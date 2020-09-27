@@ -104,3 +104,9 @@ def test_for_to_while() -> None:
     config_path = path.join(configs_dir_path, "test_for_to_while_config.yaml")
     files = ["test_for_to_while.cpp"]
     _test(files, config_path)
+
+
+def test_while_to_for() -> None:
+    config_path = path.join(configs_dir_path, "test_while_to_for_config.yaml")
+    files = ["test_while_to_for.cpp"]
+    _test(files, config_path)

@@ -1,0 +1,5 @@
+output path: "tests/resources/actual"
+n transformations: 1
+transformations:
+  - while to for:
+      p: 1.0
