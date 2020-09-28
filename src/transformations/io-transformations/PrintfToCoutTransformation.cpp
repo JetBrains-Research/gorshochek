@@ -18,7 +18,7 @@ bool PrintfToCoutVisitor::VisitCallExpr(CallExpr *e) {
     if (sm.isWrittenInMainFile(srcloc)) {
         auto const srctext = getAsText(e);
         if (srctext == "std::printf" || srctext == "printf") {
-            printfexpressions.push_back(e);
+            printfExpressions.push_back(e);
         }
     }
     return true;
@@ -186,7 +186,7 @@ bool PrintfToCoutVisitor::rewriteSimplePrintfCommand(const CallExpr *e) {
 }
 
 void PrintfToCoutVisitor::rewritePrintf() {
-    for (auto e : printfexpressions) {
+    for (auto e : printfExpressions) {
         if (determineIfSimplePrintfCommand(e)) {
             rewriteSimplePrintfCommand(e);
         }

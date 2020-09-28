@@ -32,9 +32,14 @@ class PrintfToCoutVisitor : public RecursiveASTVisitor<PrintfToCoutVisitor> {
  public:
     explicit PrintfToCoutVisitor(Rewriter * rewriter);
     /**
-     * This function is called a certain clang::Stmt is visited
+     * This function is called a certain clang::CallExpr is visited
+     * here we collect all the printf clang::CallExpr
      */
     bool VisitCallExpr(CallExpr *s);
+    /**
+     * This function is called a certain clang::UsingDirectiveDecl is visited
+     * here we collect all used namespaces
+     */
     bool VisitUsingDirectiveDecl(UsingDirectiveDecl *ud);
     void insertHeaderAtBeginning(string headerstr);
     void rewritePrintf();
@@ -45,10 +50,16 @@ class PrintfToCoutVisitor : public RecursiveASTVisitor<PrintfToCoutVisitor> {
     LangOptions opt;
     bool determineIfSimplePrintfCommand(const CallExpr * e);
     bool rewriteSimplePrintfCommand(const CallExpr *e);
+    /**
+     * If namespace "std" is used we can use "cout" instead of "std::cout"
+     * in this function we check if std is used and add "std::" prefix if needed
+     * @param word
+     * @return
+     */
     string append_std(string word);
     vector<string> getPrecisionPrefix(const vector<string> &plholdersvec);
     StringRef getAsText(const Expr * e);
-    vector<const CallExpr *> printfexpressions;
+    vector<const CallExpr *> printfExpressions;
     vector<const UsingDirectiveDecl *> usedNamespaces;
 
     string regexPlaceholders = "(%[diufeEgGcs])|%lld|%lu|%ld|%llu|(%\\.[0-9]*f)";
@@ -63,13 +74,6 @@ struct IOTransformationException : public std::exception {
 class PrintfToCoutASTConsumer : public ASTConsumer {
  public:
     explicit PrintfToCoutASTConsumer(Rewriter * rewriter);
-    /**
-     * HandleTopLevelDecl handles all the declaration (or definition),
-     * e.g. a variable, typedef, function, struct, etc
-     * @param DR     Iterating through DeclGroupRef we are getting all the declarations
-     *               belongs to current DeclGroup
-     * @return       true to continue parsing, or false to abort parsing.
-     */
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT
  private:
     PrintfToCoutVisitor visitor;
