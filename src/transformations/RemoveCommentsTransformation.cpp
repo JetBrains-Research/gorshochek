@@ -5,11 +5,11 @@ using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string;
 
 
-// ------------ RemoveCommentsConsumer ------------
+// ------------ RemoveCommentsASTConsumer ------------
 
-RemoveCommentsConsumer::RemoveCommentsConsumer(Rewriter * rewriter) : rewriter(rewriter) {}
+RemoveCommentsASTConsumer::RemoveCommentsASTConsumer(Rewriter * rewriter) : rewriter(rewriter) {}
 
-void RemoveCommentsConsumer::HandleTranslationUnit(ASTContext &ctx) {
+void RemoveCommentsASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     RawCommentList & commentList = ctx.getRawCommentList();
     for (auto const & comment : commentList.getComments()) {
         rewriter->RemoveText(comment->getSourceRange());
@@ -22,7 +22,7 @@ RemoveCommentsTransformation::RemoveCommentsTransformation(const float p) :
                                                            ITransformation(p, "remove comments") {}
 
 unique_ptr<ASTConsumer> RemoveCommentsTransformation::getConsumer(Rewriter * rewriter) {
-    return llvm::make_unique<RemoveCommentsConsumer>(rewriter);
+    return llvm::make_unique<RemoveCommentsASTConsumer>(rewriter);
 }
 
 ITransformation * RemoveCommentsTransformation::buildFromConfig(const YAML::Node & config) {
