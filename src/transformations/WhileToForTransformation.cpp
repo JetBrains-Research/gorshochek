@@ -18,7 +18,7 @@ bool WhileToForVisitor::VisitWhileStmt(WhileStmt * whileStmt) {
     }
 
     Expr * cond = whileStmt->getCond();
-    string condText = "";
+    string condText;
     if (cond) {
         SourceRange condRange = cond->getSourceRange();
         if (isa<clang::ValueStmt>(*cond->getExprStmt())) {
@@ -26,12 +26,11 @@ bool WhileToForVisitor::VisitWhileStmt(WhileStmt * whileStmt) {
         }
         condText = Lexer::getSourceText(CharSourceRange::getCharRange(condRange), sm, opt).str();
     }
-    auto whileText = "for(;" + condText + ";) ";
-    ptrdiff_t _diff = sm.getCharacterData(whileStmt->getBody()->getBeginLoc()) -
+    auto whileText = "for ( ; " + condText + "; ) ";
+    ptrdiff_t diff = sm.getCharacterData(whileStmt->getBody()->getBeginLoc()) -
                       sm.getCharacterData(whileStmt->getBeginLoc());
-    auto diff = (unsigned int) _diff;
-    rewriter->ReplaceText(whileStmt->getBeginLoc(), diff, whileText);
-
+    rewriter->ReplaceText(whileStmt->getBeginLoc(),
+                          static_cast<unsigned int>(diff), whileText);
     return true;
 }
 

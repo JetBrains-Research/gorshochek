@@ -8,6 +8,8 @@ void a(int *x) {
         if(k == 4) {
             continue;
         }
+        if (k == 5)
+            continue;
         int d = 4;
         for(; d<5; d--)
             int z;

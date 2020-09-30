@@ -38,7 +38,7 @@ class ForToWhileVisitor : public RecursiveASTVisitor<ForToWhileVisitor> {
     Rewriter * rewriter;
     SourceManager & sm;
     LangOptions opt;
-    void collectContinues(const Stmt * s, vector<const ContinueStmt *> &continues);  // NOLINT
+    void collectContinues(const Stmt * s, vector<const ContinueStmt *> *continues);
     void processBody(ForStmt * forStmt);
     void processInit(ForStmt * forStmt);
     void processCond(ForStmt * forStmt);

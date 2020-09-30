@@ -50,7 +50,7 @@ void ForToWhileVisitor::processInit(ForStmt * forStmt) {
 
 void ForToWhileVisitor::processCond(ForStmt * forStmt) {
     Expr * cond = forStmt->getCond();
-    string condText = "";
+    string condText;
     if (cond) {
         SourceRange condRange = cond->getSourceRange();
         if (isa<clang::ValueStmt>(*cond->getExprStmt())) {
@@ -60,16 +60,18 @@ void ForToWhileVisitor::processCond(ForStmt * forStmt) {
     } else {
         condText = "1";
     }
-    auto whileText = "while(" + condText + ") ";
-    ptrdiff_t _diff = sm.getCharacterData(forStmt->getBody()->getBeginLoc()) -
+    auto whileText = "while (" + condText + ") ";
+    ptrdiff_t diff = sm.getCharacterData(forStmt->getBody()->getBeginLoc()) -
                       sm.getCharacterData(forStmt->getBeginLoc());
-    auto diff = (unsigned int) _diff;
-    rewriter->ReplaceText(forStmt->getBeginLoc(), diff, whileText);
+    rewriter->ReplaceText(forStmt->getBeginLoc(),
+                          static_cast<unsigned int>(diff), whileText);
 }
 
 void ForToWhileVisitor::processInc(ForStmt * forStmt) {
     Expr * inc = forStmt->getInc();
-    if (inc) {
+    if (!inc) {
+        return;
+    } else {
         SourceRange incRange = inc->getSourceRange();
         if (isa<clang::ValueStmt>(*inc->getExprStmt())) {
             if (isa<clang::UnaryOperator>(inc) && cast<clang::UnaryOperator>(inc)->isPostfix())
@@ -77,12 +79,13 @@ void ForToWhileVisitor::processInc(ForStmt * forStmt) {
             else
                 incRange.setEnd(inc->getEndLoc().getLocWithOffset(1));
         }
-        auto incText = Lexer::getSourceText(CharSourceRange::getCharRange(incRange), sm, opt).str() + ";\n";
+        auto incText = Lexer::getSourceText(CharSourceRange::getCharRange(incRange), sm, opt).str() + "; ";
         vector<const ContinueStmt *> continues;
-        collectContinues(forStmt->getBody(), continues);
+        collectContinues(forStmt->getBody(), &continues);
         for (auto countinue_stmt : continues) {
             rewriter->InsertText(countinue_stmt->getBeginLoc(), incText, true, true);
         }
+        incText += "\n";
         const Stmt * body = forStmt->getBody();
         clang::SourceLocation forEndLoc;
         if (!isa<clang::CompoundStmt>(body)) {
@@ -95,14 +98,14 @@ void ForToWhileVisitor::processInc(ForStmt * forStmt) {
     }
 }
 
-void ForToWhileVisitor::collectContinues(const Stmt * s, vector<const ContinueStmt *> &match) {
+void ForToWhileVisitor::collectContinues(const Stmt * s, vector<const ContinueStmt *> *continues) {
     if (const ContinueStmt * dec = clang::dyn_cast<ContinueStmt>(s)) {
-        match.push_back(dec);
+        continues->push_back(dec);
     }
     const auto &children = s->children();
     for (const clang::Stmt *child : children) {
         if (child) {
-            collectContinues(child, match);
+            collectContinues(child, continues);
         }
     }
 }
