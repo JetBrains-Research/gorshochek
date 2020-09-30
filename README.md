@@ -64,7 +64,7 @@ More examples can be found in `tests` folder
 - [ ] Random change between `x++`, `++x`, `x+=1`, `x=x+1`
 - [ ] Change the signature of functions by making all the variables global
 - [x] Rearranging function declarations
-- [ ] Replace `for` with `while` and vice versa 
+- [x] Replace `for` with `while` and vice versa 
 - [ ] Replace `for` loop iteration using indexing with `for` loop with `auto`
 - [ ] Change types from `int` to `long int` and so on
 - [ ] Replace `printf` with `std::cout`
