@@ -26,7 +26,7 @@ bool WhileToForVisitor::VisitWhileStmt(WhileStmt * whileStmt) {
         }
         condText = Lexer::getSourceText(CharSourceRange::getCharRange(condRange), sm, opt).str();
     }
-    auto whileText = "for ( ; " + condText + "; ) ";
+    auto whileText = "for ( ; " + condText + "; ) \n";
     ptrdiff_t diff = sm.getCharacterData(whileStmt->getBody()->getBeginLoc()) -
                       sm.getCharacterData(whileStmt->getBeginLoc());
     rewriter->ReplaceText(whileStmt->getBeginLoc(),
@@ -51,7 +51,7 @@ bool WhileToForASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
 // ------------ WhileToForTransformation ------------
 
 WhileToForTransformation::WhileToForTransformation(const float p) :
-        ITransformation(p, "for to while") {}
+        ITransformation(p, "while to for") {}
 
 unique_ptr<ASTConsumer> WhileToForTransformation::getConsumer(Rewriter * rewriter) {
     return llvm::make_unique<WhileToForASTConsumer>(rewriter);
