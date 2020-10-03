@@ -103,4 +103,15 @@ def test_if_else_swap() -> None:
 def test_printf_to_cout() -> None:
     config_path = path.join(configs_dir_path, "test_printf_to_cout_config.yaml")
     files = ["test_printf_to_cout.cpp"]
+
+
+def test_for_to_while() -> None:
+    config_path = path.join(configs_dir_path, "test_for_to_while_config.yaml")
+    files = ["test_for_to_while.cpp"]
+    _test(files, config_path)
+
+
+def test_while_to_for() -> None:
+    config_path = path.join(configs_dir_path, "test_while_to_for_config.yaml")
+    files = ["test_while_to_for.cpp"]
     _test(files, config_path)

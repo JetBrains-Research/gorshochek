@@ -24,9 +24,9 @@ using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::De
 clang::DeclGroupRef, clang::Stmt, clang::ASTContext;
 using std::unique_ptr, std::vector, std::string;
 
-class RemoveCommentsConsumer : public ASTConsumer {
+class RemoveCommentsASTConsumer : public ASTConsumer {
  public:
-    explicit RemoveCommentsConsumer(Rewriter * rewriter);
+    explicit RemoveCommentsASTConsumer(Rewriter * rewriter);
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT.
  private:
     Rewriter * rewriter;
