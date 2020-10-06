@@ -72,8 +72,8 @@ add_executable(${PROJECT_NAME}
         src/transformations/RenameEntitiesTransformation.cpp
         src/transformations/ReorderFuncDeclsTransformation.cpp
         src/transformations/IfElseSwapTransformation.cpp
-        src/transformations/input_output/PrintfToCoutTransformation.cpp
-        src/transformations/input_output/Utils.cpp
+        src/transformations/input-output/PrintfToCoutTransformation.cpp
+        src/transformations/input-output/Utils.cpp
         src/transformations/ForToWhileTransformation.cpp
         src/transformations/WhileToForTransformation.cpp
         )

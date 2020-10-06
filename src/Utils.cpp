@@ -11,7 +11,7 @@
 #include "../include/transformations/RenameEntitiesTransformation.h"
 #include "../include/transformations/ReorderFuncDeclsTransformation.h"
 #include "../include/transformations/IfElseSwapTransformation.h"
-#include "../include/transformations/input_output/PrintfToCoutTransformation.h"
+#include "../include/transformations/input-output/PrintfToCoutTransformation.h"
 #include "../include/transformations/ForToWhileTransformation.h"
 #include "../include/transformations/WhileToForTransformation.h"
 #include "../include/TransformationFrontendActionFactory.h"

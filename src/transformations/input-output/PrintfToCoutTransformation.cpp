@@ -1,5 +1,5 @@
-#include "../../../include/transformations/input_output/PrintfToCoutTransformation.h"
-#include "../../../include/transformations/input_output/Utils.h"
+#include "../../../include/transformations/input-output/PrintfToCoutTransformation.h"
+#include "../../../include/transformations/input-output/Utils.h"
 
 using clang::IfStmt, clang::CallExpr;
 using clang::Lexer, clang::CharSourceRange, clang::SourceLocation;
