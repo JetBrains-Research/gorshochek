@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <regex> // NOLINT
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -50,24 +49,25 @@ class PrintfToCoutVisitor : public RecursiveASTVisitor<PrintfToCoutVisitor> {
     LangOptions opt;
     bool determineIfSimplePrintfCommand(const CallExpr * e);
     bool rewriteSimplePrintfCommand(const CallExpr *e);
-    /**
-     * If namespace "std" is used we can use "cout" instead of "std::cout"
-     * in this function we check if std is used and add "std::" prefix if needed
-     * @param word
-     * @return
-     */
-    string append_std(string word);
-    vector<string> getPrecisionPrefix(const vector<string> &plholdersvec);
+
+    vector<string> * getPrecisionPrefix(const vector<string> * specifiers);
+    string parsePrecision(const vector<string> * floatmatches);
     StringRef getAsText(const Expr * e);
     vector<const CallExpr *> printfExpressions;
     vector<const UsingDirectiveDecl *> usedNamespaces;
 
-    string regexPlaceholders = "(%[diufeEgGcs])|%lld|%lu|%ld|%llu|(%\\.[0-9]*f)";
+    string regexPlaceholders = "(%[diufeEgGcs]|%lld|%lu|%ld|%llu|(%\\.[0-9]*f))";
     string floatPrecisionRegex = "(%\\.[0-9][0-9]*f)";
     string floatSplitRegex = "\\.|f";
+
+    string default_precision = "6";
+    string _setprecision = "std::setprecision";
+    string _fixed = "std::fixed";
+    string _scientific = "std::scientific";
+    string _cout = "std::cout";
 };
 
-struct IOTransformationException : public std::exception {
+struct MatcherException : public std::exception {
     const char * what() const throw();
 };
 

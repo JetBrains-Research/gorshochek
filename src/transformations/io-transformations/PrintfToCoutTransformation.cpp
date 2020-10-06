@@ -48,15 +48,6 @@ bool PrintfToCoutVisitor::determineIfSimplePrintfCommand(const CallExpr * e) {
     return (match_count == (e->getNumArgs() - 1));
 }
 
-string PrintfToCoutVisitor::append_std(string word) {
-    for (auto ud : usedNamespaces) {
-        if (ud->getNominatedNamespace()->getQualifiedNameAsString() == word) {
-            return word;
-        }
-    }
-    return "std::"+ word;
-}
-
 void PrintfToCoutVisitor::insertHeaderAtBeginning(string headerstr) {
     headerstr = "#include <" + headerstr + ">\n";
     rewriter->InsertTextBefore(sm.getLocForStartOfFile(sm.getMainFileID()), headerstr);
@@ -69,102 +60,68 @@ StringRef PrintfToCoutVisitor::getAsText(const Expr * e) {
     return Lexer::getSourceText(CharSourceRange::getCharRange(range), sm, opt);
 }
 
-vector<string> PrintfToCoutVisitor::getPrecisionPrefix(const vector<string> &plholdersvec) {
-    vector<string> prefixlist;
+string PrintfToCoutVisitor::parsePrecision(const vector<string> * matches) {
+    if (matches->size() != 1) {
+        errs() << "Format string has more then one match for \"%.Xf\"" << "\n";
+        throw MatcherException();
+    }
+    auto match = matches->at(0);
+    auto format_string = "%" + floatSplitRegex;
+    vector<string> splits = split(&match, &format_string);
+    return splits[1];
+}
 
-    string cur_mode;  // we only need to add fixed if fixed changed to scientific or vice versa
-    int cur_precision = -1;  // we only need to add setprecision if precision changed..
+vector<string> * PrintfToCoutVisitor::getPrecisionPrefix(const vector<string> * specifiers) {
+    auto prefix_vec = new vector<string>();
 
+    for (const string &specifier : *specifiers) {
+        string prefix;
 
-    for (const string &plholder : plholdersvec) {
-        string cur_prefix;
-
-        // Check if we have s.th. like "%.10f"
-        auto floatmatches = getMatches(plholder, floatPrecisionRegex);
-        if (!floatmatches.empty()) {
-            if (floatmatches.size() != 1) {
-                errs() << "Warning: Format string has != 1 matches for %.Xf." << "\n";
-                throw IOTransformationException();
-            }
-            vector<string> splits = split(floatmatches[0], floatSplitRegex);
-            if (splits.size() != 2) {
-                errs() << "Error: Splits != 2.; size:"
-                       << splits.size() << "for:"
-                       << floatmatches[0] << "\n";
-                throw IOTransformationException();
-            } else {
-                if (cur_mode != "fixed") {
-                    cur_prefix += append_std("fixed");
-                    cur_mode = "fixed";
-                }
-                if (std::stoi(splits[1]) != cur_precision) {
-                    cur_precision = stoi(splits[1]);
-                    cur_prefix += " << " + append_std("setprecision(" + splits[1] + ") << ");
-                }
-            }
-        } else if (plholder == "%f") {
-            // Check if only %f, %e, %E,
-            // printf's default precision is 6.. that's why we use
-            // setprecision(6) in the default case %f
-            if (cur_mode != "fixed") {
-                cur_prefix += append_std("fixed") + " << ";
-                cur_mode = "fixed";
-            }
-            if (cur_precision != 6) {
-                cur_precision = 6;
-                cur_prefix += append_std("setprecision(6)") + " << ";
-            }
-
-        } else if (plholder == "%e" || plholder == "%E") {
-            if (cur_mode != "scientific") {
-                cur_prefix += append_std("scientific") + " << ";
-                cur_mode = "scientific";
-            }
-            if (cur_precision != 6) {
-                cur_precision = 6;
-                cur_prefix += append_std("setprecision(6)") + " << ";
-            }
+        // Check if we have something like "%.10f"
+        auto matches = getMatches(&specifier, &floatPrecisionRegex);
+        if (specifier == "%e" || specifier == "%E") {
+            prefix += _scientific + " << " +
+                      _setprecision + "(" + default_precision + ")" + " << ";
+        } else if (specifier == "%f" || !matches.empty()) {
+            string precision = !matches.empty() ? parsePrecision(&matches) : default_precision;
+            prefix += _fixed + " << " +
+                      _setprecision + "(" + precision + ")" + " << ";
         }
-        prefixlist.push_back(cur_prefix);
+        prefix_vec->push_back(prefix);
     }
 
-    if (prefixlist.size() != plholdersvec.size()) {
-        errs() << "placeholders and prefix list mismatch" << "\n";
-        throw IOTransformationException();
-    }
-
-    return prefixlist;
+    return prefix_vec;
 }
 
 bool PrintfToCoutVisitor::rewriteSimplePrintfCommand(const CallExpr *e) {
     // A. Definitions
     // Get the first printf argument = the format string with all the placeholders..
-    string formatstring = getAsText(e->getArg(0)).str();
-    // B. Get all the substrings between the placeholders
-    vector<string> splits = split(formatstring, regexPlaceholders);
+    string format = getAsText(e->getArg(0)).str();
 
-    // Assure the number of splits equals the number of arguments
+    // B. Get all the substrings between the placeholders
+    vector<string> splits = split(&format, &regexPlaceholders);
+
+    // Removing quotes at the for first and last elem in splits
+    if (splits.front().front() == '\"') {
+        splits.front().erase(splits.front().begin());
+    if (splits.back().back() == '\"')
+        splits.back().pop_back();
+    }
+
     if (splits.size() != e->getNumArgs()) {
-        errs() << "Splits != Num Args" << "\n";
+        errs() << "The number of placeholders is not equal the number of arguments" << "\n";
         return false;
     }
 
     // C. get the placeholders
-    vector<string> plholders = getMatches(formatstring, regexPlaceholders);
-
-    if (splits.size() - 1 != plholders.size()) {
-        errs() << splits.size() << ";"
-               << plholders.size() << "Splits-1 != plholders.size()"
-               << "\n";
-        return false;
-    }
+    vector<string> plholders = getMatches(&format, &regexPlaceholders);
 
     // D. Now get the correct precision for each substring depending on the respective placeholder
-    std::vector<std::string> prefixforeachplholder;
+    vector<string> * prefixforeachplholder;
     try {
-        prefixforeachplholder = getPrecisionPrefix(plholders);
-    } catch(IOTransformationException& ex) {
-        errs() << "Precision-Prefix-Error during printf->cout rewrite:" << "\n";
+        prefixforeachplholder = getPrecisionPrefix(&plholders);
+    } catch(MatcherException& ex) {
+        errs() << "Precision-Prefix-Error during printf->cout rewrite" << "\n";
         return false;
     }
 
@@ -172,10 +129,19 @@ bool PrintfToCoutVisitor::rewriteSimplePrintfCommand(const CallExpr *e) {
     std::stringstream sstream;
 
     // Keep in mind: add std only if user has included the std namespace via "using namespace std"
-    sstream << "" << append_std("cout");
+    sstream << _cout;
     // Now build the rest
     for (unsigned i = 1; i < e->getNumArgs(); i++) {
-        sstream << " << " << prefixforeachplholder[i - 1] << getAsText(e->getArg(i)).str();
+        sstream << " << ";
+        if (!splits[i - 1].empty()) {
+            sstream << "\"" + splits[i - 1] + "\"" << " << ";
+        }
+        sstream << prefixforeachplholder->at(i - 1)
+                << getAsText(e->getArg(i)).str();
+    }
+    if (!splits[e->getNumArgs() - 1].empty()) {
+        sstream << " << ";
+        sstream << "\"" + splits[e->getNumArgs() - 1] + "\"";
     }
     string coutCommand = sstream.str();
 
@@ -193,7 +159,7 @@ void PrintfToCoutVisitor::rewritePrintf() {
     }
 }
 
-const char * IOTransformationException::what() const throw() {
+const char * MatcherException::what() const throw() {
     return "Error while transforming IO";
 }
 

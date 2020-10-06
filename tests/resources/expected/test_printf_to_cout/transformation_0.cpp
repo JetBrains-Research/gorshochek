@@ -16,10 +16,10 @@ int main() {
     foo1(1);
     foo2(2);
     foo3(3);
-    printf("%d%d%d", 1,2,3);
+    printf("hello %d some string %d another string %d goodby", 1,2,3);
     if (1 == 1) {
         for (long long i = 0; i < 5; ++i) {
-            printf("%lld%.10f", i, 0.333);
+            printf("%lld hello %.10f", i, 0.333);
         }
     }
     return 0;

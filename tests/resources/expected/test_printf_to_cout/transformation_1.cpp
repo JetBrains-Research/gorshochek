@@ -18,10 +18,10 @@ int main() {
     foo1(1);
     foo2(2);
     foo3(3);
-    std::cout << 1 << 2 << 3;
+    std::cout << "hello " << 1 << " some string " << 2 << " another string " << 3 << " goodby";
     if (1 == 1) {
         for (long long i = 0; i < 5; ++i) {
-            std::cout << i << std::fixed << std::setprecision(10) << 0.333;
+            std::cout << i << " hello " << std::fixed << std::setprecision(10) << 0.333;
         }
     }
     return 0;
