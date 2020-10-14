@@ -21,7 +21,7 @@ jobs:
       - name: Install clang
         run: |
           sh scripts/install_clang.sh
-          apt-get install build-essential libclang-3.8-dev libncurses-dev libz-dev cmake xz-utils
+          sudo apt-get install build-essential libclang-3.8-dev libncurses-dev libz-dev cmake xz-utils
       - name: Lint
         run: |
           cpplint --filter=-legal --recursive --exclude=build --exclude=tests/resources --linelength=120 .
