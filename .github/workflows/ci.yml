@@ -22,6 +22,7 @@ jobs:
         run: |
           sh scripts/install_clang.sh
           sudo apt-get install build-essential
+          sudo apt install clang-9
       - name: Lint
         run: |
           cpplint --filter=-legal --recursive --exclude=build --exclude=tests/resources --linelength=120 .
