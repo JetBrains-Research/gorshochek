@@ -2,7 +2,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <iostream>
-#include <cstdio>
 
 void foo1(int n) {
     int x = 9;
