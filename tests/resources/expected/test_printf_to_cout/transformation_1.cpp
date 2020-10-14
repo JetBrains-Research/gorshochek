@@ -1,6 +1,6 @@
 #include <iomanip>
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 
 void foo1(int n) {
