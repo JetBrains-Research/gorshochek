@@ -34,4 +34,4 @@ jobs:
           cmake --build .
       - name: Test
         run: |
-          pytest --show-capture={stdout,log}
+          pytest
