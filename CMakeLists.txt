@@ -47,7 +47,7 @@ find_package(Clang REQUIRED CONFIG)
 message(STATUS "Using ClangConfig.cmake in: ${CLANG_CMAKE_DIR}")
 
 include_directories(${LLVM_INCLUDE_DIRS} ${CLANG_INCLUDE_DIRS})
-include_directories("${CLANG_CMAKE_DIR}/../../../include/c++/v1")
+include_directories("${CLANG_CMAKE_DIR}/../../../include")
 if(LLVM_BUILD_MAIN_SRC_DIR)
     include_directories(${LLVM_BUILD_MAIN_SRC_DIR}/tools/clang/include)
     include_directories(${LLVM_BUILD_BINARY_DIR}/tools/clang/include)
