@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <iostream>
+#include <cstdio>
 
 void foo1(int n) {
     int x = 9;
@@ -13,6 +15,7 @@ void foo3(int n) {
 }
 
 int main() {
+    std::ios_base::sync_with_stdio(false);
     foo1(1);
     foo2(2);
     foo3(3);
