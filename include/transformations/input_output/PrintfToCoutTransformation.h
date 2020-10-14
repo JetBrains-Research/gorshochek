@@ -22,7 +22,7 @@
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::CallExpr,
 clang::StringRef, clang::ASTContext, clang::SourceManager, clang::LangOptions,
-clang::SourceRange, clang::Expr, clang::UsingDirectiveDecl;
+clang::SourceRange, clang::Expr, clang::UsingDirectiveDecl, clang::SourceLocation;
 using std::unique_ptr, std::vector, std::string;
 
 /// RecursiveASTVisitor is a set of actions that are done
@@ -34,13 +34,13 @@ class PrintfToCoutVisitor : public RecursiveASTVisitor<PrintfToCoutVisitor> {
      * This function is called a certain clang::CallExpr is visited
      * here we collect all the printf clang::CallExpr
      */
-    bool VisitCallExpr(CallExpr *s);
+    bool VisitCallExpr(CallExpr * e);
     /**
      * This function is called a certain clang::UsingDirectiveDecl is visited
      * here we collect all used namespaces
      */
-    bool VisitUsingDirectiveDecl(UsingDirectiveDecl *ud);
-    void insertHeaderAtBeginning(string headerstr);
+    bool VisitUsingDirectiveDecl(UsingDirectiveDecl * ud);
+    void insertHeaderAtBeginning(string * headerString);
     void rewritePrintf();
 
  private:
@@ -48,11 +48,11 @@ class PrintfToCoutVisitor : public RecursiveASTVisitor<PrintfToCoutVisitor> {
     SourceManager & sm;
     LangOptions opt;
     bool determineIfSimplePrintfCommand(const CallExpr * e);
-    bool rewriteSimplePrintfCommand(const CallExpr *e);
+    bool rewriteSimplePrintfCommand(const CallExpr * e);
 
     vector<string> * getPrecisionPrefix(const vector<string> * specifiers);
-    string parsePrecision(const vector<string> * floatmatches);
-    StringRef getAsText(const Expr * e);
+    string * parsePrecision(const vector<string> * matches);
+    StringRef * getAsText(SourceRange range);
     vector<const CallExpr *> printfExpressions;
     vector<const UsingDirectiveDecl *> usedNamespaces;
 

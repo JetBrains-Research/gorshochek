@@ -1,7 +1,7 @@
 #include "../../../include/transformations/input_output/PrintfToCoutTransformation.h"
 #include "../../../include/transformations/input_output/Utils.h"
 
-using clang::IfStmt, clang::CallExpr;
+using clang::Stmt, clang::CallExpr;
 using clang::Lexer, clang::CharSourceRange, clang::SourceLocation;
 using llvm::isa, llvm::cast, llvm::errs;
 using std::stoi, std::vector, std::string, std::regex_search,
@@ -13,14 +13,24 @@ PrintfToCoutVisitor::PrintfToCoutVisitor(Rewriter * rewriter) :
         rewriter(rewriter), sm(rewriter->getSourceMgr()), opt(rewriter->getLangOpts()) {}
 
 bool PrintfToCoutVisitor::VisitCallExpr(CallExpr *e) {
-    auto srcloc = e->getBeginLoc();
+    // Removing all sync_with_stdio expressions
+    auto const exprText = getAsText(SourceRange(e->getBeginLoc(), e->getEndLoc()));
+    if (exprText->find("sync_with_stdio") != string::npos) {
+        SourceRange rangeToDelete(e->getBeginLoc(),
+                                  e->getEndLoc().getLocWithOffset(2));
+        rewriter->ReplaceText(rangeToDelete, "");
+    }
+
     // Collecting printf or std::printf expressions
-    if (sm.isWrittenInMainFile(srcloc)) {
-        auto const srctext = getAsText(e);
-        if (srctext == "std::printf" || srctext == "printf") {
+    SourceLocation LocStart = e->getBeginLoc();
+    SourceLocation LocEnd = Lexer::getLocForEndOfToken(LocStart, 0, sm, opt);
+    auto const exprToken = getAsText(SourceRange(LocStart, LocEnd));
+    if (sm.isWrittenInMainFile(e->getBeginLoc())) {
+        if (*exprToken == "std::printf" || *exprToken == "printf") {
             printfExpressions.push_back(e);
         }
     }
+
     return true;
 }
 
@@ -34,7 +44,10 @@ bool PrintfToCoutVisitor::VisitUsingDirectiveDecl(UsingDirectiveDecl *ud) {
 }
 
 bool PrintfToCoutVisitor::determineIfSimplePrintfCommand(const CallExpr * e) {
-    string formatstring = getAsText(e->getArg(0)).str();
+    SourceLocation ArgLocStart = e->getArg(0)->getBeginLoc();
+    SourceLocation ArgLocEnd = Lexer::getLocForEndOfToken(ArgLocStart, 0, sm, opt);
+    SourceRange range(ArgLocStart, ArgLocEnd);
+    string formatstring = getAsText(range)->str();
 
     // We rewrite simple printf commands directly.
     // If the number of args matches with the number from the regex,
@@ -48,27 +61,25 @@ bool PrintfToCoutVisitor::determineIfSimplePrintfCommand(const CallExpr * e) {
     return (match_count == (e->getNumArgs() - 1));
 }
 
-void PrintfToCoutVisitor::insertHeaderAtBeginning(string headerstr) {
-    headerstr = "#include <" + headerstr + ">\n";
-    rewriter->InsertTextBefore(sm.getLocForStartOfFile(sm.getMainFileID()), headerstr);
+void PrintfToCoutVisitor::insertHeaderAtBeginning(string * headerString) {
+    auto headerInclude = "#include <" + *headerString + ">\n";
+    rewriter->InsertTextBefore(sm.getLocForStartOfFile(sm.getMainFileID()), headerInclude);
 }
 
-StringRef PrintfToCoutVisitor::getAsText(const Expr * e) {
-    SourceLocation LocStart = e->getBeginLoc();
-    SourceLocation LocEnd = Lexer::getLocForEndOfToken(LocStart, 0, sm, opt);
-    SourceRange range(LocStart, LocEnd);
-    return Lexer::getSourceText(CharSourceRange::getCharRange(range), sm, opt);
+StringRef * PrintfToCoutVisitor::getAsText(SourceRange range) {
+    return new StringRef(Lexer::getSourceText(CharSourceRange::getCharRange(range), sm, opt));
 }
 
-string PrintfToCoutVisitor::parsePrecision(const vector<string> * matches) {
+string * PrintfToCoutVisitor::parsePrecision(const vector<string> * matches) {
     if (matches->size() != 1) {
         errs() << "Format string has more then one match for \"%.Xf\"" << "\n";
         throw MatcherException();
     }
     auto match = matches->at(0);
     auto format_string = "%" + floatSplitRegex;
-    vector<string> splits = split(&match, &format_string);
-    return splits[1];
+    auto splits = new vector<string>;
+    split(&match, &format_string, splits);
+    return &splits->at(1);
 }
 
 vector<string> * PrintfToCoutVisitor::getPrecisionPrefix(const vector<string> * specifiers) {
@@ -78,12 +89,13 @@ vector<string> * PrintfToCoutVisitor::getPrecisionPrefix(const vector<string> * 
         string prefix;
 
         // Check if we have something like "%.10f"
-        auto matches = getMatches(&specifier, &floatPrecisionRegex);
+        auto matches = new vector<string>;
+        getMatches(&specifier, &floatPrecisionRegex, matches);
         if (specifier == "%e" || specifier == "%E") {
             prefix += _scientific + " << " +
                       _setprecision + "(" + default_precision + ")" + " << ";
-        } else if (specifier == "%f" || !matches.empty()) {
-            string precision = !matches.empty() ? parsePrecision(&matches) : default_precision;
+        } else if (specifier == "%f" || !matches->empty()) {
+            string precision = !matches->empty() ? *parsePrecision(matches) : default_precision;
             prefix += _fixed + " << " +
                       _setprecision + "(" + precision + ")" + " << ";
         }
@@ -96,30 +108,36 @@ vector<string> * PrintfToCoutVisitor::getPrecisionPrefix(const vector<string> * 
 bool PrintfToCoutVisitor::rewriteSimplePrintfCommand(const CallExpr *e) {
     // A. Definitions
     // Get the first printf argument = the format string with all the placeholders..
-    string format = getAsText(e->getArg(0)).str();
+    SourceLocation ArgLocStart = e->getArg(0)->getBeginLoc();
+    SourceLocation ArgLocEnd = Lexer::getLocForEndOfToken(ArgLocStart, 0, sm, opt);
+    SourceRange range(ArgLocStart, ArgLocEnd);
+    string format = getAsText(range)->str();
 
     // B. Get all the substrings between the placeholders
-    vector<string> splits = split(&format, &regexPlaceholders);
+    auto splits = new vector<string>;
+    split(&format, &regexPlaceholders, splits);
 
     // Removing quotes at the for first and last elem in splits
-    if (splits.front().front() == '\"') {
-        splits.front().erase(splits.front().begin());
-    if (splits.back().back() == '\"')
-        splits.back().pop_back();
+    if (splits->front().front() == '\"') {
+        splits->front().erase(splits->front().begin());
+    }
+    if (splits->back().back() == '\"') {
+        splits->back().pop_back();
     }
 
-    if (splits.size() != e->getNumArgs()) {
+    if (splits->size() != e->getNumArgs()) {
         errs() << "The number of placeholders is not equal the number of arguments" << "\n";
         return false;
     }
 
     // C. get the placeholders
-    vector<string> plholders = getMatches(&format, &regexPlaceholders);
+    auto placeholders = new vector<string>;
+    getMatches(&format, &regexPlaceholders, placeholders);
 
     // D. Now get the correct precision for each substring depending on the respective placeholder
-    vector<string> * prefixforeachplholder;
+    vector<string> * prefixForEachPlaceholder;
     try {
-        prefixforeachplholder = getPrecisionPrefix(&plholders);
+        prefixForEachPlaceholder = getPrecisionPrefix(placeholders);
     } catch(MatcherException& ex) {
         errs() << "Precision-Prefix-Error during printf->cout rewrite" << "\n";
         return false;
@@ -133,15 +151,18 @@ bool PrintfToCoutVisitor::rewriteSimplePrintfCommand(const CallExpr *e) {
     // Now build the rest
     for (unsigned i = 1; i < e->getNumArgs(); i++) {
         sstream << " << ";
-        if (!splits[i - 1].empty()) {
-            sstream << "\"" + splits[i - 1] + "\"" << " << ";
+        if (!splits->at(i - 1).empty()) {
+            sstream << "\"" + splits->at(i - 1) + "\"" << " << ";
         }
-        sstream << prefixforeachplholder->at(i - 1)
-                << getAsText(e->getArg(i)).str();
+        SourceLocation ArgLocStart = e->getArg(i)->getBeginLoc();
+        SourceLocation ArgLocEnd = Lexer::getLocForEndOfToken(ArgLocStart, 0, sm, opt);
+        SourceRange range(ArgLocStart, ArgLocEnd);
+        sstream << prefixForEachPlaceholder->at(i - 1)
+                << getAsText(range)->str();
     }
-    if (!splits[e->getNumArgs() - 1].empty()) {
+    if (!splits->at(e->getNumArgs() - 1).empty()) {
         sstream << " << ";
-        sstream << "\"" + splits[e->getNumArgs() - 1] + "\"";
+        sstream << "\"" + splits->at(e->getNumArgs() - 1) + "\"";
     }
     string coutCommand = sstream.str();
 
@@ -171,8 +192,10 @@ PrintfToCoutASTConsumer::PrintfToCoutASTConsumer(Rewriter * rewriter) :
 void PrintfToCoutASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
     visitor.rewritePrintf();
-    visitor.insertHeaderAtBeginning("iostream");
-    visitor.insertHeaderAtBeginning("iomanip");
+    vector<string> headers = {"iostream", "iomanip"};
+    for (auto header : headers) {
+        visitor.insertHeaderAtBeginning(&header);
+    }
 }
 
 // ------------ PrintfToCoutTransformation ------------

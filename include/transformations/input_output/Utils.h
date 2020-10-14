@@ -8,7 +8,7 @@
 using std::vector, std::string;
 
 
-vector<string> split(const string * input, const string * reg);
-vector<string> getMatches(const string * input, const string * re);
+void split(const string * input, const string * reg, vector<string> * splits);
+void getMatches(const string * input, const string * re, vector<string> * matches);
 
 #endif  // INCLUDE_TRANSFORMATIONS_INPUT_OUTPUT_UTILS_H_
