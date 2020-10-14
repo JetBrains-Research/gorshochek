@@ -22,10 +22,10 @@ bool PrintfToCoutVisitor::VisitCallExpr(CallExpr *e) {
     }
 
     // Collecting printf or std::printf expressions
-    SourceLocation LocStart = e->getBeginLoc();
-    SourceLocation LocEnd = Lexer::getLocForEndOfToken(LocStart, 0, sm, opt);
-    auto const exprToken = getAsText(SourceRange(LocStart, LocEnd));
     if (sm.isWrittenInMainFile(e->getBeginLoc())) {
+        SourceLocation LocStart = e->getBeginLoc();
+        SourceLocation LocEnd = Lexer::getLocForEndOfToken(LocStart, 0, sm, opt);
+        auto const exprToken = getAsText(SourceRange(LocStart, LocEnd));
         if (*exprToken == "std::printf" || *exprToken == "printf") {
             printfExpressions.push_back(e);
         }
