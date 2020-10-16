@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "clang/Frontend/FrontendActions.h"
 #include "clang/Tooling/Tooling.h"
