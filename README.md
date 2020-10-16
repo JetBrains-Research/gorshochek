@@ -13,6 +13,21 @@ cd gorshochek
 ./scripts/install_clang.sh
 ```
 3. Build the project from source
+
+* Install CMake
+We tested our tool on `macOS`, on `ubuntu-16.04` and `ubuntu-18.04` using `cmake-3.15.2`. To install
+`cmake-3.15.2` run the following commands:
+```(bash)
+wget https://github.com/Kitware/CMake/releases/download/v3.15.2/cmake-3.15.2.tar.gz
+tar -zxvf cmake-3.15.2.tar.gz
+cd cmake-3.15.2
+./bootstrap
+make
+sudo make install
+# Check the version
+cmake --version
+```
+* 
 ```(bash)
 cd build
 cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
