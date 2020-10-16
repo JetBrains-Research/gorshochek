@@ -7,6 +7,7 @@ TransformationFrontendActionFactory::TransformationFrontendActionFactory(
 ) :
     transformations(transformations), output_path(output_path), gen(gen) {}
 
-FrontendAction * TransformationFrontendActionFactory::create() {
-    return new TransformationFrontendAction(transformations, output_path, gen);
+std::unique_ptr<FrontendAction> TransformationFrontendActionFactory::create() {
+    auto ptr = new TransformationFrontendAction(transformations, output_path, gen);
+    return std::unique_ptr<FrontendAction>(ptr);
 }

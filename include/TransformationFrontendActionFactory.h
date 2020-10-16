@@ -21,7 +21,7 @@ class TransformationFrontendActionFactory : public FrontendActionFactory {
             const vector<ITransformation *> *transformations,
             string const & output_path,
             mt19937 *gen);
-    FrontendAction * create() override;
+    std::unique_ptr<FrontendAction> create() override;
  private:
     const vector<ITransformation *> *transformations;
     string const & output_path;

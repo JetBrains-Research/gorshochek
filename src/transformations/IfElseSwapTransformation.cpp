@@ -90,7 +90,7 @@ IfElseSwapTransformation::IfElseSwapTransformation(const float p) :
         ITransformation(p, "if else swap") {}
 
 unique_ptr<ASTConsumer> IfElseSwapTransformation::getConsumer(Rewriter * rewriter) {
-    return llvm::make_unique<IfElseSwapASTConsumer>(rewriter);
+    return std::make_unique<IfElseSwapASTConsumer>(rewriter);
 }
 
 ITransformation * IfElseSwapTransformation::buildFromConfig(const YAML::Node & config) {

@@ -68,7 +68,7 @@ ReorderFuncDeclsTransformation::ReorderFuncDeclsTransformation(const float p, co
         test(test) {}
 
 unique_ptr<ASTConsumer> ReorderFuncDeclsTransformation::getConsumer(Rewriter *rewriter) {
-    return llvm::make_unique<ReorderFuncDeclsASTConsumer>(rewriter, gen, test);
+    return std::make_unique<ReorderFuncDeclsASTConsumer>(rewriter, gen, test);
 }
 
 ITransformation * ReorderFuncDeclsTransformation::buildFromConfig(const YAML::Node & config) {

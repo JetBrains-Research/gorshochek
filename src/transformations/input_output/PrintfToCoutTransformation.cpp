@@ -204,7 +204,7 @@ PrintfToCoutTransformation::PrintfToCoutTransformation(const float p) :
         ITransformation(p, "printf to cout") {}
 
 unique_ptr<ASTConsumer> PrintfToCoutTransformation::getConsumer(Rewriter * rewriter) {
-    return llvm::make_unique<PrintfToCoutASTConsumer>(rewriter);
+    return std::make_unique<PrintfToCoutASTConsumer>(rewriter);
 }
 
 ITransformation * PrintfToCoutTransformation::buildFromConfig(const YAML::Node & config) {

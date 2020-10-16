@@ -27,11 +27,10 @@ jobs:
       - name: Build
         run: |
           cd build
-          cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
-                -DClang_DIR=build/clang+llvm-9/lib/cmake/clang \
-                -DCXXFLAGS="-isystem ${GITHUB_WORKSPACE}/build/clang+llvm-9/lib/clang/9.0.1/include" \
-                -DCMAKE_C_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-9/bin/clang" \
-                -DCMAKE_CXX_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-9/bin/clang++" ..
+          cmake -DLLVM_DIR=build/clang+llvm-10/lib/cmake/llvm \
+                -DClang_DIR=build/clang+llvm-10/lib/cmake/clang \
+                -DCMAKE_C_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-10/bin/clang" \
+                -DCMAKE_CXX_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-10/bin/clang++" ..
           cmake --build .
       - name: Test
         run: |

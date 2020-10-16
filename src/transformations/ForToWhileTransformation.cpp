@@ -130,7 +130,7 @@ ForToWhileTransformation::ForToWhileTransformation(const float p) :
         ITransformation(p, "for to while") {}
 
 unique_ptr<ASTConsumer> ForToWhileTransformation::getConsumer(Rewriter * rewriter) {
-    return llvm::make_unique<ForToWhileASTConsumer>(rewriter);
+    return std::make_unique<ForToWhileASTConsumer>(rewriter);
 }
 
 ITransformation * ForToWhileTransformation::buildFromConfig(const YAML::Node & config) {

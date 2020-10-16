@@ -116,7 +116,7 @@ discrete_distribution<int> RenameEntitiesTransformation::createUniformIntGenerat
 }
 
 unique_ptr<ASTConsumer> RenameEntitiesTransformation::getConsumer(Rewriter * rewriter) {
-    return llvm::make_unique<RenameEntitiesASTConsumer>(rewriter, rename_func, rename_var,
+    return std::make_unique<RenameEntitiesASTConsumer>(rewriter, rename_func, rename_var,
                                                         token_len_generator, tokens_num_generator,
                                                         char_generator, gen, test);
 }

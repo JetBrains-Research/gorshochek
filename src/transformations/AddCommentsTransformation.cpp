@@ -69,7 +69,7 @@ AddCommentsTransformation::AddCommentsTransformation(const float p, const vector
                                                      statements(statements) {}
 
 unique_ptr<ASTConsumer> AddCommentsTransformation::getConsumer(Rewriter * rewriter) {
-    return llvm::make_unique<AddCommentsASTConsumer>(rewriter, statements);
+    return std::make_unique<AddCommentsASTConsumer>(rewriter, statements);
 }
 
 ITransformation * AddCommentsTransformation::buildFromConfig(const YAML::Node & config) {

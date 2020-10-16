@@ -54,7 +54,7 @@ WhileToForTransformation::WhileToForTransformation(const float p) :
         ITransformation(p, "while to for") {}
 
 unique_ptr<ASTConsumer> WhileToForTransformation::getConsumer(Rewriter * rewriter) {
-    return llvm::make_unique<WhileToForASTConsumer>(rewriter);
+    return std::make_unique<WhileToForASTConsumer>(rewriter);
 }
 
 ITransformation * WhileToForTransformation::buildFromConfig(const YAML::Node & config) {

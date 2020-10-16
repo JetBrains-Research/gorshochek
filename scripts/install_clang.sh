@@ -26,13 +26,13 @@ then
   mkdir "$BUILD_DIR"
 fi
 
-DISTR_ARCHIVE="clang+llvm-9.0.1-x86_64-${DISTR_VERSION}.tar.xz"
-DISTR_LINK="https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/${DISTR_ARCHIVE}"
+DISTR_ARCHIVE="clang+llvm-10.0.0-x86_64-${DISTR_VERSION}.tar.xz"
+DISTR_LINK="https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/${DISTR_ARCHIVE}"
 if [ ! -f "$BUILD_DIR"/"$DISTR_ARCHIVE" ]
 then
   wget "$DISTR_LINK" -P "$BUILD_DIR"
 fi
 
 tar -xvf "$BUILD_DIR"/"$DISTR_ARCHIVE" -C "$BUILD_DIR"
-mv "$BUILD_DIR"/"clang+llvm-9.0.1-x86_64-${DISTR_VERSION}" "$BUILD_DIR"/"clang+llvm-9"
+mv "$BUILD_DIR"/"clang+llvm-10.0.0-x86_64-${DISTR_VERSION}" "$BUILD_DIR"/"clang+llvm-10"
 

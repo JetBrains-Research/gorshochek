@@ -7,12 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -v \
+                                            -stdlib=libc++ \
                                             -fparse-all-comments \
                                             -fno-strict-aliasing \
                                             -fno-rtti \
                                             -mmacosx-version-min=10.15")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -v \
+                                            -stdlib=libc++ \
                                             -fparse-all-comments \
                                             -fno-strict-aliasing \
                                             -fno-rtti")
@@ -38,7 +40,7 @@ set(LIBRARY_LIST
         clangToolingCore
 )
 
-find_package(LLVM 9.0.0 REQUIRED CONFIG)
+find_package(LLVM 10.0.0 REQUIRED CONFIG)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 
@@ -102,6 +104,8 @@ include_directories(BEFORE SYSTEM ${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR}/
 target_link_libraries(${PROJECT_NAME} yaml-cpp)
 
 target_link_libraries(${PROJECT_NAME} ${LIBRARY_LIST})
+
+target_link_libraries(${PROJECT_NAME} clangTooling)
 
 target_link_libraries(${PROJECT_NAME}
         LLVMTransformUtils
