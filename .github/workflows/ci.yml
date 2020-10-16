@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.8
@@ -29,7 +29,7 @@ jobs:
           cd build
           cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
                 -DClang_DIR=build/clang+llvm-9/lib/cmake/clang \
-                -DCXXFLAGS="-isystem ${GITHUB_WORKSPACE}/build/clang+llvm-9/lib/clang/9.0.0/include" \
+                -DCXXFLAGS="-isystem ${GITHUB_WORKSPACE}/build/clang+llvm-9/lib/clang/9.0.1/include" \
                 -DCMAKE_C_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-9/bin/clang" \
                 -DCMAKE_CXX_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-9/bin/clang++" ..
           cmake --build .
