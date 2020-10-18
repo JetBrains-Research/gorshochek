@@ -17,7 +17,7 @@ class Runner {
  public:
     explicit Runner(const vector<ITransformation * > * transformations,
                     size_t n_transformations);
-    void run(int num_files, char ** files, const string& output_path);
+    void run(int num_files, char * arg0, char ** files, const string& output_path);
  private:
     /**
      * Method for creating folders for transformations and their descriptions

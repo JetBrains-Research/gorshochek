@@ -17,6 +17,6 @@ int main(int argc, const char **argv) {
     string output_path = getOutputPathFromYaml(config_path);
     // Getting number of transformations
     size_t n_transformations = getNumTransformationsFromYaml(config_path);
-    Runner(transformations, n_transformations).run(argc - 2, const_cast<char **>(argv + 2), output_path);
+    Runner(transformations, n_transformations).run(argc - 2, const_cast<char *>(*argv), const_cast<char **>(argv + 2), output_path);
     return 0;
 }
