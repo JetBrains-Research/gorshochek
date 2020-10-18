@@ -7,14 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -v \
-                                            -stdlib=libc++ \
                                             -fparse-all-comments \
                                             -fno-strict-aliasing \
                                             -fno-rtti \
                                             -mmacosx-version-min=10.15")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -v \
-                                            -stdlib=libc++ \
                                             -fparse-all-comments \
                                             -fno-strict-aliasing \
                                             -fno-rtti")
