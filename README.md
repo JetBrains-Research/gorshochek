@@ -27,7 +27,7 @@ sudo make install
 # Check the version
 cmake --version
 ```
-* 
+* Build tool
 ```(bash)
 cd build
 cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
@@ -37,6 +37,12 @@ cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
 # It is essential to specify the full path to gorshochek
 cmake --build .
 ```
+> If you encounter an error on `ubuntu`, try running the following commands:
+> ```(bash)
+> sudo apt-get install libtinfo-dev
+> sudo apt-get install lib32z1-dev
+> sudo apt-get install build-essential
+> ```
 4. Run the tool with the needed configuration on C++ files
 ```(bash)
 # You can specify as many files as you need
