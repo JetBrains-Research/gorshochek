@@ -40,7 +40,7 @@ void Runner::run(int num_files, char ** files, const string& output_path) {
     createOutputFolders(num_files, files, output_path);
     int argc = num_files + 3;
     const char * argv[num_files + 3];
-    argv[0] = "./gorshocek";
+    argv[0] = "./gorshochek";
     argv[1] = "-p";
     argv[2] = "build";
     copy(files, files + num_files, argv + 3);
