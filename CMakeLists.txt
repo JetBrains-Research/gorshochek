@@ -7,17 +7,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -v \
-                                            -fdiagnostics-color=always \
                                             -fparse-all-comments \
                                             -fno-strict-aliasing \
                                             -fno-rtti \
                                             -mmacosx-version-min=10.15")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall \
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -v \
                                             -fparse-all-comments \
                                             -fno-strict-aliasing \
                                             -fno-rtti")
 endif()
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(LIBRARY_LIST
         clangASTMatchers
@@ -56,14 +57,14 @@ message("CLANG STATUS:
   Includes (llvm)     ${LLVM_INCLUDE_DIRS}"
 )
 
-include_directories(SYSTEM "${LLVM_INCLUDE_DIRS};${CLANG_INCLUDE_DIRS}")
-#set(LLVM_TOOLS_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/clang+llvm-9/bin)
-#include_directories(${CMAKE_CURRENT_BINARY_DIR}/clang+llvm-9/lib/clang/9.0.0/include)
+message("CMAKE BIN: ${CMAKE_BINARY_DIR}")
+include_directories("${LLVM_INCLUDE_DIRS};${CLANG_INCLUDE_DIRS}")
+
 if(LLVM_BUILD_MAIN_SRC_DIR)
     include_directories(${LLVM_BUILD_MAIN_SRC_DIR}/tools/clang/include)
     include_directories(${LLVM_BUILD_BINARY_DIR}/tools/clang/include)
 endif()
-link_directories(${LLVM_LIBRARY_DIRS})
+
 add_definitions(${LLVM_DEFINITIONS})
 
 add_definitions(

@@ -21,7 +21,7 @@ jobs:
       - name: Install clang
         run: |
           sh scripts/install_clang.sh
-          sudo apt-get install clang-tools-9
+           ln -s "${GITHUB_WORKSPACE}/build/clang+llvm-9/lib" "${GITHUB_WORKSPACE}/lib"
       - name: Lint
         run: |
           cpplint --filter=-legal --recursive --exclude=build --exclude=tests/resources --linelength=120 .

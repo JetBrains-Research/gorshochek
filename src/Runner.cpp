@@ -42,7 +42,7 @@ void Runner::run(int num_files, char * arg0, char ** files, const string& output
     const char * argv[num_files + 3];
     argv[0] = arg0;
     argv[1] = "-p";
-    argv[2] = "build";
+    argv[2] = "build/clang+llvm-9";
     copy(files, files + num_files, argv + 3);
     auto OptionsParser = CommonOptionsParser(argc, argv,
                                              TransformationCategory);
