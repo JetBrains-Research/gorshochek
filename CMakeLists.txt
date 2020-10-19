@@ -6,13 +6,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -v \
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall \
                                             -fparse-all-comments \
                                             -fno-strict-aliasing \
                                             -fno-rtti \
                                             -mmacosx-version-min=10.15")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -v \
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall \
                                             -fparse-all-comments \
                                             -fno-strict-aliasing \
                                             -fno-rtti")
@@ -64,7 +64,6 @@ if(LLVM_BUILD_MAIN_SRC_DIR)
     include_directories(${LLVM_BUILD_MAIN_SRC_DIR}/tools/clang/include)
     include_directories(${LLVM_BUILD_BINARY_DIR}/tools/clang/include)
 endif()
-
 add_definitions(${LLVM_DEFINITIONS})
 
 add_definitions(
