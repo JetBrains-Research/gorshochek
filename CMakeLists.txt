@@ -18,6 +18,8 @@ else()
                                             -fno-rtti")
 endif()
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 set(LIBRARY_LIST
         clangASTMatchers
         clangDynamicASTMatchers
@@ -41,17 +43,27 @@ set(LIBRARY_LIST
 find_package(LLVM 9.0.0 REQUIRED CONFIG)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+message(STATUS "Current build dir : ${CMAKE_CURRENT_BINARY_DIR}")
 
+
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/clang+llvm-9/lib/cmake/llvm/")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/clang+llvm-9/lib/cmake/clang/")
 # The clang package doesn't appear to provide a version
 find_package(Clang REQUIRED CONFIG)
 message(STATUS "Using ClangConfig.cmake in: ${CLANG_CMAKE_DIR}")
 
-include_directories(${LLVM_INCLUDE_DIRS} ${CLANG_INCLUDE_DIRS})
+message("CLANG STATUS:
+  Includes (clang)    ${CLANG_INCLUDE_DIRS}
+  Includes (llvm)     ${LLVM_INCLUDE_DIRS}"
+)
+
+message("CMAKE BIN: ${CMAKE_BINARY_DIR}")
+include_directories("${LLVM_INCLUDE_DIRS};${CLANG_INCLUDE_DIRS}")
+
 if(LLVM_BUILD_MAIN_SRC_DIR)
     include_directories(${LLVM_BUILD_MAIN_SRC_DIR}/tools/clang/include)
     include_directories(${LLVM_BUILD_BINARY_DIR}/tools/clang/include)
 endif()
-link_directories(${LLVM_LIBRARY_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
 add_definitions(
@@ -72,6 +84,8 @@ add_executable(${PROJECT_NAME}
         src/transformations/RenameEntitiesTransformation.cpp
         src/transformations/ReorderFuncDeclsTransformation.cpp
         src/transformations/IfElseSwapTransformation.cpp
+        src/transformations/input_output/PrintfToCoutTransformation.cpp
+        src/transformations/input_output/Utils.cpp
         src/transformations/ForToWhileTransformation.cpp
         src/transformations/WhileToForTransformation.cpp
         )

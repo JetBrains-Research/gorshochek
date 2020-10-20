@@ -35,4 +35,5 @@ fi
 
 tar -xvf "$BUILD_DIR"/"$DISTR_ARCHIVE" -C "$BUILD_DIR"
 mv "$BUILD_DIR"/"clang+llvm-9.0.0-x86_64-${DISTR_VERSION}" "$BUILD_DIR"/"clang+llvm-9"
+ln -s "$BUILD_DIR"/"clang+llvm-9/lib" "lib"
 

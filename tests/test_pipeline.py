@@ -11,7 +11,7 @@ logs_file = path.join("tests", "clang_logs.txt")
 expected_path = path.join("tests", "resources", "expected")
 actual_path = path.join("tests", "resources", "actual")
 input_path = path.join("tests", "resources", "input")
-clang_path = path.join("build", "clang+llvm-9", "bin", "clang++")
+clang_path = path.join("c++")
 tricky_path = path.join("scripts", "..", "tests", "..", "tests", "resources", "input")
 build = path.join("build", "gorshochek")
 
@@ -97,6 +97,12 @@ def test_reorder_function_decls() -> None:
 def test_if_else_swap() -> None:
     config_path = path.join(configs_dir_path, "test_if_else_swap_config.yaml")
     files = ["test_if_else_swap.cpp"]
+    _test(files, config_path)
+
+
+def test_printf_to_cout() -> None:
+    config_path = path.join(configs_dir_path, "test_printf_to_cout_config.yaml")
+    files = ["test_printf_to_cout.cpp"]
     _test(files, config_path)
 
 

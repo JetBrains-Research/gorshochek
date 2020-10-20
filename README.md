@@ -67,7 +67,8 @@ More examples can be found in `tests` folder
 - [x] Replace `for` with `while` and vice versa 
 - [ ] Replace `for` loop iteration using indexing with `for` loop with `auto`
 - [ ] Change types from `int` to `long int` and so on
-- [ ] Replace `printf` with `std::cout`
+- [x] Replace `printf` with `std::cout`
+- [ ] Replace `std::cout` with `printf`
 - [x] Swap `if` and `else` blocks and change the corresponding condition inside `if`
 - [ ] Add wrappers for functions
 
