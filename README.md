@@ -39,9 +39,7 @@ cmake --build .
 ```
 > If you encounter an error on `ubuntu`, try running the following commands:
 > ```(bash)
-> sudo apt-get install libtinfo-dev
-> sudo apt-get install lib32z1-dev
-> sudo apt-get install build-essential
+> sudo apt install libtinfo-dev lib32z1-dev build-essential
 > ```
 4. Run the tool with the needed configuration on C++ files
 ```(bash)
