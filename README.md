@@ -41,6 +41,11 @@ cmake --build .
 > ```(bash)
 > sudo apt install libtinfo-dev lib32z1-dev build-essential
 > ```
+
+> If you encounter an error on `macOS`, try installing `gcc`:
+> ```(bash)
+> brew install gcc
+> ```
 4. Run the tool with the needed configuration on C++ files
 ```(bash)
 # You can specify as many files as you need
