@@ -45,7 +45,7 @@ message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 message(STATUS "Current build dir : ${CMAKE_CURRENT_BINARY_DIR}")
 
-
+include_directories(/usr/local/include/)
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/clang+llvm-9/lib/cmake/llvm/")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/clang+llvm-9/lib/cmake/clang/")
 # The clang package doesn't appear to provide a version
