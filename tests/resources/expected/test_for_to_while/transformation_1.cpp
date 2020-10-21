@@ -1,4 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 void a(int *x) {
+    cout << "hello";
     int i = 0;
     while (i < 4) {
         int d = 4;
