@@ -32,13 +32,13 @@ class IfElseSwapVisitor : public RecursiveASTVisitor<IfElseSwapVisitor> {
     /**
      * This function is called a certain clang::Stmt is visited
      */
-    bool VisitStmt(Stmt *s);
+    bool VisitIfStmt(IfStmt * ifStmt);
  private:
     Rewriter * rewriter;
     SourceManager & sm;
     LangOptions opt;
     vector<IfStmt *> visitedIfStmt;
-    bool isNotVisited(IfStmt * s);
+    bool isNotVisited(IfStmt * ifStmt);
     void swapBodies(IfStmt * ifStmt);
     void rewriteCondition(IfStmt * ifStmt);
     void processIfStmt(IfStmt * ifStmt);

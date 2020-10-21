@@ -21,7 +21,7 @@
 #include "../ITransformation.h"
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
-clang::DeclGroupRef, clang::Stmt;
+clang::DeclGroupRef, clang::Stmt, clang::SourceManager;
 using std::unique_ptr, std::vector, std::string;
 
 /// RecursiveASTVisitor is a set of actions that are done
@@ -35,6 +35,7 @@ class AddCommentsVisitor : public RecursiveASTVisitor<AddCommentsVisitor> {
     bool VisitStmt(Stmt *s);
  private:
     Rewriter * rewriter;
+    SourceManager & sm;
     const vector<string> * statements;
     /**
      * Check if vector statements contains a specific statement

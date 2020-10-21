@@ -11,17 +11,19 @@ ForToWhileVisitor::ForToWhileVisitor(Rewriter * rewriter) :
         rewriter(rewriter), sm(rewriter->getSourceMgr()), opt(rewriter->getLangOpts()) {}
 
 bool ForToWhileVisitor::VisitForStmt(ForStmt * forStmt) {
-    const Stmt * body = forStmt->getBody();
+    auto loc = forStmt->getBeginLoc();
+    if (sm.isWrittenInMainFile(loc)) {
+        const Stmt *body = forStmt->getBody();
 
-    if (!body) {
-        return true;
+        if (!body) {
+            return true;
+        }
+
+        processInit(forStmt);
+        processCond(forStmt);
+        processInc(forStmt);
+        processBody(forStmt);
     }
-
-    processInit(forStmt);
-    processCond(forStmt);
-    processInc(forStmt);
-    processBody(forStmt);
-
     return true;
 }
 

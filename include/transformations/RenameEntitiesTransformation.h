@@ -23,7 +23,7 @@
 #include "../ITransformation.h"
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
-clang::ASTContext, clang::CallExpr, clang::Decl, clang::Stmt;
+clang::ASTContext, clang::CallExpr, clang::Decl, clang::Stmt, clang::SourceManager;
 using std::unique_ptr, std::vector, std::map, std::string, std::mt19937,
 std::discrete_distribution;
 
@@ -51,6 +51,7 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
 
  private:
     Rewriter * rewriter;
+    SourceManager & sm;
 
     const bool rename_func = false;
     const bool rename_var = false;
