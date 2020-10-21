@@ -16,8 +16,9 @@ bool PrintfToCoutVisitor::VisitCallExpr(CallExpr *e) {
     // Removing all sync_with_stdio expressions
     auto const exprText = getAsText(SourceRange(e->getBeginLoc(), e->getEndLoc()));
     if (exprText->find("sync_with_stdio") != string::npos) {
-        SourceRange rangeToDelete(e->getBeginLoc(),
-                                  e->getEndLoc().getLocWithOffset(2));
+        SourceLocation LocStart = e->getBeginLoc();
+        SourceLocation LocEnd = Lexer::getLocForEndOfToken(e->getEndLoc(), 0, sm, opt);
+        SourceRange rangeToDelete(LocStart, LocEnd);
         rewriter->ReplaceText(rangeToDelete, "");
     }
 
