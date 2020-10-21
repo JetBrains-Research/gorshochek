@@ -53,13 +53,8 @@ bool AddCommentsVisitor::containStatement(string const &stmt) {
 AddCommentsASTConsumer::AddCommentsASTConsumer(Rewriter * rewriter, const vector<string> * statements) :
                                                visitor(rewriter, statements) {}
 
-bool AddCommentsASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
-    for (clang::Decl * b : DR) {
-        // Traverse each declaration in DeclGroup using our AST visitor.
-        visitor.TraverseDecl(b);
-        b->dump();
-    }
-    return true;
+void AddCommentsASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
+    visitor.TraverseDecl(ctx.getTranslationUnitDecl());
 }
 
 // ------------ AddCommentsTransformation ------------
