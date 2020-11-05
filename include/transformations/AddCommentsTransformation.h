@@ -21,7 +21,7 @@
 #include "../ITransformation.h"
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
-clang::DeclGroupRef, clang::Stmt, clang::SourceManager;
+clang::DeclGroupRef, clang::Stmt, clang::SourceManager, clang::ASTContext;
 using std::unique_ptr, std::vector, std::string;
 
 /// RecursiveASTVisitor is a set of actions that are done
@@ -55,14 +55,7 @@ class AddCommentsVisitor : public RecursiveASTVisitor<AddCommentsVisitor> {
 class AddCommentsASTConsumer : public ASTConsumer {
  public:
     explicit AddCommentsASTConsumer(Rewriter * rewriter, const vector<string> * statements);
-    /**
-     * HandleTopLevelDecl handles all the declaration (or definition),
-     * e.g. a variable, typedef, function, struct, etc
-     * @param DR     Iterating through DeclGroupRef we are getting all the declarations
-     *               belongs to current DeclGroup
-     * @return       true to continue parsing, or false to abort parsing.
-     */
-    bool HandleTopLevelDecl(DeclGroupRef DR);
+    void HandleTranslationUnit(ASTContext &ctx); // NOLINT
  private:
     AddCommentsVisitor visitor;
 };

@@ -73,13 +73,8 @@ bool IfElseSwapVisitor::isNotVisited(IfStmt * ifStmt) {
 IfElseSwapASTConsumer::IfElseSwapASTConsumer(Rewriter * rewriter) :
         visitor(rewriter) {}
 
-bool IfElseSwapASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
-    for (clang::Decl * b : DR) {
-        // Traverse each declaration in DeclGroup using our AST visitor.
-        visitor.TraverseDecl(b);
-        b->dump();
-    }
-    return true;
+void IfElseSwapASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
+    visitor.TraverseDecl(ctx.getTranslationUnitDecl());
 }
 
 // ------------ IfElseSwapTransformation ------------

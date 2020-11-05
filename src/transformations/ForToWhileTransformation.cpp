@@ -117,13 +117,8 @@ void ForToWhileVisitor::collectContinues(const Stmt * s, vector<const ContinueSt
 ForToWhileASTConsumer::ForToWhileASTConsumer(Rewriter * rewriter) :
         visitor(rewriter) {}
 
-bool ForToWhileASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
-    for (clang::Decl * b : DR) {
-        // Traverse each declaration in DeclGroup using our AST visitor.
-        visitor.TraverseDecl(b);
-        b->dump();
-    }
-    return true;
+void ForToWhileASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
+    visitor.TraverseDecl(ctx.getTranslationUnitDecl());
 }
 
 // ------------ ForToWhileTransformation ------------

@@ -42,13 +42,8 @@ bool WhileToForVisitor::VisitWhileStmt(WhileStmt * whileStmt) {
 WhileToForASTConsumer::WhileToForASTConsumer(Rewriter * rewriter) :
         visitor(rewriter) {}
 
-bool WhileToForASTConsumer::HandleTopLevelDecl(DeclGroupRef DR) {
-    for (clang::Decl * b : DR) {
-        // Traverse each declaration in DeclGroup using our AST visitor.
-        visitor.TraverseDecl(b);
-        b->dump();
-    }
-    return true;
+void WhileToForASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
+    visitor.TraverseDecl(ctx.getTranslationUnitDecl());
 }
 
 // ------------ WhileToForTransformation ------------
