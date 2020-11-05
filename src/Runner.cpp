@@ -24,12 +24,6 @@ Runner::Runner(const vector<ITransformation *> *transformations,
         n_transformations(n_transformations),
         gen(new mt19937(SEED)) {}
 
-char * Runner::convert(const std::string & s) {
-    char *pc = new char[s.size()+1];
-    std::strcpy(pc, s.c_str());
-    return pc;
-}
-
 map<int, char **> Runner::createOutputFolders(int num_files, char * input_files[], const string& output_path) {
     fs::path output_dir(output_path);
     if (!fs::exists(output_dir)) {
@@ -54,7 +48,7 @@ map<int, char **> Runner::createOutputFolders(int num_files, char * input_files[
             fs::copy(src_path, dst_path, copy_options);
             if (i != 0) {
                 rewritable_cpaths[i][file_index] = new char[dst_path.string().size() + 1];
-                strcpy(rewritable_cpaths[i][file_index], dst_path.string().c_str());
+                snprintf(rewritable_cpaths[i][file_index], dst_path.string().c_str());
                 fs::path description_path = transformations_path / "description.txt";
                 ofstream description(description_path, ios_base::app);
                 description << "transformation_" << i << endl;

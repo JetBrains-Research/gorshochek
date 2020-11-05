@@ -26,7 +26,6 @@ class Runner {
      * @param output_path   Path to the output dir where transformed code will be stored
      */
     map<int, char **> createOutputFolders(int num_files, char * input_files[], const string& output_path);
-    static char * convert(const string & s);
     const vector<ITransformation * > * transformations;
     size_t n_transformations;
     mt19937 *gen;

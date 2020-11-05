@@ -31,7 +31,7 @@ namespace fs = std::filesystem;
 /// For each source file provided to the tool, a new FrontendAction is created.
 class TransformationFrontendAction : public ASTFrontendAction {
  public:
-    TransformationFrontendAction(ITransformation * transformation);
+    explicit TransformationFrontendAction(ITransformation * transformation);
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                               StringRef file) override;
 

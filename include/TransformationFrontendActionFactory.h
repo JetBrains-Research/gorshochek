@@ -17,7 +17,7 @@ using clang::tooling::FrontendActionFactory, clang::FrontendAction;
 /// doesn't accept any parameters for FrontendAction
 class TransformationFrontendActionFactory : public FrontendActionFactory {
  public:
-    TransformationFrontendActionFactory(ITransformation * transformation);
+    explicit TransformationFrontendActionFactory(ITransformation * transformation);
     FrontendAction * create() override;
  private:
     ITransformation * transformation;
