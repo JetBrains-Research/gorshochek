@@ -48,7 +48,7 @@ map<int, char **> Runner::createOutputFolders(int num_files, char * input_files[
             fs::copy(src_path, dst_path, copy_options);
             if (i != 0) {
                 rewritable_cpaths[i][file_index] = new char[dst_path.string().size() + 1];
-                snprintf(rewritable_cpaths[i][file_index], dst_path.string().c_str());
+                strcpy(rewritable_cpaths[i][file_index], dst_path.string().c_str()); // NOLINT
                 fs::path description_path = transformations_path / "description.txt";
                 ofstream description(description_path, ios_base::app);
                 description << "transformation_" << i << endl;
@@ -73,12 +73,12 @@ void Runner::run(int num_files, char ** files, const string& output_path) {
 
         auto OptionsParser = CommonOptionsParser(argc, argv,
                                                  TransformationCategory);
-        // Constructs a clang tool to run over a list of files.
-        ClangTool Tool(OptionsParser.getCompilations(),
-                       OptionsParser.getSourcePathList());
         // Run the Clang Tool, creating a new FrontendAction
         // The way to create new FrontendAction is similar to newFrontendActionFactory function
         for (auto transformation : *transformations) {
+            // Constructs a clang tool to run over a list of files.
+            ClangTool Tool(OptionsParser.getCompilations(),
+                           OptionsParser.getSourcePathList());
             Tool.run(std::unique_ptr<FrontendActionFactory>(
                     new TransformationFrontendActionFactory(transformation)).get());
         }
