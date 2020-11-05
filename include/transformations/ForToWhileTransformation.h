@@ -21,7 +21,7 @@
 #include "../ITransformation.h"
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
-clang::DeclGroupRef, clang::ForStmt, clang::SourceManager, clang::LangOptions,
+clang::ASTContext, clang::ForStmt, clang::SourceManager, clang::LangOptions,
 clang::ContinueStmt, clang::Stmt;
 using std::unique_ptr, std::vector, std::string;
 
@@ -48,14 +48,7 @@ class ForToWhileVisitor : public RecursiveASTVisitor<ForToWhileVisitor> {
 class ForToWhileASTConsumer : public ASTConsumer {
  public:
     explicit ForToWhileASTConsumer(Rewriter * rewriter);
-    /**
-     * HandleTopLevelDecl handles all the declaration (or definition),
-     * e.g. a variable, typedef, function, struct, etc
-     * @param DR     Iterating through DeclGroupRef we are getting all the declarations
-     *               belongs to current DeclGroup
-     * @return       true to continue parsing, or false to abort parsing.
-     */
-    bool HandleTopLevelDecl(DeclGroupRef DR);
+    void HandleTranslationUnit(ASTContext &ctx); // NOLINT
  private:
     ForToWhileVisitor visitor;
 };
