@@ -57,6 +57,7 @@ class AddCommentsASTConsumer : public ASTConsumer {
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT
  private:
     AddCommentsVisitor visitor;
+    Rewriter * rewriter;
 };
 
 class AddCommentsTransformation : public ITransformation {

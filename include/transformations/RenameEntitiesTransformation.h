@@ -77,6 +77,7 @@ class RenameEntitiesASTConsumer : public ASTConsumer {
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT.
  private:
     RenameEntitiesVisitor visitor;
+    Rewriter * rewriter;
 };
 
 class RenameEntitiesTransformation : public ITransformation {

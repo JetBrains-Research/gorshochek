@@ -46,6 +46,7 @@ class WhileToForASTConsumer : public ASTConsumer {
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT
  private:
     WhileToForVisitor visitor;
+    Rewriter * rewriter;
 };
 
 class WhileToForTransformation : public ITransformation {

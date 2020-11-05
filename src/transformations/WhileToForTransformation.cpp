@@ -37,10 +37,11 @@ bool WhileToForVisitor::VisitWhileStmt(WhileStmt * whileStmt) {
 // ------------ WhileToForASTConsumer ------------
 
 WhileToForASTConsumer::WhileToForASTConsumer(Rewriter * rewriter) :
-        visitor(rewriter) {}
+        visitor(rewriter), rewriter(rewriter) {}
 
 void WhileToForASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
+    rewriter->overwriteChangedFiles();
 }
 
 // ------------ WhileToForTransformation ------------

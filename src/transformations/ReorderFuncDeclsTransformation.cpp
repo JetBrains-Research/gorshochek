@@ -55,11 +55,12 @@ void ReorderFuncDeclsVisitor::rewriteFunctions() {
 }
 
 ReorderFuncDeclsASTConsumer::ReorderFuncDeclsASTConsumer(Rewriter * rewriter, mt19937 * gen, const bool test) :
-                                                         visitor(rewriter, gen, test) {}
+                                                         visitor(rewriter, gen, test), rewriter(rewriter) {}
 
 void ReorderFuncDeclsASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
     visitor.rewriteFunctions();
+    rewriter->overwriteChangedFiles();
 }
 
 ReorderFuncDeclsTransformation::ReorderFuncDeclsTransformation(const float p, const int seed, const bool test) :

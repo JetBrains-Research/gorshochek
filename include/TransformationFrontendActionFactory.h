@@ -17,15 +17,10 @@ using clang::tooling::FrontendActionFactory, clang::FrontendAction;
 /// doesn't accept any parameters for FrontendAction
 class TransformationFrontendActionFactory : public FrontendActionFactory {
  public:
-    TransformationFrontendActionFactory(
-            const vector<ITransformation *> *transformations,
-            string const & output_path,
-            mt19937 *gen);
+    TransformationFrontendActionFactory(ITransformation * transformation);
     FrontendAction * create() override;
  private:
-    const vector<ITransformation *> *transformations;
-    string const & output_path;
-    mt19937 *gen;
+    ITransformation * transformation;
 };
 
 #endif  // INCLUDE_TRANSFORMATIONFRONTENDACTIONFACTORY_H_

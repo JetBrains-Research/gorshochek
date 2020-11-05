@@ -14,6 +14,7 @@ void RemoveCommentsASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     for (auto const & comment : commentList.getComments()) {
         rewriter->RemoveText(comment->getSourceRange());
     }
+    rewriter->overwriteChangedFiles();
 }
 
 // ------------ RemoveCommentsTransformation ------------

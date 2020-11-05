@@ -77,6 +77,7 @@ class PrintfToCoutASTConsumer : public ASTConsumer {
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT
  private:
     PrintfToCoutVisitor visitor;
+    Rewriter * rewriter;
 };
 
 class PrintfToCoutTransformation : public ITransformation {

@@ -51,10 +51,11 @@ bool AddCommentsVisitor::containStatement(string const &stmt) {
 // ------------ AddCommentsASTConsumer ------------
 
 AddCommentsASTConsumer::AddCommentsASTConsumer(Rewriter * rewriter, const vector<string> * statements) :
-                                               visitor(rewriter, statements) {}
+                                               visitor(rewriter, statements), rewriter(rewriter) {}
 
 void AddCommentsASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
+    rewriter->overwriteChangedFiles();
 }
 
 // ------------ AddCommentsTransformation ------------

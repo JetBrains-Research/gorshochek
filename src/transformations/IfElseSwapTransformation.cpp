@@ -73,10 +73,11 @@ bool IfElseSwapVisitor::isNotVisited(IfStmt * s) {
 // ------------ AddCommentsASTConsumer ------------
 
 IfElseSwapASTConsumer::IfElseSwapASTConsumer(Rewriter * rewriter) :
-        visitor(rewriter) {}
+        visitor(rewriter), rewriter(rewriter) {}
 
 void IfElseSwapASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
+    rewriter->overwriteChangedFiles();
 }
 
 // ------------ IfElseSwapTransformation ------------

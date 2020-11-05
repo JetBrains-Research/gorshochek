@@ -187,7 +187,7 @@ const char * MatcherException::what() const throw() {
 // ------------ PrintfToCoutASTConsumer ------------
 
 PrintfToCoutASTConsumer::PrintfToCoutASTConsumer(Rewriter * rewriter) :
-        visitor(rewriter) {}
+        visitor(rewriter), rewriter(rewriter) {}
 
 void PrintfToCoutASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
@@ -196,6 +196,7 @@ void PrintfToCoutASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     for (auto header : headers) {
         visitor.insertHeaderAtBeginning(&header);
     }
+    rewriter->overwriteChangedFiles();
 }
 
 // ------------ PrintfToCoutTransformation ------------
