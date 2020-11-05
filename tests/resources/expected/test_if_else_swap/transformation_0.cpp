@@ -1,4 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 int foo(int n) {
+    cout << "hello";
     if (n == 1) {
         int k = 0;
         int j = 0;

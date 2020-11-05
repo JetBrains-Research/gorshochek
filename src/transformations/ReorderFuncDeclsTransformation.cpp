@@ -1,5 +1,4 @@
 #include "../../include/transformations/ReorderFuncDeclsTransformation.h"
-#include <iostream>
 
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::sort, std::shuffle, std::find, std::reverse,
@@ -7,11 +6,13 @@ std::vector, std::string;
 using clang::SourceRange, clang::SourceManager, clang::FileID;
 
 ReorderFuncDeclsVisitor::ReorderFuncDeclsVisitor(Rewriter * rewriter, mt19937 * gen, const bool test) :
-                                                 rewriter(rewriter), gen(gen), test(test) {}
+                                                 rewriter(rewriter), sm(rewriter->getSourceMgr()),
+                                                 gen(gen), test(test) {}
 
 bool ReorderFuncDeclsVisitor::VisitFunctionDecl(FunctionDecl * decl) {
     if (!isFuncDeclProcessed(decl)) {
-        if (decl->isThisDeclarationADefinition()) {
+        auto loc = decl->getBeginLoc();
+        if (decl->isThisDeclarationADefinition() && sm.isWrittenInMainFile(loc)) {
             funcdecls.push_back(decl);
         }
     }

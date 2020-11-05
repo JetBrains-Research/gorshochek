@@ -1,4 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 void a(int *x) {
+    cout << "hello";
     int f;
     for ( ; 1; ) 
 {

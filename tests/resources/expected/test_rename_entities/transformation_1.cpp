@@ -1,4 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 void test_do_math(int *test_x) {
+    cout << "hello";
     *test_x += 5;
 }
 

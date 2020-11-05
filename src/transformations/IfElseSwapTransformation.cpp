@@ -1,7 +1,5 @@
 #include "../../include/transformations/IfElseSwapTransformation.h"
 
-#include <iostream>
-
 using clang::IfStmt, clang::ForStmt, clang::WhileStmt;
 using clang::Lexer, clang::CharSourceRange;
 using llvm::isa, llvm::cast;
@@ -56,9 +54,9 @@ void IfElseSwapVisitor::processIfStmt(IfStmt * ifStmt) {
     }
 }
 
-bool IfElseSwapVisitor::VisitStmt(Stmt *s) {
-    if (isa<IfStmt>(s)) {
-        auto ifStmt = cast<IfStmt>(s);
+bool IfElseSwapVisitor::VisitIfStmt(IfStmt * ifStmt) {
+    auto loc = ifStmt->getBeginLoc();
+    if (sm.isWrittenInMainFile(loc)) {
         if (ifStmt->hasElseStorage()) {
             processIfStmt(ifStmt);
         }
@@ -66,8 +64,8 @@ bool IfElseSwapVisitor::VisitStmt(Stmt *s) {
     return true;
 }
 
-bool IfElseSwapVisitor::isNotVisited(IfStmt * s) {
-    return find(visitedIfStmt.begin(), visitedIfStmt.end(), s) == visitedIfStmt.end();
+bool IfElseSwapVisitor::isNotVisited(IfStmt * ifStmt) {
+    return find(visitedIfStmt.begin(), visitedIfStmt.end(), ifStmt) == visitedIfStmt.end();
 }
 
 // ------------ AddCommentsASTConsumer ------------

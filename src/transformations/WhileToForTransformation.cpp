@@ -11,26 +11,29 @@ WhileToForVisitor::WhileToForVisitor(Rewriter * rewriter) :
         rewriter(rewriter), sm(rewriter->getSourceMgr()), opt(rewriter->getLangOpts()) {}
 
 bool WhileToForVisitor::VisitWhileStmt(WhileStmt * whileStmt) {
-    const Stmt * body = whileStmt->getBody();
+    auto loc = whileStmt->getBeginLoc();
+    if (sm.isWrittenInMainFile(loc)) {
+        const Stmt *body = whileStmt->getBody();
 
-    if (!body) {
-        return true;
-    }
-
-    Expr * cond = whileStmt->getCond();
-    string condText;
-    if (cond) {
-        SourceRange condRange = cond->getSourceRange();
-        if (isa<clang::ValueStmt>(*cond->getExprStmt())) {
-            condRange.setEnd(cond->getEndLoc().getLocWithOffset(1));
+        if (!body) {
+            return true;
         }
-        condText = Lexer::getSourceText(CharSourceRange::getCharRange(condRange), sm, opt).str();
+
+        Expr *cond = whileStmt->getCond();
+        string condText;
+        if (cond) {
+            SourceRange condRange = cond->getSourceRange();
+            if (isa<clang::ValueStmt>(*cond->getExprStmt())) {
+                condRange.setEnd(cond->getEndLoc().getLocWithOffset(1));
+            }
+            condText = Lexer::getSourceText(CharSourceRange::getCharRange(condRange), sm, opt).str();
+        }
+        auto whileText = "for ( ; " + condText + "; ) \n";
+        ptrdiff_t diff = sm.getCharacterData(whileStmt->getBody()->getBeginLoc()) -
+                         sm.getCharacterData(whileStmt->getBeginLoc());
+        rewriter->ReplaceText(whileStmt->getBeginLoc(),
+                              static_cast<unsigned int>(diff), whileText);
     }
-    auto whileText = "for ( ; " + condText + "; ) \n";
-    ptrdiff_t diff = sm.getCharacterData(whileStmt->getBody()->getBeginLoc()) -
-                      sm.getCharacterData(whileStmt->getBeginLoc());
-    rewriter->ReplaceText(whileStmt->getBeginLoc(),
-                          static_cast<unsigned int>(diff), whileText);
     return true;
 }
 

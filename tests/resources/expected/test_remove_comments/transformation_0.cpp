@@ -1,3 +1,6 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 class Class {
     /**
      * param:
@@ -10,6 +13,7 @@ public:
     //  \______>   |__|        |__|
 
     void ffff(int &S) {
+        cout << "hello";
         int totalset = 33;
         /*
          * comments
