@@ -29,7 +29,7 @@ void a(int *x) {
 
 int main(void) {
     int val = 4;
-    int i=0;
+    int i=1000;
     while (i < 4) {
         int k = 5;	
         i++; 

@@ -24,7 +24,7 @@ bool WhileToForVisitor::VisitWhileStmt(WhileStmt * whileStmt) {
         if (cond) {
             SourceRange condRange = cond->getSourceRange();
             if (isa<clang::ValueStmt>(*cond->getExprStmt())) {
-                condRange.setEnd(cond->getEndLoc().getLocWithOffset(1));
+                condRange.setEnd(Lexer::getLocForEndOfToken(cond->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
             }
             condText = Lexer::getSourceText(CharSourceRange::getCharRange(condRange), sm, opt).str();
         }

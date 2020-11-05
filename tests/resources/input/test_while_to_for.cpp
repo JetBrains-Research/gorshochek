@@ -7,8 +7,8 @@ void a(int *x) {
     while(1) {
         f = 5;
     }
-
-    while(f < 5)
+    int test_val = 0;
+    while(f < test_val)
         f++;
 }
 

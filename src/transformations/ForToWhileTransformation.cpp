@@ -33,10 +33,8 @@ void ForToWhileVisitor::processBody(ForStmt *forStmt) {
     if (forStmt->getInc()) {
         if (!isa<clang::CompoundStmt>(body)) {
             rewriter->InsertText(body->getBeginLoc(), "{\n", true, true);
-            rewriter->InsertText(
-                    body->getEndLoc().getLocWithOffset(1),
-                    "}", true, true
-                    );
+            rewriter->InsertText(body->getEndLoc().getLocWithOffset(1),
+                                 "}", true, true);
         }
     }
 }
@@ -59,9 +57,7 @@ void ForToWhileVisitor::processCond(ForStmt * forStmt) {
     if (cond) {
         SourceRange condRange = cond->getSourceRange();
         if (isa<clang::ValueStmt>(*cond->getExprStmt())) {
-            condRange.setEnd(
-                    Lexer::getLocForEndOfToken(cond->getEndLoc(), 1, sm, opt).getLocWithOffset(1)
-            );
+            condRange.setEnd(Lexer::getLocForEndOfToken(cond->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
         }
         condText = Lexer::getSourceText(CharSourceRange::getCharRange(condRange), sm, opt).str();
     } else {
@@ -81,9 +77,7 @@ void ForToWhileVisitor::processInc(ForStmt * forStmt) {
     } else {
         SourceRange incRange = inc->getSourceRange();
         if (isa<clang::ValueStmt>(*inc->getExprStmt())) {
-            incRange.setEnd(
-                    Lexer::getLocForEndOfToken(inc->getEndLoc(), 1, sm, opt).getLocWithOffset(1)
-                    );
+            incRange.setEnd(Lexer::getLocForEndOfToken(inc->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
         }
         auto incText = Lexer::getSourceText(CharSourceRange::getCharRange(incRange), sm, opt).str() + "; ";
         vector<const ContinueStmt *> continues;

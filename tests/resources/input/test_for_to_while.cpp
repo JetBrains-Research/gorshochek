@@ -23,7 +23,7 @@ void a(int *x) {
 
 int main(void) {
     int val = 4;
-    for(int i=0; i < 4; i++)
+    for(int i=1000; i < 4; i++)
         int k = 5;
     a(&val);
     int x = 0;
