@@ -11,6 +11,7 @@ void foo1(int n) {
 }
 
 void foo2(int n) {
+    cin.tie(0);
     foo1(2);
 }
 
