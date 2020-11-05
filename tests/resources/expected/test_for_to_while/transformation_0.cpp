@@ -3,7 +3,8 @@ using namespace std;
 
 void a(int *x) {
     cout << "hello";
-    for(int i = 0; i < 4; ++i) {
+    int second_item = 6;
+    for(int item = 0; item < second_item; ++item) {
         int d = 4;
     }
 

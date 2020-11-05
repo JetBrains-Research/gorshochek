@@ -48,7 +48,7 @@ map<int, char **> Runner::createOutputFolders(int num_files, char * input_files[
             fs::copy(src_path, dst_path, copy_options);
             if (i != 0) {
                 rewritable_cpaths[i][file_index] = new char[dst_path.string().size() + 1];
-                snprintf(rewritable_cpaths[i][file_index], dst_path.string().c_str());
+                strcpy(rewritable_cpaths[i][file_index], dst_path.string().c_str()); // NOLINT
                 fs::path description_path = transformations_path / "description.txt";
                 ofstream description(description_path, ios_base::app);
                 description << "transformation_" << i << endl;
