@@ -1,4 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 void foo(int n) {
+    cout << "hello";
     int i = 0;
     int j = 0;
     /* 'for' begin */

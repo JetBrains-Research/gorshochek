@@ -22,7 +22,7 @@
 
 #include "../ITransformation.h"
 
-using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
+using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::SourceManager,
 clang::ASTContext, clang::CallExpr, clang::SourceLocation, clang::FunctionDecl;
 using std::unique_ptr, std::vector, std::map, std::string, std::mt19937,
 std::discrete_distribution;
@@ -47,7 +47,7 @@ class ReorderFuncDeclsVisitor : public RecursiveASTVisitor<ReorderFuncDeclsVisit
 
  private:
     Rewriter * rewriter;
-
+    SourceManager & sm;
     mt19937 * gen;
 
     const bool test = false;

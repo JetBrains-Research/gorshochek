@@ -11,7 +11,8 @@ RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const bool ren
                                              discrete_distribution<int> tokens_num_generator,
                                              discrete_distribution<int> char_generator,
                                              mt19937 * gen, const bool test):
-        rewriter(rewriter), rename_func(rename_func), rename_var(rename_var),
+        rewriter(rewriter), sm(rewriter->getSourceMgr()),
+        rename_func(rename_func), rename_var(rename_var),
         token_len_generator(move(token_len_generator)),
         tokens_num_generator(move(tokens_num_generator)),
         char_generator(move(char_generator)),
@@ -23,7 +24,8 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
         if (isa<DeclRefExpr>(stmt)) {
             auto * de = cast<DeclRefExpr>(stmt);
             auto * decl = de->getDecl();
-            if (isa<VarDecl>(decl)) {
+            auto loc = decl->getBeginLoc();
+            if (isa<VarDecl>(decl) && sm.isWrittenInMainFile(loc)) {
                 string name = de->getNameInfo().getAsString();
                 if (decl2name.find(decl) == decl2name.end()) {
                     string randomName = test ? "test_" + name : randomSnakeCaseName();
@@ -40,13 +42,16 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
 bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
     if (rename_func && call->getDirectCallee()) {
         FunctionDecl * f  = call->getDirectCallee();
-        string name = f->getNameInfo().getName().getAsString();
-        if (decl2name.find(f) == decl2name.end()) {
-            string randomName = test ? "test_" + name : randomSnakeCaseName();
-            rewriter->ReplaceText(f->getLocation(), name.length(), randomName);
-            decl2name[f] = randomName;
+        auto loc = f->getBeginLoc();
+        if (sm.isWrittenInMainFile(loc)) {
+            string name = f->getNameInfo().getName().getAsString();
+            if (decl2name.find(f) == decl2name.end()) {
+                string randomName = test ? "test_" + name : randomSnakeCaseName();
+                rewriter->ReplaceText(f->getLocation(), name.length(), randomName);
+                decl2name[f] = randomName;
+            }
+            rewriter->ReplaceText(call->getExprLoc(), name.length(), decl2name.at(f));
         }
-        rewriter->ReplaceText(call->getExprLoc(), name.length(), decl2name.at(f));
     }
     return true;
 }

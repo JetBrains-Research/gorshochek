@@ -7,10 +7,11 @@ using std::unique_ptr, std::find, std::vector, std::string;
 // ------------ AddCommentsVisitor ------------
 
 AddCommentsVisitor::AddCommentsVisitor(Rewriter * rewriter, const vector<string> * statements) :
-                                       rewriter(rewriter), statements(statements) {}
+                                       rewriter(rewriter), sm(rewriter->getSourceMgr()), statements(statements) {}
 
 bool AddCommentsVisitor::VisitStmt(Stmt *s) {
-    if (isa<IfStmt>(s)) {
+    auto loc = s->getBeginLoc();
+    if (isa<IfStmt>(s) && sm.isWrittenInMainFile(loc)) {
         auto IfStatement = cast<IfStmt>(s);
         if (containStatement(ifInside)) {
             rewriter->InsertText(IfStatement->getThen()->getBeginLoc(), "/* 'if' inside */\n",

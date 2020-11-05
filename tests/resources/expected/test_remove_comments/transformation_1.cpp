@@ -1,3 +1,6 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 class Class {
     
 public:
@@ -5,6 +8,7 @@ public:
     
 
     void ffff(int &S) {
+        cout << "hello";
         int totalset = 33;
         
         for(int i=0; i<S;){
