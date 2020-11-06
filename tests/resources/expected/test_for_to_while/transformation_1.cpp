@@ -3,10 +3,11 @@ using namespace std;
 
 void a(int *x) {
     cout << "hello";
-    int i = 0;
-    while (i < 4) {
+    int second_item = 6;
+    int item = 0;
+    while (item < second_item) {
         int d = 4;
-    	++i; 
+    	++item; 
     }
 
     int k;
@@ -28,7 +29,7 @@ void a(int *x) {
 
 int main(void) {
     int val = 4;
-    int i=0;
+    int i=1000;
     while (i < 4) {
         int k = 5;	
         i++; 

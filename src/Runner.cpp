@@ -12,9 +12,8 @@
 using clang::tooling::FrontendActionFactory,
 clang::tooling::CommonOptionsParser, clang::tooling::ClangTool,
 clang::FrontendAction;
-using std::size_t, std::vector, std::string, std::transform, std::map, std::ofstream, std::ios_base,
-std::ifstream, std::mt19937, std::copy, std::back_inserter, std::endl, std::uniform_real_distribution,
-std::to_string;
+using std::size_t, std::vector, std::string, std::ofstream, std::ios_base,
+std::mt19937, std::copy, std::uniform_real_distribution, std::to_string;
 namespace fs = std::filesystem;
 
 const int SEED = 7;

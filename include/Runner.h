@@ -8,7 +8,7 @@
 #include "ITransformation.h"
 
 using clang::tooling::ClangTool, llvm::cl::OptionCategory;
-using std::string, std::vector, std::mt19937, std::size_t, std::map;
+using std::string, std::vector, std::mt19937, std::size_t;
 
 static OptionCategory TransformationCategory("Transformation");
 

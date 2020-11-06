@@ -8,8 +8,8 @@ void a(int *x) {
 {
         f = 5;
     }
-
-    for ( ; f < 5; ) 
+    int test_val = 0;
+    for ( ; f < test_val; ) 
 f++;
 }
 
