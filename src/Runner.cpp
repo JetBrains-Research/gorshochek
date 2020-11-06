@@ -35,17 +35,18 @@ void Runner::createDescriptionFile(int num_files, char ** files,
     }
 }
 
-map<int, char **> Runner::createOutputFolders(int num_files, char * input_files[], const string& output_path) {
+void Runner::createOutputFolders(int num_files,
+                                 char * input_files[],
+                                 const string& output_path,
+                                 vector<char **> * rewritable_cpaths) {
     fs::path output_dir(output_path);
     fs::create_directory(output_dir);
 
-    map<int, vector<string>> rewritable_paths;
-    map<int, char **> rewritable_cpaths;
     const auto copy_options = fs::copy_options::overwrite_existing;
 
     for (int transform_index = 0; transform_index < n_transformations + 1; ++transform_index) {
         if (transform_index != 0) {
-            rewritable_cpaths[transform_index] = new char * [num_files];
+            rewritable_cpaths->at(transform_index - 1) = new char * [num_files];
         }
         string transformation_name = "transformation_" + std::to_string(transform_index) + ".cpp";
         for (size_t file_index = 0; file_index < num_files; ++file_index) {
@@ -55,16 +56,17 @@ map<int, char **> Runner::createOutputFolders(int num_files, char * input_files[
             fs::path dst_path = transformations_path / fs::path(transformation_name);
             fs::copy(src_path, dst_path, copy_options);
             if (transform_index != 0) {
-                rewritable_cpaths[transform_index][file_index] = new char[dst_path.string().size() + 1];
-                strcpy(rewritable_cpaths[transform_index][file_index], dst_path.string().c_str()); // NOLINT
+                rewritable_cpaths->at(transform_index - 1)[file_index] = new char[dst_path.string().size() + 1];
+                strcpy(rewritable_cpaths->at(transform_index - 1)[file_index], dst_path.string().c_str()); // NOLINT
             }
         }
     }
-    return rewritable_cpaths;
 }
 
 void Runner::run(int num_files, char ** files, const string& output_path) {
-    map<int, char **> rewritable_cpaths = createOutputFolders(num_files, files, output_path);
+    auto rewritable_cpaths = new vector<char **>(n_transformations);
+    createOutputFolders(num_files, files, output_path, rewritable_cpaths);
+
     int argc = num_files + 3;
     const char * argv[num_files + 3];
     argv[0] = "./gorshochek";
@@ -74,7 +76,7 @@ void Runner::run(int num_files, char ** files, const string& output_path) {
     string description;
     uniform_real_distribution<double> dis(0.0, 1.0);
     for (size_t transform_index = 0; transform_index < n_transformations; ++transform_index) {
-        copy(rewritable_cpaths[transform_index + 1], rewritable_cpaths[transform_index + 1] + num_files, argv + 3);
+        copy(rewritable_cpaths->at(transform_index), rewritable_cpaths->at(transform_index) + num_files, argv + 3);
 
         description += "transformation_" + to_string(transform_index) + "\n";
         auto OptionsParser = CommonOptionsParser(argc, argv,
