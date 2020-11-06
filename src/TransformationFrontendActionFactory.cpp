@@ -1,12 +1,8 @@
 #include "../include/TransformationFrontendActionFactory.h"
 
-TransformationFrontendActionFactory::TransformationFrontendActionFactory(
-        const vector<ITransformation *> *transformations,
-        string const & output_path,
-        mt19937 *gen
-) :
-    transformations(transformations), output_path(output_path), gen(gen) {}
+TransformationFrontendActionFactory::TransformationFrontendActionFactory(ITransformation * transformation) :
+    transformation(transformation) {}
 
 FrontendAction * TransformationFrontendActionFactory::create() {
-    return new TransformationFrontendAction(transformations, output_path, gen);
+    return new TransformationFrontendAction(transformation);
 }

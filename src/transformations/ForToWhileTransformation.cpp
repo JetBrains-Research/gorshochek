@@ -115,10 +115,11 @@ void ForToWhileVisitor::collectContinues(const Stmt * s, vector<const ContinueSt
 // ------------ ForToWhileASTConsumer ------------
 
 ForToWhileASTConsumer::ForToWhileASTConsumer(Rewriter * rewriter) :
-        visitor(rewriter) {}
+        visitor(rewriter), rewriter(rewriter) {}
 
 void ForToWhileASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
+    rewriter->overwriteChangedFiles();
 }
 
 // ------------ ForToWhileTransformation ------------

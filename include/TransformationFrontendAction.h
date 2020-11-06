@@ -31,24 +31,13 @@ namespace fs = std::filesystem;
 /// For each source file provided to the tool, a new FrontendAction is created.
 class TransformationFrontendAction : public ASTFrontendAction {
  public:
-    TransformationFrontendAction(const vector<ITransformation *> *transformations,
-                                 string const & output_path,
-                                 mt19937 *gen);
+    explicit TransformationFrontendAction(ITransformation * transformation);
     unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                               StringRef file) override;
-    /**
-     * At the end of each file EndSourceFileAction is called, inside this method we
-     * dump the transformed code on the disk
-     */
-    void EndSourceFileAction() override;
 
  private:
     Rewriter rewriter;
-    const vector<ITransformation *> *transformations;
-    string const & output_path;
-    mt19937 *gen;
-    fs::path getTransformationsPath();
-    static bool isFileCpp(fs::path const &path);
+    ITransformation * transformation;
 };
 
 #endif  // INCLUDE_TRANSFORMATIONFRONTENDACTION_H_

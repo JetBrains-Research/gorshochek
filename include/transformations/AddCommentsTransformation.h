@@ -20,8 +20,8 @@
 
 #include "../ITransformation.h"
 
-using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
-clang::DeclGroupRef, clang::Stmt, clang::SourceManager, clang::ASTContext;
+using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::ASTContext,
+clang::DeclGroupRef, clang::Stmt, clang::SourceManager;
 using std::unique_ptr, std::vector, std::string;
 
 /// RecursiveASTVisitor is a set of actions that are done
@@ -58,6 +58,7 @@ class AddCommentsASTConsumer : public ASTConsumer {
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT
  private:
     AddCommentsVisitor visitor;
+    Rewriter * rewriter;
 };
 
 class AddCommentsTransformation : public ITransformation {

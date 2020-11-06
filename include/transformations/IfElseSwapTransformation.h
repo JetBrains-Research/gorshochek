@@ -51,6 +51,7 @@ class IfElseSwapASTConsumer : public ASTConsumer {
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT.
  private:
     IfElseSwapVisitor visitor;
+    Rewriter * rewriter;
 };
 
 class IfElseSwapTransformation : public ITransformation {

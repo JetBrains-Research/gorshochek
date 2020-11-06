@@ -8,7 +8,7 @@
 #include "ITransformation.h"
 
 using clang::tooling::ClangTool, llvm::cl::OptionCategory;
-using std::string, std::vector, std::mt19937, std::size_t;
+using std::string, std::vector, std::mt19937, std::size_t, std::map;
 
 static OptionCategory TransformationCategory("Transformation");
 
@@ -25,7 +25,10 @@ class Runner {
      * @param input_files   Paths to files to be transformed
      * @param output_path   Path to the output dir where transformed code will be stored
      */
-    static void createOutputFolders(int num_files, char * input_files[], const string& output_path);
+    void createOutputFolders(int num_files, char * input_files[],
+                             const string& output_path, vector<char **> * rewritable_cpaths);
+    static void createDescriptionFile(int num_files, char ** files,
+                                      const string& output_path, const string& description);
     const vector<ITransformation * > * transformations;
     size_t n_transformations;
     mt19937 *gen;

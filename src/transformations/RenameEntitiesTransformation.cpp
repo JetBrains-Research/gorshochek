@@ -81,10 +81,12 @@ RenameEntitiesASTConsumer::RenameEntitiesASTConsumer(Rewriter * rewriter, const 
                                                      mt19937 * gen, const bool test):
         visitor(rewriter, rename_func, rename_var,
                 move(token_len_generator), move(tokens_num_generator),
-                move(char_generator), gen, test) {}
+                move(char_generator), gen, test),
+        rewriter(rewriter) {}
 
 void RenameEntitiesASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
+    rewriter->overwriteChangedFiles();
 }
 
 // ------------ RenameEntitiesTransformation ------------

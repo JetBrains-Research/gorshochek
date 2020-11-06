@@ -64,6 +64,7 @@ class ReorderFuncDeclsASTConsumer : public ASTConsumer {
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT.
  private:
     ReorderFuncDeclsVisitor visitor;
+    Rewriter * rewriter;
 };
 
 class ReorderFuncDeclsTransformation : public ITransformation {
