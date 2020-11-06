@@ -25,7 +25,8 @@ class Runner {
      * @param input_files   Paths to files to be transformed
      * @param output_path   Path to the output dir where transformed code will be stored
      */
-    map<int, char **> createOutputFolders(int num_files, char * input_files[], const string& output_path);
+    void createOutputFolders(int num_files, char * input_files[],
+                             const string& output_path, vector<char **> * rewritable_cpaths);
     static void createDescriptionFile(int num_files, char ** files,
                                       const string& output_path, const string& description);
     const vector<ITransformation * > * transformations;
