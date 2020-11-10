@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-everything  \
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-everything \
                                             -fparse-all-comments \
                                             -fno-strict-aliasing \
                                             -fno-rtti \
@@ -71,6 +71,14 @@ add_definitions(
         -D__STDC_CONSTANT_MACROS
 )
 
+set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
+set(OpenMP_C_LIB_NAMES "omp")
+set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
+set(OpenMP_CXX_LIB_NAMES "omp")
+set(OpenMP_omp_LIBRARY omp)
+
+find_package(OpenMP REQUIRED)
+
 add_executable(${PROJECT_NAME}
         main.cpp
         src/ITransformation.cpp
@@ -89,6 +97,7 @@ add_executable(${PROJECT_NAME}
         src/transformations/ForToWhileTransformation.cpp
         src/transformations/WhileToForTransformation.cpp
         )
+
 
 # Installing yaml-cpp
 

@@ -1,3 +1,5 @@
+#include <omp.h>
+
 #include <string>
 #include <vector>
 #include <random>
@@ -73,12 +75,13 @@ void Runner::run(int num_files, char ** files, const string& output_path) {
     argv[1] = "-p";
     argv[2] = "build";
 
-    string description;
-    uniform_real_distribution<double> dis(0.0, 1.0);
+
+    vector<string> descr_per_transform(n_transformations);
+    #pragma omp parallel for
     for (size_t transform_index = 0; transform_index < n_transformations; ++transform_index) {
         copy(rewritable_cpaths->at(transform_index), rewritable_cpaths->at(transform_index) + num_files, argv + 3);
-
-        description += "transformation_" + to_string(transform_index) + "\n";
+        descr_per_transform[transform_index] += "transformation_" + to_string(transform_index) + "\n";
+        uniform_real_distribution<double> dis(0.0, 1.0);
         auto OptionsParser = CommonOptionsParser(argc, argv,
                                                  TransformationCategory);
         // Run the Clang Tool, creating a new FrontendAction
@@ -90,10 +93,16 @@ void Runner::run(int num_files, char ** files, const string& output_path) {
                                OptionsParser.getSourcePathList());
                 Tool.run(std::unique_ptr<FrontendActionFactory>(
                         new TransformationFrontendActionFactory(transformation)).get());
-                description += "\t\t" + transformation->getName() + "\n";
+                descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
             }
         }
     }
+
+    string description;
+    for (const auto & descr: descr_per_transform) {
+        description += descr;
+    }
+
     createDescriptionFile(num_files, files, output_path, description);
 }
 
