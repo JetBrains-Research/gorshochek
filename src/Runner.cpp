@@ -70,30 +70,33 @@ void Runner::run(int num_files, char ** files, const string& output_path) {
     createOutputFolders(num_files, files, output_path, rewritable_cpaths);
 
     int argc = num_files + 3;
-    const char * argv[num_files + 3];
-    argv[0] = "./gorshochek";
-    argv[1] = "-p";
-    argv[2] = "build";
-
 
     vector<string> descr_per_transform(n_transformations);
-    #pragma omp parallel for
-    for (size_t transform_index = 0; transform_index < n_transformations; ++transform_index) {
-        copy(rewritable_cpaths->at(transform_index), rewritable_cpaths->at(transform_index) + num_files, argv + 3);
-        descr_per_transform[transform_index] += "transformation_" + to_string(transform_index) + "\n";
-        uniform_real_distribution<double> dis(0.0, 1.0);
-        auto OptionsParser = CommonOptionsParser(argc, argv,
-                                                 TransformationCategory);
-        // Run the Clang Tool, creating a new FrontendAction
-        // The way to create new FrontendAction is similar to newFrontendActionFactory function
-        for (auto transformation : *transformations) {
-            // Constructs a clang tool to run over a list of files.
-            if (dis(*gen) < transformation->getProbability()) {
-                ClangTool Tool(OptionsParser.getCompilations(),
-                               OptionsParser.getSourcePathList());
-                Tool.run(std::unique_ptr<FrontendActionFactory>(
-                        new TransformationFrontendActionFactory(transformation)).get());
-                descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
+    #pragma omp parallel num_threads(5)
+    {
+        #pragma omp for
+        for (size_t transform_index = 0; transform_index < n_transformations; ++transform_index) {
+            std::cout << transform_index << std::endl;
+            const char *argv[num_files + 3];
+            argv[0] = "./gorshochek";
+            argv[1] = "-p";
+            argv[2] = "build";
+            copy(rewritable_cpaths->at(transform_index), rewritable_cpaths->at(transform_index) + num_files, argv + 3);
+            descr_per_transform[transform_index] += "transformation_" + to_string(transform_index) + "\n";
+            uniform_real_distribution<double> dis(0.0, 1.0);
+            auto OptionsParser = CommonOptionsParser(argc, argv,
+                                                     TransformationCategory);
+            // Run the Clang Tool, creating a new FrontendAction
+            // The way to create new FrontendAction is similar to newFrontendActionFactory function
+            for (auto transformation : *transformations) {
+                // Constructs a clang tool to run over a list of files.
+                if (dis(*gen) < transformation->getProbability()) {
+                    ClangTool Tool(OptionsParser.getCompilations(),
+                                   OptionsParser.getSourcePathList());
+                    Tool.run(std::unique_ptr<FrontendActionFactory>(
+                            new TransformationFrontendActionFactory(transformation)).get());
+                    descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
+                }
             }
         }
     }
