@@ -104,6 +104,7 @@ void Runner::run(int num_files, char ** files, const string& output_path) {
             // The way to create new FrontendAction is similar to newFrontendActionFactory function
             for (auto transformation : *transformations) {
                 // Constructs a clang tool to run over a list of files.
+                std::cout << transform_index + 1<< "\n\n";
                 if (dis(*gen) < transformation->getProbability()) {
                     ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
                                    option_parsers->at(transform_index)->getSourcePathList());
