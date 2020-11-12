@@ -20,7 +20,7 @@ jobs:
           pip install -r requirements.txt
       - name: Install clang
         run: |
-          sudo apt-get install libomp-dev
+          sudo apt install libomp-dev
           sh scripts/install_clang.sh
       - name: Lint
         run: |
