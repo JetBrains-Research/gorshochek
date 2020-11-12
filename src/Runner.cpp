@@ -11,8 +11,7 @@
 #include "../include/TransformationFrontendAction.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
-using clang::tooling::FrontendActionFactory,
-clang::tooling::CommonOptionsParser, clang::tooling::ClangTool,
+using clang::tooling::FrontendActionFactory, clang::tooling::ClangTool,
 clang::FrontendAction;
 using std::size_t, std::vector, std::string, std::ofstream, std::ios_base,
 std::mt19937, std::copy, std::uniform_real_distribution, std::to_string;
@@ -65,10 +64,9 @@ void Runner::createOutputFolders(int num_files,
     }
 }
 
-void Runner::run(int num_files, char ** files, const string& output_path) {
-    auto rewritable_cpaths = new vector<char **>(n_transformations);
-    createOutputFolders(num_files, files, output_path, rewritable_cpaths);
-
+void Runner::createOptionsParser(
+        int num_files, vector<char **> * rewritable_cpaths,
+        vector<CommonOptionsParser *> * option_parsers) {
     int argc = num_files + 3;
 
     const char *argv[num_files + 3];
@@ -76,24 +74,39 @@ void Runner::run(int num_files, char ** files, const string& output_path) {
     argv[1] = "-p";
     argv[2] = "build";
 
-    uniform_real_distribution<double> dis(0.0, 1.0);
+    for (size_t transform_index = 0; transform_index < n_transformations; ++transform_index) {
+        copy(rewritable_cpaths->at(transform_index),
+             rewritable_cpaths->at(transform_index) + num_files,
+             argv + 3);
+        option_parsers->at(transform_index) = new CommonOptionsParser(argc, argv, TransformationCategory);
+    }
+}
 
+void Runner::run(int num_files, char ** files, const string& output_path) {
     vector<string> descr_per_transform(n_transformations);
-    #pragma omp parallel num_threads(3)
-    {
+    auto rewritable_cpaths = new vector<char **>(n_transformations);
+    createOutputFolders(num_files, files, output_path, rewritable_cpaths);
+
+    auto option_parsers = new vector<CommonOptionsParser *>(n_transformations);
+    createOptionsParser(num_files, rewritable_cpaths, option_parsers);
+
+    uniform_real_distribution<double> dis(0.0, 1.0);
+    size_t transform_index = 0;
+    #pragma omp parallel \
+        private(transform_index) \
+        shared(num_files, rewritable_cpaths, option_parsers, descr_per_transform)
+    {  // NOLINT
         #pragma omp for
-        for (size_t transform_index = 0; transform_index < n_transformations; ++transform_index) {
-            copy(rewritable_cpaths->at(transform_index), rewritable_cpaths->at(transform_index) + num_files, argv + 3);
-            descr_per_transform[transform_index] += "transformation_" + to_string(transform_index) + "\n";
-            auto OptionsParser = CommonOptionsParser(argc, argv,
-                                                     TransformationCategory);
+        for (transform_index = 0; transform_index < n_transformations; ++transform_index) {
+            descr_per_transform[transform_index] += "transformation_" + to_string(transform_index + 1) + "\n";
+
             // Run the Clang Tool, creating a new FrontendAction
             // The way to create new FrontendAction is similar to newFrontendActionFactory function
             for (auto transformation : *transformations) {
                 // Constructs a clang tool to run over a list of files.
                 if (dis(*gen) < transformation->getProbability()) {
-                    ClangTool Tool(OptionsParser.getCompilations(),
-                                   OptionsParser.getSourcePathList());
+                    ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
+                                   option_parsers->at(transform_index)->getSourcePathList());
                     Tool.run(std::unique_ptr<FrontendActionFactory>(
                             new TransformationFrontendActionFactory(transformation)).get());
                     descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";

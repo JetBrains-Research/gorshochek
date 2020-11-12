@@ -71,13 +71,19 @@ add_definitions(
         -D__STDC_CONSTANT_MACROS
 )
 
-set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
+set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -lomp -L/usr/local/opt/libomp/lib -I/usr/local/opt/libomp/include")
 set(OpenMP_C_LIB_NAMES "omp")
-set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
+set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -lomp -L/usr/local/opt/libomp/lib -I/usr/local/opt/libomp/include")
 set(OpenMP_CXX_LIB_NAMES "omp")
-set(OpenMP_omp_LIBRARY omp)
+set(OpenMP_omp_LIBRARY /usr/local/opt/libomp/lib/libomp.dylib)
+
+set(OMPI_CXX "${CMAKE_CXX_COMPILE}")
+set(OMPI_CC "${CMAKE_C_COMPILE}")
 
 find_package(OpenMP REQUIRED)
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+set (CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 
 add_executable(${PROJECT_NAME}
         main.cpp
@@ -97,7 +103,6 @@ add_executable(${PROJECT_NAME}
         src/transformations/ForToWhileTransformation.cpp
         src/transformations/WhileToForTransformation.cpp
         )
-
 
 # Installing yaml-cpp
 
