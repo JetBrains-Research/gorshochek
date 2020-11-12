@@ -98,13 +98,10 @@ void Runner::run(int num_files, char ** files, const string& output_path) {
     {  // NOLINT
         #pragma omp for
         for (transform_index = 0; transform_index < n_transformations; ++transform_index) {
-            descr_per_transform[transform_index] += "transformation_" + to_string(transform_index + 1) + "\n";
-
             // Run the Clang Tool, creating a new FrontendAction
             // The way to create new FrontendAction is similar to newFrontendActionFactory function
             for (auto transformation : *transformations) {
                 // Constructs a clang tool to run over a list of files.
-                std::cout << transform_index + 1<< "\n\n";
                 if (dis(*gen) < transformation->getProbability()) {
                     ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
                                    option_parsers->at(transform_index)->getSourcePathList());
