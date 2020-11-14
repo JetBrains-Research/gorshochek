@@ -39,3 +39,6 @@ RUN cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
           -DCMAKE_C_COMPILER="/gorshochek/build/clang+llvm-9/bin/clang" \
           -DCMAKE_CXX_COMPILER="/gorshochek/build/clang+llvm-9/bin/clang++" .. \
     && cmake --build .
+
+WORKDIR /gorshochek
+RUN pytest . -vv
