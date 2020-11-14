@@ -5,9 +5,10 @@
 #include <vector>
 #include <random>
 
+#include "clang/Tooling/CommonOptionsParser.h"
 #include "ITransformation.h"
 
-using clang::tooling::ClangTool, llvm::cl::OptionCategory;
+using clang::tooling::ClangTool, clang::tooling::CommonOptionsParser, llvm::cl::OptionCategory;
 using std::string, std::vector, std::mt19937, std::size_t;
 
 static OptionCategory TransformationCategory("Transformation");
@@ -29,6 +30,8 @@ class Runner {
                              const string& output_path, vector<char **> * rewritable_cpaths);
     static void createDescriptionFile(int num_files, char ** files,
                                       const string& output_path, const string& description);
+    void createOptionsParser(int num_files, vector<char **> * rewritable_cpaths,
+                             vector<CommonOptionsParser *> * option_parsers);
     const vector<ITransformation * > * transformations;
     size_t n_transformations;
     mt19937 *gen;
