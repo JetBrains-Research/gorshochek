@@ -2,30 +2,37 @@
 [WIP] A tool for C++ code modification to augment data for clone detection tools
 
 -------------
-## Usage
-1. Clone or download repo from GitHub
+## Installation
+Clone or download repo from GitHub
 ```(bash)
 git clone https://github.com/JetBrains-Research/gorshochek.git
 cd gorshochek
 ```
-2. Install clang with the desired version to use only inside `gorshochek`
+### Docker
+It is more preferable to run `gorshochek` using `Docker`. All necessary scripts to work with `Docker`
+are stored in `docker` folder. 
+
+To build docker image run:
+```(bash)
+./docker/build.sh
+```
+
+Then to run a container from just created image run:
+```(bash)
+./docker/build.sh
+```
+### Instlling on local machine
+1. Install clang with the desired version to use only inside `gorshochek`
 ```(bash)
 ./scripts/install_clang.sh
 ```
-3. Build the project from source
+2. Build the project from source
 
 * Install CMake
-We tested our tool on `macOS`, on `ubuntu-16.04` and `ubuntu-18.04` using `cmake-3.15.2`. To install
-`cmake-3.15.2` run the following commands:
+We tested our tool on `macOS`, on `ubuntu-16.04` and `ubuntu-18.04` using `cmake-3.18.4`. To install
+`cmake-3.18.4` run the following commands:
 ```(bash)
-wget https://github.com/Kitware/CMake/releases/download/v3.15.2/cmake-3.15.2.tar.gz
-tar -zxvf cmake-3.15.2.tar.gz
-cd cmake-3.15.2
-./bootstrap
-make
-sudo make install
-# Check the version
-cmake --version
+pip install cmake
 ```
 * Build tool
 ```(bash)
@@ -39,14 +46,21 @@ cmake --build .
 ```
 > If you encounter an error on `ubuntu`, try running the following commands:
 > ```(bash)
-> sudo apt install libtinfo-dev lib32z1-dev build-essential
+> sudo apt install \
+>       libtinfo-dev \
+>       lib32z1-dev \
+>       build-essential \
+>       libomp5 libomp-dev
 > ```
 
-> If you encounter an error on `macOS`, try installing `gcc`:
+> If you encounter an error on `macOS`, try installing `gcc` and `libomp`:
 > ```(bash)
-> brew install gcc
+> brew install gcc libomp
 > ```
-4. Run the tool with the needed configuration on C++ files
+ 
+Feel free to create issues if you run into a problem during installation
+# Usage
+Run the tool with the needed configuration on C++ files
 ```(bash)
 # You can specify as many files as you need
 ./build/gorshochek config.yaml file1.cpp file2.cpp
@@ -83,18 +97,15 @@ More examples can be found in `tests` folder
 
 - [x] Identity transformation
 - [x] Add, remove comments
-- [ ] Useless variables, functions, defines
 - [x] Rename variables, functions
-- [ ] Random change between `x++`, `++x`, `x+=1`, `x=x+1`
-- [ ] Change the signature of functions by making all the variables global
+- [x] Swap `if` and `else` blocks and change the corresponding condition inside `if`
 - [x] Rearranging function declarations
 - [x] Replace `for` with `while` and vice versa 
-- [ ] Replace `for` loop iteration using indexing with `for` loop with `auto`
-- [ ] Change types from `int` to `long int` and so on
 - [x] Replace `printf` with `std::cout`
+- [ ] Random change between `x++`, `++x`, `x+=1`, `x=x+1`
+- [ ] Change the signature of functions by making variables global
 - [ ] Replace `std::cout` with `printf`
-- [x] Swap `if` and `else` blocks and change the corresponding condition inside `if`
-- [ ] Add wrappers for functions
+- [ ] Useless variables, functions, defines
 
 --------------
 ## Documentations
@@ -107,7 +118,7 @@ More detailed documentation can be found in [DOCS.md](DOCS.md)
 If want to contribute to the project and add new transformation (e.g. `Example`, note that `Example` 
 is just a name of a transformation) the following classes should be implemented:
 - `ExampleTransformation` derived from `ITransformation` --  class that aggregates all the sufficient
-information from `config.yaml` and creates and instances of `ExampleASTConsumer` using 
+information from `config.yaml` and creates instances of `ExampleASTConsumer` using 
 `getConsumer` method
 - `ExampleASTConsumer` derived from `ASTConsumer`
 - `ExampleASTVisitor` derived from `RecursiveASTVisitor<ExampleASTVisitor>`
