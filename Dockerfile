@@ -24,8 +24,8 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 10 \
 RUN ln -sf $(which python3) /usr/bin/python \
     && ln -sf $(which pip3) /usr/bin/pip
 
-RUN git clone https://github.com/JetBrains-Research/gorshochek.git
 WORKDIR /gorshochek
+COPY . /gorshochek
 
 RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
