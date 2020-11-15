@@ -29,7 +29,7 @@ COPY . /gorshochek
 
 RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
-RUN pip install cmake
+RUN pip install cmake==3.18.4
 
 RUN sh scripts/install_clang.sh
 
