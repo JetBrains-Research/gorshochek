@@ -1,5 +1,7 @@
 FROM ubuntu:18.04
 
+LABEL desc="Dockerfile for gorshochek -- tool for c++ source code augmetration"
+
 RUN apt-get update \
 	&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common \
 	&& add-apt-repository ppa:ubuntu-toolchain-r/test \
@@ -33,11 +35,11 @@ RUN pip install cmake==3.18.4
 
 RUN sh scripts/install_clang.sh
 
-WORKDIR /gorshochek/build
-RUN cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
-          -DClang_DIR=build/clang+llvm-9/lib/cmake/clang \
-          -DCMAKE_C_COMPILER="/gorshochek/build/clang+llvm-9/bin/clang" \
-          -DCMAKE_CXX_COMPILER="/gorshochek/build/clang+llvm-9/bin/clang++" .. \
+RUN cd ./build \
+    && cmake -DLLVM_DIR=build/clang+llvm-9/lib/cmake/llvm \
+             -DClang_DIR=build/clang+llvm-9/lib/cmake/clang \
+             -DCMAKE_C_COMPILER="/gorshochek/build/clang+llvm-9/bin/clang" \
+             -DCMAKE_CXX_COMPILER="/gorshochek/build/clang+llvm-9/bin/clang++" .. \
     && cmake --build .
 
 WORKDIR /gorshochek
