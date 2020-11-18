@@ -16,20 +16,16 @@ tricky_path = path.join("scripts", "..", "tests", "..", "tests", "resources", "i
 build = path.join("build", "gorshochek")
 
 
-def _test(files: List, config_path: str) -> None:
+def _test(input_: str, config_path: str) -> None:
     # Getting the caller function name
     test_name = inspect.stack()[1].function
-    num_regular = len(files) // 2
-    input_files_paths = [
-                            path.join(input_path, file) for file in files[:-num_regular]
-                        ] + [
-                            path.join(tricky_path, file) for file in files[-num_regular:]
-                        ]
+    full_input_path = path.join(input_path, input_)
+    files = listdir(full_input_path) if path.isdir(full_input_path) else [input_]
     try:
-        subprocess.check_call([build, config_path] + input_files_paths)
+        subprocess.check_call([build, full_input_path, actual_path, config_path])
     except subprocess.CalledProcessError:
         pytest.fail(f"Running gorshochek with config \"{config_path}\"\n" +
-                    f"on files [{', '.join(input_files_paths)}] ended with non-zero code")
+                    f"on files [{full_input_path}] ended with non-zero code")
     assert path.exists(actual_path), f"Transformed files folder \"{actual_path}\" does not exists"
 
     for file in files:
@@ -66,53 +62,53 @@ def _test(files: List, config_path: str) -> None:
 
 def test_pipeline() -> None:
     config_path = path.join(configs_dir_path, "test_pipeline_config.yaml")
-    files = ["test1.cpp", "test2.cpp", "test3.cpp"]
-    _test(files, config_path)
+    input_ = "test_pipeline"
+    _test(input_, config_path)
 
 
 def test_remove_comments() -> None:
     config_path = path.join(configs_dir_path, "test_remove_comments_config.yaml")
-    files = ["test_remove_comments.cpp"]
-    _test(files, config_path)
+    input_ = "test_remove_comments.cpp"
+    _test(input_, config_path)
 
 
 def test_add_comments() -> None:
     config_path = path.join(configs_dir_path, "test_add_comments_config.yaml")
-    files = ["test_add_comments.cpp"]
-    _test(files, config_path)
+    input_ = "test_add_comments.cpp"
+    _test(input_, config_path)
 
 
 def test_rename_entities() -> None:
     config_path = path.join(configs_dir_path, "test_rename_entities_config.yaml")
-    files = ["test_rename_entities.cpp"]
-    _test(files, config_path)
+    input_ = "test_rename_entities.cpp"
+    _test(input_, config_path)
 
 
 def test_reorder_function_decls() -> None:
     config_path = path.join(configs_dir_path, "test_reorder_function_decls_config.yaml")
-    files = ["test_reorder_function_decls.cpp"]
-    _test(files, config_path)
+    input_ = "test_reorder_function_decls.cpp"
+    _test(input_, config_path)
 
 
 def test_if_else_swap() -> None:
     config_path = path.join(configs_dir_path, "test_if_else_swap_config.yaml")
-    files = ["test_if_else_swap.cpp"]
-    _test(files, config_path)
+    input_ = "test_if_else_swap.cpp"
+    _test(input_, config_path)
 
 
 def test_printf_to_cout() -> None:
     config_path = path.join(configs_dir_path, "test_printf_to_cout_config.yaml")
-    files = ["test_printf_to_cout.cpp"]
-    _test(files, config_path)
+    input_ = "test_printf_to_cout.cpp"
+    _test(input_, config_path)
 
 
 def test_for_to_while() -> None:
     config_path = path.join(configs_dir_path, "test_for_to_while_config.yaml")
-    files = ["test_for_to_while.cpp"]
-    _test(files, config_path)
+    input_ = "test_for_to_while.cpp"
+    _test(input_, config_path)
 
 
 def test_while_to_for() -> None:
     config_path = path.join(configs_dir_path, "test_while_to_for_config.yaml")
-    files = ["test_while_to_for.cpp"]
-    _test(files, config_path)
+    input_ = "test_while_to_for.cpp"
+    _test(input_, config_path)
