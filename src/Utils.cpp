@@ -19,7 +19,6 @@
 using std::string, std::function, std::cerr, std::endl, std::size_t;
 
 const char * CONFIG_TRANSFORMATIONS_KEY = "transformations";
-const char * CONFIG_OUTPUT_PATH_KEY = "output path";
 const char * CONFIG_NUM_TRANSFORMATIONS_KEY = "n transformations";
 
 const map<string, function<ITransformation *(const YAML::Node &)>> transformFactory = {
@@ -56,16 +55,6 @@ vector<ITransformation *> *getTransformationsFromYaml(const string &config_path)
         }
     }
     return transformations;
-}
-
-string getOutputPathFromYaml(const string &config_path) {
-    YAML::Node config = YAML::LoadFile(config_path);
-    if (!config[CONFIG_OUTPUT_PATH_KEY]) {
-        cerr << "Specify output path in yaml config inside \""
-             << CONFIG_OUTPUT_PATH_KEY
-             << "\" key" << endl;
-    }
-    return config[CONFIG_OUTPUT_PATH_KEY].as<string>();
 }
 
 size_t getNumTransformationsFromYaml(const string &config_path) {

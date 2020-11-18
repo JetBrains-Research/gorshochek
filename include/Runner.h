@@ -18,18 +18,23 @@ class Runner {
  public:
     explicit Runner(const vector<ITransformation * > * transformations,
                     size_t n_transformations);
-    void run(int num_files, char ** files, const string& output_path);
+    void run(const string& input_path, const string& output_path);
+
  private:
     /**
      * Method for creating folders for transformations and their descriptions
-     * @param num_files     Number of files to be transformed
-     * @param input_files   Paths to files to be transformed
-     * @param output_path   Path to the output dir where transformed code will be stored
+     * @param input_path         Path to dir consisting files that are going to be transformed
+     * @param output_path        Path to the output dir where transformed code will be stored
+     * @param rewritable_cpaths  Vector of array with c_strings got ClangTool
+     * @param num_files          Num files to be transformed
      */
-    void createOutputFolders(int num_files, char * input_files[],
-                             const string& output_path, vector<char **> * rewritable_cpaths);
-    static void createDescriptionFile(int num_files, char ** files,
-                                      const string& output_path, const string& description);
+    void createOutputFolders(const string& input_path,
+                             const string& output_path,
+                             vector<char **> * rewritable_cpaths,
+                             int * num_files);
+    static void createDescriptionFile(const string& input_path,
+                                      const string& output_path,
+                                      const string &description);
     void createOptionsParser(int num_files, vector<char **> * rewritable_cpaths,
                              vector<CommonOptionsParser *> * option_parsers);
     const vector<ITransformation * > * transformations;

@@ -15,12 +15,6 @@ using std::string, std::vector, std::size_t;
  */
 vector<ITransformation *> *getTransformationsFromYaml(const string &config_path);
 /**
- * Util for extracting an output path where the transformed code will be stored
- * @param config_path    path to the .yaml config
- * @return               output path
- */
-string getOutputPathFromYaml(const string &config_path);
-/**
  * Util for extracting the number of transformations from config
  * @param config_path    path to the .yaml config
  * @return               output path
