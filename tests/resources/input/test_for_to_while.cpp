@@ -27,7 +27,8 @@ int main(void) {
         int k = 5;
     a(&val);
     int x = 0;
-    for(int s = 5;; s += 1){
+    int very_long_var = 100;
+    for(int s = very_long_var;; s += 1){
         if (s == 6) {
             break;
         }
