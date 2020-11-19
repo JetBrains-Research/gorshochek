@@ -22,7 +22,7 @@
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
 clang::ASTContext, clang::ForStmt, clang::SourceManager, clang::LangOptions,
-clang::ContinueStmt, clang::Stmt;
+clang::ContinueStmt, clang::Stmt, clang::SourceRange;
 using std::unique_ptr, std::vector, std::string;
 
 /// RecursiveASTVisitor is a set of actions that are done
@@ -43,6 +43,7 @@ class ForToWhileVisitor : public RecursiveASTVisitor<ForToWhileVisitor> {
     void processInit(ForStmt * forStmt);
     void processCond(ForStmt * forStmt);
     void processInc(ForStmt * forStmt);
+    string getTextFromRange(SourceRange range);
 };
 
 class ForToWhileASTConsumer : public ASTConsumer {
