@@ -42,5 +42,7 @@ RUN cd ./build \
              -DCMAKE_CXX_COMPILER="/gorshochek/build/clang+llvm-9/bin/clang++" .. \
     && cmake --build .
 
-WORKDIR /gorshochek
-RUN pytest . -vv
+RUN mkdir data && mkdir data/input && mkdir data/output
+
+ENTRYPOINT ["./build/gorshochek", "./data/input", "./data/output"]
+CMD ["./config.yaml"]

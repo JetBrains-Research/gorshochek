@@ -1,15 +1,7 @@
-n transformations: 15
+n transformations: 1
 transformations:
   - remove comments:
       p: 1.0
-  - rename entities:
-      p: 0.5
-      seed: 9
-      max tokens: 2
-      max token len: 3
-      rename functions: true
-      rename variables: true
-      test: true
   - for to while:
       p: 1.0
   - if else swap:
@@ -21,4 +13,12 @@ transformations:
   - reorder function decls:
       p: 1.0
       seed: 9
+      test: true
+  - rename entities:
+      p: 0.5
+      seed: 9
+      max tokens: 2
+      max token len: 3
+      rename functions: true
+      rename variables: true
       test: true
