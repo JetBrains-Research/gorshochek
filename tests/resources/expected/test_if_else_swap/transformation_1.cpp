@@ -22,10 +22,15 @@ int foo(int n) {
 }
 
 int main() {
+    int big_var = 0;
     int x = foo(1);
-    if (x == 2) {
+    int bigger_var = x - 1;
+    if (!(big_var == bigger_var)) {
+        x = 5;
+    } else {
         return 1;
-    } else if (x == 6) {
+    }
+    if (x == 6) {
         return 0;
     } else if (x >= 1) {
         int a;
