@@ -36,7 +36,8 @@ int main(void) {
         }
     a(&val);
     int x = 0;
-    int s = 5;
+    int very_long_var = 100;
+    int s = very_long_var;
     while (1) {
         if (s == 6) {
             break;

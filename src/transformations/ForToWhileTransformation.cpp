@@ -1,6 +1,6 @@
 #include "../../include/transformations/ForToWhileTransformation.h"
 
-using clang::Expr, clang::ContinueStmt, clang::SourceRange;
+using clang::Expr, clang::ContinueStmt;
 using clang::Lexer, clang::CharSourceRange;
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string;
@@ -9,6 +9,10 @@ using std::unique_ptr, std::find, std::vector, std::string;
 
 ForToWhileVisitor::ForToWhileVisitor(Rewriter * rewriter) :
         rewriter(rewriter), sm(rewriter->getSourceMgr()), opt(rewriter->getLangOpts()) {}
+
+string ForToWhileVisitor::getTextFromRange(SourceRange range) {
+    return Lexer::getSourceText(CharSourceRange::getCharRange(range), sm, opt).str();
+}
 
 bool ForToWhileVisitor::VisitForStmt(ForStmt * forStmt) {
     auto loc = forStmt->getBeginLoc();
@@ -46,7 +50,7 @@ void ForToWhileVisitor::processInit(ForStmt * forStmt) {
         if (isa<clang::ValueStmt>(*init)) {
             initRange.setEnd(init->getEndLoc().getLocWithOffset(1));
         }
-        auto initText = Lexer::getSourceText(CharSourceRange::getCharRange(initRange), sm, opt).str() + ";\n";
+        auto initText = getTextFromRange(initRange) + ";\n";
         rewriter->InsertText(forStmt->getBeginLoc(), initText, true, true);
     }
 }
@@ -59,7 +63,7 @@ void ForToWhileVisitor::processCond(ForStmt * forStmt) {
         if (isa<clang::ValueStmt>(*cond->getExprStmt())) {
             condRange.setEnd(Lexer::getLocForEndOfToken(cond->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
         }
-        condText = Lexer::getSourceText(CharSourceRange::getCharRange(condRange), sm, opt).str();
+        condText = getTextFromRange(condRange);
     } else {
         condText = "1";
     }
@@ -79,7 +83,7 @@ void ForToWhileVisitor::processInc(ForStmt * forStmt) {
         if (isa<clang::ValueStmt>(*inc->getExprStmt())) {
             incRange.setEnd(Lexer::getLocForEndOfToken(inc->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
         }
-        auto incText = Lexer::getSourceText(CharSourceRange::getCharRange(incRange), sm, opt).str() + "; ";
+        auto incText = getTextFromRange(incRange) + "; ";
         vector<const ContinueStmt *> continues;
         collectContinues(forStmt->getBody(), &continues);
         for (auto countinue_stmt : continues) {
