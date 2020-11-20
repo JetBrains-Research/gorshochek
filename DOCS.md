@@ -53,8 +53,7 @@ all files passed through `argv`.
 ## FrontendAction
 
 `FrontendAction` is an interface to create and run `ASTConsumer` and then save the result.
-We use `FrontendAction` together with `MultiplexConsumer` which allows to run multiple
-`ASTConsumers`. After running `MultiplexConsumer` on each file `FrontendAction` calls 
+ After each file `FrontendAction` calls 
 `EndSourceFileAction` method and save transformed code on disk.
 
 <!-- ITRANSFORMATION -->
