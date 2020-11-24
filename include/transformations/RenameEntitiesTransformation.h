@@ -22,7 +22,7 @@
 
 #include "../ITransformation.h"
 
-using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
+using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::FunctionDecl,
 clang::ASTContext, clang::CallExpr, clang::Decl, clang::Stmt, clang::SourceManager;
 using std::unique_ptr, std::vector, std::map, std::string, std::mt19937,
 std::discrete_distribution;
@@ -43,6 +43,11 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
      * calls/declarations and rename them
      */
     bool VisitCallExpr(CallExpr * call);
+    /**
+     * This function is called a certain clang::FunctionDecl is visited. Here get all the functions
+     * declarations and rename them
+     */
+    bool VisitFunctionDecl(FunctionDecl * fdecl);
     /**
      * This function is called a certain clang::Stmt is visited. Here get all the variables
      * calls/declarations and rename them
@@ -66,6 +71,7 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
 
     map<Decl *, string> decl2name;
     string randomSnakeCaseName();
+    void processVarDecl(Decl * decl, string * name);
 };
 
 class RenameEntitiesASTConsumer : public ASTConsumer {

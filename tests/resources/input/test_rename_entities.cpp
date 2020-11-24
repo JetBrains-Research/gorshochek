@@ -28,14 +28,19 @@ int join(int x) {
         do_math(&x);
         return 0;
     }
+    int some_val;
 }
 
+void tmppp(int k) {
+    k += 1;
+}
 
 int main(void) {
     int result = -1, val = 4;
+    int x;
     int omega = join(result);
     do_math(&val);
-    int x = 0;
+    x = 0;
     do_math(&x);
     if (join(val) > 3) {
         do_math(&omega);
