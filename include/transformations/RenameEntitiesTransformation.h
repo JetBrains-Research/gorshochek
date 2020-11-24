@@ -66,6 +66,7 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
 
     map<Decl *, string> decl2name;
     string randomSnakeCaseName();
+    void processVarDecl(Decl * decl, string * name);
 };
 
 class RenameEntitiesASTConsumer : public ASTConsumer {

@@ -2,7 +2,8 @@
 
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string;
-using clang::FunctionDecl, clang::VarDecl, clang::DeclRefExpr;
+using clang::DeclStmt, clang::FunctionDecl, clang::VarDecl, clang::DeclRefExpr,
+clang::NamedDecl;
 
 // ------------ RenameEntitiesVisitor ------------
 
@@ -28,11 +29,23 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
             if (isa<VarDecl>(decl) && sm.isWrittenInMainFile(loc)) {
                 string name = de->getNameInfo().getAsString();
                 if (decl2name.find(decl) == decl2name.end()) {
-                    string randomName = test ? "test_" + name : randomSnakeCaseName();
-                    rewriter->ReplaceText(decl->getLocation(), name.length(), randomName);
-                    decl2name[decl] = randomName;
+                    processVarDecl(decl, &name);
                 }
                 rewriter->ReplaceText(de->getExprLoc(), name.length(), decl2name.at(decl));
+            }
+        }
+        if (isa<DeclStmt>(stmt)) {
+            auto * de = cast<DeclStmt>(stmt);
+            if (de->isSingleDecl()) {
+                auto * decl = de->getSingleDecl();
+                auto loc = decl->getBeginLoc();
+                if (isa<VarDecl>(decl) && sm.isWrittenInMainFile(loc)) {
+                    auto * vardecl = cast<VarDecl>(decl);
+                    string name = vardecl->getNameAsString();
+                    if (decl2name.find(decl) == decl2name.end()) {
+                        processVarDecl(decl, &name);
+                    }
+                }
             }
         }
     }
@@ -41,16 +54,14 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
 
 bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
     if (rename_func && call->getDirectCallee()) {
-        FunctionDecl * f  = call->getDirectCallee();
-        auto loc = f->getBeginLoc();
+        FunctionDecl * fdecl  = call->getDirectCallee();
+        auto loc = fdecl->getBeginLoc();
         if (sm.isWrittenInMainFile(loc)) {
-            string name = f->getNameInfo().getName().getAsString();
-            if (decl2name.find(f) == decl2name.end()) {
-                string randomName = test ? "test_" + name : randomSnakeCaseName();
-                rewriter->ReplaceText(f->getLocation(), name.length(), randomName);
-                decl2name[f] = randomName;
+            string name = fdecl->getNameInfo().getName().getAsString();
+            if (decl2name.find(fdecl) == decl2name.end()) {
+                processVarDecl(fdecl, &name);
             }
-            rewriter->ReplaceText(call->getExprLoc(), name.length(), decl2name.at(f));
+            rewriter->ReplaceText(call->getExprLoc(), name.length(), decl2name.at(fdecl));
         }
     }
     return true;
@@ -70,6 +81,12 @@ string RenameEntitiesVisitor::randomSnakeCaseName() {
         }
     }
     return newName;
+}
+
+void RenameEntitiesVisitor::processVarDecl(Decl * decl, string * name) {
+    string randomName = test ? "test_" + *name : randomSnakeCaseName();
+    rewriter->ReplaceText(decl->getLocation(), name->length(), randomName);
+    decl2name[decl] = randomName;
 }
 
 // ------------ RenameEntitiesASTConsumer ------------

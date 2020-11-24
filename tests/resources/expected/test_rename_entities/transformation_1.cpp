@@ -28,14 +28,16 @@ int test_join(int test_x) {
         test_do_math(&test_x);
         return 0;
     }
+    int test_some_val;
 }
 
 
 int main(void) {
     int test_result = -1, test_val = 4;
+    int test_x;
     int test_omega = test_join(test_result);
     test_do_math(&test_val);
-    int test_x = 0;
+    test_x = 0;
     test_do_math(&test_x);
     if (test_join(test_val) > 3) {
         test_do_math(&test_omega);
