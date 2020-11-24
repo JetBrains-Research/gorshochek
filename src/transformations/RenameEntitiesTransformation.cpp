@@ -20,6 +20,19 @@ RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const bool ren
         gen(gen), test(test) {
 }
 
+bool RenameEntitiesVisitor::VisitFunctionDecl(FunctionDecl * fdecl) {
+    if (rename_func) {
+        auto loc = fdecl->getBeginLoc();
+        if (sm.isWrittenInMainFile(loc) && !(fdecl->isMain())) {
+            string name = fdecl->getNameInfo().getName().getAsString();
+            if (decl2name.find(fdecl) == decl2name.end()) {
+                processVarDecl(fdecl, &name);
+            }
+        }
+    }
+    return true;
+}
+
 bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
     if (rename_var) {
         if (isa<DeclRefExpr>(stmt)) {

@@ -31,6 +31,9 @@ int test_join(int test_x) {
     int test_some_val;
 }
 
+void test_tmppp(int test_k) {
+    test_k += 1;
+}
 
 int main(void) {
     int test_result = -1, test_val = 4;

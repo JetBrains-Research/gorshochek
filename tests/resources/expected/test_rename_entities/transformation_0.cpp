@@ -31,6 +31,9 @@ int join(int x) {
     int some_val;
 }
 
+void tmppp(int k) {
+    k += 1;
+}
 
 int main(void) {
     int result = -1, val = 4;
