@@ -177,7 +177,7 @@ ITransformation * RenameEntitiesTransformation::buildFromConfig(const YAML::Node
     const auto seed = config["seed"].as<int>();
     const auto max_tokens = config["max tokens"].as<int>();
     const auto max_token_len = config["max token len"].as<int>();
-    const auto hash_token = config["hash token"].as<string>();
+    const auto hash_token = config["with hash"] != nullptr ? config["hash token"].as<string>() : "d";
     const auto with_hash = config["with hash"] != nullptr && config["with hash"].as<bool>();
     return new RenameEntitiesTransformation(p, rename_func, rename_var, seed,
                                             max_tokens, max_token_len, hash_token, with_hash, test);
