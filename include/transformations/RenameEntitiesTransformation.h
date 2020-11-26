@@ -29,15 +29,17 @@ std::discrete_distribution;
 
 /// RecursiveASTVisitor is a set of actions that are done
 /// when a certain node of AST is reached. RenameEntitiesVisitor in particular
-/// visits all entities (e.g functions or variables) and rename them to a
-/// random name (or name like prefix_(hash from old name)
+/// visits all entities (e.g functions or variables) and rename them.
+/// Currently supported renamings:
+///    - random name
+///    - hash taken from previous name with a certain prefix
 class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> {
  public:
     explicit RenameEntitiesVisitor(Rewriter * rewriter, const bool rename_func, const bool rename_var,
                                    discrete_distribution<int> token_len_generator,
                                    discrete_distribution<int> tokens_num_generator,
                                    discrete_distribution<int> char_generator,
-                                   mt19937 * gen, string  hash_prefix = "d",
+                                   mt19937 * gen, const string * hash_prefix,
                                    const bool with_hash = false,
                                    const bool test = false);
     /**
@@ -76,7 +78,7 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
 
     map<Decl *, string> decl2name;
     string randomSnakeCaseName();
-    string hashName(string *name);
+    string hashName(string * name);
     void processVarDecl(Decl * decl, string * name);
 };
 
@@ -86,7 +88,7 @@ class RenameEntitiesASTConsumer : public ASTConsumer {
                                        discrete_distribution<int> token_len_generator,
                                        discrete_distribution<int> tokens_num_generator,
                                        discrete_distribution<int> char_generator,
-                                       mt19937 * gen, const string& hash_prefix,
+                                       mt19937 * gen, const string * hash_prefix,
                                        const bool with_hash, const bool test);
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT.
  private:
@@ -99,11 +101,8 @@ class RenameEntitiesTransformation : public ITransformation {
     explicit RenameEntitiesTransformation(const float p, const bool rename_func,
                                           const bool rename_var, const int seed,
                                           const int max_tokens, const int max_token_len,
+                                          const string * hash_prefix, const bool with_hash,
                                           const bool test);
-
-    RenameEntitiesTransformation(const float p, const bool rename_func, const bool rename_var, const int seed,
-                                 const int max_tokens, const int max_token_len, string hash_prefix,
-                                 const bool with_hash, const bool test);
 
     ~RenameEntitiesTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);

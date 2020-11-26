@@ -3,7 +3,7 @@
 #include <utility>
 
 using llvm::isa, llvm::cast;
-using std::unique_ptr, std::find, std::vector, std::string;
+using std::unique_ptr, std::find, std::vector, std::string, std::to_string, std::hash;
 using clang::DeclStmt, clang::FunctionDecl, clang::VarDecl, clang::DeclRefExpr,
 clang::NamedDecl;
 
@@ -13,14 +13,14 @@ RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const bool ren
                                              discrete_distribution<int> token_len_generator,
                                              discrete_distribution<int> tokens_num_generator,
                                              discrete_distribution<int> char_generator,
-                                             mt19937 * gen, string hash_prefix, const bool with_hash,
+                                             mt19937 * gen, const string * hash_prefix, const bool with_hash,
                                              const bool test):
         rewriter(rewriter), sm(rewriter->getSourceMgr()),
         rename_func(rename_func), rename_var(rename_var),
         token_len_generator(move(token_len_generator)),
         tokens_num_generator(move(tokens_num_generator)),
         char_generator(move(char_generator)),
-        gen(gen), hash_prefix(std::move(hash_prefix)), with_hash(with_hash), test(test)  {
+        gen(gen), hash_prefix(*hash_prefix), with_hash(with_hash), test(test)  {
 }
 
 bool RenameEntitiesVisitor::VisitFunctionDecl(FunctionDecl * fdecl) {
@@ -100,11 +100,16 @@ string RenameEntitiesVisitor::randomSnakeCaseName() {
 }
 
 string RenameEntitiesVisitor::hashName(string * name) {
-    return hash_prefix + "_" + std::to_string(std::hash<std::string>{}(*name));
+    return hash_prefix + "_" + to_string(hash<string>{}(*name));
 }
 
 void RenameEntitiesVisitor::processVarDecl(Decl * decl, string * name) {
-    string randomName = test ? "test_" + *name : with_hash ? hashName(name) : randomSnakeCaseName();
+    string randomName;
+    if (test) {
+        randomName = "test_" + *name;
+    } else {
+        randomName = with_hash ? hashName(name) : randomSnakeCaseName();
+    }
     rewriter->ReplaceText(decl->getLocation(), name->length(), randomName);
     decl2name[decl] = randomName;
 }
@@ -115,7 +120,7 @@ RenameEntitiesASTConsumer::RenameEntitiesASTConsumer(Rewriter * rewriter, const 
                                                      discrete_distribution<int> token_len_generator,
                                                      discrete_distribution<int> tokens_num_generator,
                                                      discrete_distribution<int> char_generator,
-                                                     mt19937 * gen, const string& hash_prefix,
+                                                     mt19937 * gen, const string * hash_prefix,
                                                      const bool with_hash, const bool test):
         visitor(rewriter, rename_func, rename_var,
                 move(token_len_generator), move(tokens_num_generator),
@@ -132,12 +137,12 @@ void RenameEntitiesASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
 RenameEntitiesTransformation::RenameEntitiesTransformation(const float p, const bool rename_func,
                                                            const bool rename_var, const int seed,
                                                            const int max_tokens, const int max_token_len,
-                                                           string  hash_prefix,
+                                                           const string * hash_prefix,
                                                            const bool with_hash, const bool test):
         ITransformation(p, "rename entities"),
         rename_func(rename_func),
         rename_var(rename_var),
-        hash_prefix(std::move(hash_prefix)),
+        hash_prefix(*hash_prefix),
         with_hash(with_hash),
         test(test) {
     gen = new mt19937(seed);
@@ -166,7 +171,7 @@ discrete_distribution<int> RenameEntitiesTransformation::createUniformIntGenerat
 unique_ptr<ASTConsumer> RenameEntitiesTransformation::getConsumer(Rewriter * rewriter) {
     return llvm::make_unique<RenameEntitiesASTConsumer>(rewriter, rename_func, rename_var,
                                                         token_len_generator, tokens_num_generator,
-                                                        char_generator, gen, hash_prefix, with_hash, test);
+                                                        char_generator, gen, &hash_prefix, with_hash, test);
 }
 
 ITransformation * RenameEntitiesTransformation::buildFromConfig(const YAML::Node & config) {
@@ -177,8 +182,8 @@ ITransformation * RenameEntitiesTransformation::buildFromConfig(const YAML::Node
     const auto seed = config["seed"].as<int>();
     const auto max_tokens = config["max tokens"].as<int>();
     const auto max_token_len = config["max token len"].as<int>();
-    const auto hash_token = config["hash token"] != nullptr ? config["hash token"].as<string>() : "d";
-    const auto with_hash = config["with hash"] != nullptr && config["with hash"].as<bool>();
+    const auto hash_prefix = config["hash prefix"] != nullptr ? config["hash prefix"].as<string>() : "d";
+    const auto with_hash = (config["with hash"] != nullptr) && config["with hash"].as<bool>();
     return new RenameEntitiesTransformation(p, rename_func, rename_var, seed,
-                                            max_tokens, max_token_len, hash_token, with_hash, test);
+                                            max_tokens, max_token_len, &hash_prefix, with_hash, test);
 }
