@@ -29,7 +29,7 @@ string RandomRenameProcessor::generateNewName(string * name) {
     return newName;
 }
 
-BaseRenameProcessor * RandomRenameProcessor::buildFromConfig(const YAML::Node & config) {
+BaseRenameProcessor * RandomRenameProcessor::buildFromConfig(const YAML::Node &config) {
     const auto seed = config["seed"].as<int>();
     const auto max_tokens = config["max tokens"].as<int>();
     const auto max_token_len = config["max token len"].as<int>();

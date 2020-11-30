@@ -11,10 +11,10 @@ class TestRenameProcessor : public BaseRenameProcessor {
 
     explicit TestRenameProcessor();
 
-    string generateNewName(string *name) override;
+    string generateNewName(string * name) override;
 
 public:
-    static BaseRenameProcessor * buildFromConfig(const YAML::Node & config);
+    static BaseRenameProcessor * buildFromConfig(const YAML::Node &config);
 
 private:
     const string prefix = "test";
