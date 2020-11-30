@@ -10,4 +10,4 @@ static class DistributionGenerator {
     static discrete_distribution<int> createUniformIntGenerator(int num_elements);
 };
 
-#endif // GORSHOCHEK_DISCRETEDISTRIBUTIONGENERATOR_H
+#endif  // GORSHOCHEK_DISCRETEDISTRIBUTIONGENERATOR_H

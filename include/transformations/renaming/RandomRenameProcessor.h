@@ -30,4 +30,4 @@ class RandomRenameProcessor : public BaseRenameProcessor {
     const int num_lat_chars = 26;
 };
 
-#endif // GORSHOCHEK_RANDOMRENAMEPROCESSOR_H
+#endif  // GORSHOCHEK_RANDOMRENAMEPROCESSOR_H

@@ -18,4 +18,4 @@ class HashRenameProcessor : public BaseRenameProcessor {
     const string hash_prefix;
 };
 
-#endif // GORSHOCHEK_HASHRENAMEPROCESSOR_H
+#endif  // GORSHOCHEK_HASHRENAMEPROCESSOR_H

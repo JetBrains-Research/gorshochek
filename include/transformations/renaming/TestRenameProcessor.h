@@ -18,4 +18,4 @@ class TestRenameProcessor : public BaseRenameProcessor {
     const string prefix = "test";
 };
 
-#endif // GORSHOCHEK_TESTRENAMEPROCESSOR_H
+#endif  // GORSHOCHEK_TESTRENAMEPROCESSOR_H

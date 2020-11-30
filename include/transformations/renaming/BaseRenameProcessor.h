@@ -20,4 +20,4 @@ class BaseRenameProcessor {
     static BaseRenameProcessor * buildFromConfig(const YAML::Node & config);
 };
 
-#endif // GORSHOCHEK_BASERENAMEPROCESSOR_H
+#endif  // GORSHOCHEK_BASERENAMEPROCESSOR_H
