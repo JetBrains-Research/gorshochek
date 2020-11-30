@@ -11,16 +11,13 @@ class BaseRenameProcessor {
     /**
      * Base class for all renaming processors, which generates a new name
      */
-
  public:
-
-    explicit BaseRenameProcessor() = default;
+    BaseRenameProcessor() = default;
     virtual ~BaseRenameProcessor() = default;
 
     virtual string generateNewName(string * name);
 
     static BaseRenameProcessor * buildFromConfig(const YAML::Node & config);
-
 };
 
-#endif //GORSHOCHEK_BASERENAMEPROCESSOR_H
+#endif // GORSHOCHEK_BASERENAMEPROCESSOR_H

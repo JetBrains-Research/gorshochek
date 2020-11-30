@@ -8,7 +8,6 @@
 #include <memory>
 #include <map>
 #include <random>
-#include <include/transformations/renaming/BaseRenameProcessor.h>
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -22,6 +21,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include "../ITransformation.h"
+#include "./renaming/BaseRenameProcessor.h"
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::FunctionDecl,
 clang::ASTContext, clang::CallExpr, clang::Decl, clang::Stmt, clang::SourceManager;

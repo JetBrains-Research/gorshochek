@@ -11,7 +11,7 @@ string HashRenameProcessor::generateNewName(string * name) {
 }
 
 BaseRenameProcessor * HashRenameProcessor::buildFromConfig(const YAML::Node &config) {
-    // TODO: generate random hash prefix by default?
+    // TODO(@nbirillo): generate random hash prefix by default?
     const auto hash_prefix = config["hash prefix"] != nullptr ? config["hash prefix"].as<string>() : "d";
     return new HashRenameProcessor(&hash_prefix);
 }
