@@ -8,6 +8,7 @@
 #include <memory>
 #include <map>
 #include <random>
+#include <include/transformations/renaming/BaseRenameProcessor.h>
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -36,12 +37,7 @@ std::discrete_distribution;
 class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> {
  public:
     explicit RenameEntitiesVisitor(Rewriter * rewriter, const bool rename_func, const bool rename_var,
-                                   discrete_distribution<int> token_len_generator,
-                                   discrete_distribution<int> tokens_num_generator,
-                                   discrete_distribution<int> char_generator,
-                                   mt19937 * gen, const string * hash_prefix,
-                                   const bool with_hash = false,
-                                   const bool test = false);
+                                   const BaseRenameProcessor * processor);
     /**
      * This function is called a certain clang::CallExpr is visited. Here get all the functions
      * calls/declarations and rename them
@@ -65,44 +61,28 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
     const bool rename_func = false;
     const bool rename_var = false;
 
-    discrete_distribution<int> token_len_generator;
-    discrete_distribution<int> tokens_num_generator;
-    discrete_distribution<int> char_generator;
-
-    mt19937 * gen;
-
-    const bool test = false;
-
-    const bool with_hash = false;
-    const string hash_prefix = "d";
+    BaseRenameProcessor processor;
 
     map<Decl *, string> decl2name;
-    string randomSnakeCaseName();
-    string hashName(string * name);
     void processVarDecl(Decl * decl, string * name);
 };
 
 class RenameEntitiesASTConsumer : public ASTConsumer {
  public:
     explicit RenameEntitiesASTConsumer(Rewriter * rewriter, const bool rename_func, const bool rename_var,
-                                       discrete_distribution<int> token_len_generator,
-                                       discrete_distribution<int> tokens_num_generator,
-                                       discrete_distribution<int> char_generator,
-                                       mt19937 * gen, const string * hash_prefix,
-                                       const bool with_hash, const bool test);
+                                       BaseRenameProcessor * processor);
     void HandleTranslationUnit(ASTContext &ctx); // NOLINT.
  private:
     RenameEntitiesVisitor visitor;
     Rewriter * rewriter;
+    BaseRenameProcessor * processor;
 };
 
 class RenameEntitiesTransformation : public ITransformation {
  public:
     explicit RenameEntitiesTransformation(const float p, const bool rename_func,
-                                          const bool rename_var, const int seed,
-                                          const int max_tokens, const int max_token_len,
-                                          const string * hash_prefix, const bool with_hash,
-                                          const bool test);
+                                          const bool rename_var,
+                                          const BaseRenameProcessor * processor);
 
     ~RenameEntitiesTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
@@ -116,25 +96,7 @@ class RenameEntitiesTransformation : public ITransformation {
     const bool rename_func = false;
     const bool rename_var = false;
 
-    const bool test = false;
-
-    const bool with_hash = false;
-    const string hash_prefix = "d";
-
-    const int num_lat_chars = 26;
-
-    discrete_distribution<int> token_len_generator;
-    discrete_distribution<int> tokens_num_generator;
-    discrete_distribution<int> char_generator;
-
-    mt19937 * gen;
-
-    /**
-     * This function creates discrete uniform distribution.
-     * @param num_elements    the number of elements in the distribution
-     * @return                discrete uniform distribution (i.e. with equal probabilities of each output)
-     */
-    static discrete_distribution<int> createUniformIntGenerator(const int num_elements);
+    BaseRenameProcessor processor;
 };
 
 #endif  // INCLUDE_TRANSFORMATIONS_RENAMEENTITIESTRANSFORMATION_H_
