@@ -91,7 +91,8 @@ void RenameEntitiesVisitor::processVarDecl(Decl * decl, string * name) {
 RenameEntitiesASTConsumer::RenameEntitiesASTConsumer(Rewriter * rewriter, const bool rename_func, const bool rename_var,
                                                      BaseRenameProcessor * processor):
         visitor(rewriter, rename_func, rename_var, processor),
-        rewriter(rewriter) {}
+        rewriter(rewriter),
+        processor(processor) {}
 
 void RenameEntitiesASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());
@@ -102,15 +103,15 @@ void RenameEntitiesASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
 
 RenameEntitiesTransformation::RenameEntitiesTransformation(const float p, const bool rename_func,
                                                            const bool rename_var,
-                                                           const BaseRenameProcessor * processor):
+                                                           BaseRenameProcessor * processor):
         ITransformation(p, "rename entities"),
         rename_func(rename_func),
         rename_var(rename_var),
-        processor(*processor) {
+        processor(processor) {
 }
 
 unique_ptr<ASTConsumer> RenameEntitiesTransformation::getConsumer(Rewriter * rewriter) {
-    return llvm::make_unique<RenameEntitiesASTConsumer>(rewriter, rename_func, rename_var, &processor);
+    return llvm::make_unique<RenameEntitiesASTConsumer>(rewriter, rename_func, rename_var, processor);
 }
 
 ITransformation * RenameEntitiesTransformation::buildFromConfig(const YAML::Node & config) {

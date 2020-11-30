@@ -82,7 +82,7 @@ class RenameEntitiesTransformation : public ITransformation {
  public:
     explicit RenameEntitiesTransformation(const float p, const bool rename_func,
                                           const bool rename_var,
-                                          const BaseRenameProcessor * processor);
+                                          BaseRenameProcessor * processor);
 
     ~RenameEntitiesTransformation() = default;
     unique_ptr<ASTConsumer> getConsumer(Rewriter *rewriter);
@@ -96,7 +96,7 @@ class RenameEntitiesTransformation : public ITransformation {
     const bool rename_func = false;
     const bool rename_var = false;
 
-    BaseRenameProcessor processor;
+    BaseRenameProcessor * processor;
 };
 
 #endif  // INCLUDE_TRANSFORMATIONS_RENAMEENTITIESTRANSFORMATION_H_
