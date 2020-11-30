@@ -11,6 +11,8 @@ class BaseRenameProcessor {
     /**
      * Base class for all renaming processors, which generates a new name
      */
+
+
  public:
     BaseRenameProcessor() = default;
     virtual ~BaseRenameProcessor() = default;

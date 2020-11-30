@@ -6,7 +6,6 @@
 using std::discrete_distribution;
 
 static class DistributionGenerator {
-
  public:
     static discrete_distribution<int> createUniformIntGenerator(int num_elements);
 };

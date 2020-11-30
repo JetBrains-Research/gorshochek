@@ -102,7 +102,11 @@ add_executable(${PROJECT_NAME}
         src/transformations/input_output/Utils.cpp
         src/transformations/ForToWhileTransformation.cpp
         src/transformations/WhileToForTransformation.cpp
-        include/transformations/renaming/BaseRenameProcessor.h src/transformations/renaming/BaseRenameProcessor.cpp include/transformations/renaming/HashRenameProcessor.h src/transformations/renaming/HashRenameProcessor.cpp include/transformations/renaming/TestRenameProcessor.h src/transformations/renaming/TestRenameProcessor.cpp include/transformations/renaming/RandomRenameProcessor.h src/transformations/renaming/RandomRenameProcessor.cpp include/transformations/renaming/DistributionGenerator.h src/transformations/renaming/DistributionGenerator.cpp)
+        src/transformations/renaming/BaseRenameProcessor.cpp
+        src/transformations/renaming/HashRenameProcessor.cpp
+        src/transformations/renaming/TestRenameProcessor.cpp
+        src/transformations/renaming/RandomRenameProcessor.cpp
+        src/transformations/renaming/DistributionGenerator.cpp)
 
 # Installing yaml-cpp
 

@@ -12,6 +12,8 @@ class RandomRenameProcessor : public BaseRenameProcessor {
      * Generate a new name by the following rule:
      * take the hash from the previous name with a certain prefix
      */
+
+
  public:
     explicit RandomRenameProcessor(int seed,
                                    int max_tokens,

@@ -10,6 +10,8 @@ class HashRenameProcessor : public BaseRenameProcessor {
      * Generate a new name by the following rule:
      * take the hash from the previous name with a certain prefix
      */
+
+
  public:
     explicit HashRenameProcessor(const string * hash_prefix);
 

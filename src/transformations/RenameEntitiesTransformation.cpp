@@ -1,10 +1,10 @@
 #include "../../include/transformations/RenameEntitiesTransformation.h"
 
 #include <utility>
-#include <include/transformations/renaming/BaseRenameProcessor.h>
-#include <include/transformations/renaming/RandomRenameProcessor.h>
-#include <include/transformations/renaming/TestRenameProcessor.h>
-#include <include/transformations/renaming/HashRenameProcessor.h>
+#include "include/transformations/renaming/BaseRenameProcessor.h"
+#include "include/transformations/renaming/RandomRenameProcessor.h"
+#include "include/transformations/renaming/TestRenameProcessor.h"
+#include "include/transformations/renaming/HashRenameProcessor.h"
 
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string, std::to_string, std::hash, std::function;
