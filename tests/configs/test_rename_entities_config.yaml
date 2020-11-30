@@ -3,6 +3,6 @@ transformations:
   - rename entities:
       p: 1.0
       rename functions: true
-          rename variables: true
-          strategy:
-              name: test
+      rename variables: true
+      strategy:
+        name: test
