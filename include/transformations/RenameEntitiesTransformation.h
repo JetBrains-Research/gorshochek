@@ -37,7 +37,7 @@ std::discrete_distribution;
 class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> {
  public:
     explicit RenameEntitiesVisitor(Rewriter * rewriter, const bool rename_func, const bool rename_var,
-                                   const BaseRenameProcessor * processor);
+                                   BaseRenameProcessor * processor);
     /**
      * This function is called a certain clang::CallExpr is visited. Here get all the functions
      * calls/declarations and rename them
@@ -61,7 +61,7 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
     const bool rename_func = false;
     const bool rename_var = false;
 
-    BaseRenameProcessor processor;
+    BaseRenameProcessor * processor;
 
     map<Decl *, string> decl2name;
     void processVarDecl(Decl * decl, string * name);

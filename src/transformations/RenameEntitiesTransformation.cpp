@@ -14,10 +14,10 @@ clang::NamedDecl;
 // ------------ RenameEntitiesVisitor ------------
 
 RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const bool rename_func, const bool rename_var,
-                                             const BaseRenameProcessor * processor):
+                                             BaseRenameProcessor * processor):
         rewriter(rewriter), sm(rewriter->getSourceMgr()),
         rename_func(rename_func), rename_var(rename_var),
-        processor(*processor)  {
+        processor(processor)  {
 }
 
 bool RenameEntitiesVisitor::VisitFunctionDecl(FunctionDecl * fdecl) {
@@ -81,7 +81,7 @@ bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
 }
 
 void RenameEntitiesVisitor::processVarDecl(Decl * decl, string * name) {
-    string randomName = processor.generateNewName(name);
+    string randomName = processor->generateNewName(name);
     rewriter->ReplaceText(decl->getLocation(), name->length(), randomName);
     decl2name[decl] = randomName;
 }
