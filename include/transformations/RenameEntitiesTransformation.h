@@ -75,7 +75,6 @@ class RenameEntitiesASTConsumer : public ASTConsumer {
  private:
     RenameEntitiesVisitor visitor;
     Rewriter * rewriter;
-    BaseRenameProcessor * processor;
 };
 
 class RenameEntitiesTransformation : public ITransformation {

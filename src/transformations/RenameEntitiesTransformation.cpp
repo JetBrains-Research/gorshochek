@@ -91,8 +91,7 @@ void RenameEntitiesVisitor::processVarDecl(Decl * decl, string * name) {
 RenameEntitiesASTConsumer::RenameEntitiesASTConsumer(Rewriter * rewriter, const bool rename_func, const bool rename_var,
                                                      BaseRenameProcessor * processor):
         visitor(rewriter, rename_func, rename_var, processor),
-        rewriter(rewriter),
-        processor(processor) {}
+        rewriter(rewriter) {}
 
 void RenameEntitiesASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     visitor.TraverseDecl(ctx.getTranslationUnitDecl());

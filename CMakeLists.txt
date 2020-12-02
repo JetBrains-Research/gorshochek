@@ -106,7 +106,7 @@ add_executable(${PROJECT_NAME}
         src/transformations/renaming/HashRenameProcessor.cpp
         src/transformations/renaming/TestRenameProcessor.cpp
         src/transformations/renaming/RandomRenameProcessor.cpp
-        src/transformations/renaming/DistributionGenerator.cpp)
+        src/transformations/renaming/Utils.cpp)
 
 # Installing yaml-cpp
 

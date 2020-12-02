@@ -1,8 +1,8 @@
-#include "include/transformations/renaming/DistributionGenerator.h"
+#include "include/transformations/renaming/Utils.h"
 
 using std::vector;
 
-discrete_distribution<int> DistributionGenerator::createUniformIntGenerator(const int num_elements) {
+discrete_distribution<int> createUniformIntGenerator(const int num_elements) {
     /**
      * Such a strange way to generate random variables is essential to guarantee
      * the same behaviour of random module on different OS.
@@ -17,4 +17,6 @@ discrete_distribution<int> DistributionGenerator::createUniformIntGenerator(cons
     }
     return discrete_distribution<int> (probabilities.begin(), probabilities.end());
 }
+
+
 

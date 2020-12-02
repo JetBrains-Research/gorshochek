@@ -10,8 +10,7 @@ using std::mt19937, std::discrete_distribution;
 
 class RandomRenameProcessor : public BaseRenameProcessor {
     /**
-     * Generate a new name by the following rule:
-     * take the hash from the previous name with a certain prefix
+     * Generate a random new name
      */
  public:
     explicit RandomRenameProcessor(int seed,

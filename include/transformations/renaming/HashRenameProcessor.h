@@ -12,7 +12,7 @@ class HashRenameProcessor : public BaseRenameProcessor {
      */
  public:
     explicit HashRenameProcessor(const string * hash_prefix);
-    string generateNewName(string *name) override;
+    string generateNewName(string * name) override;
     static BaseRenameProcessor * buildFromConfig(const YAML::Node & config);
  private:
     const string hash_prefix;

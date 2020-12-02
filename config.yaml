@@ -2,6 +2,18 @@ n transformations: 1
 transformations:
   - remove comments:
       p: 1.0
+  - for to while:
+      p: 1.0
+  - if else swap:
+      p: 1.0
+  - printf to cout:
+      p: 1.0
+  - while to for:
+      p: 1.0
+  - reorder function decls:
+      p: 1.0
+      seed: 9
+      test: true
   - rename entities:
       p: 1
       rename functions: true

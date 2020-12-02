@@ -1,5 +1,5 @@
 #include "include/transformations/renaming/RandomRenameProcessor.h"
-#include "include/transformations/renaming/DistributionGenerator.h"
+#include "include/transformations/renaming/Utils.h"
 
 using std::hash, std::to_string;
 // ------------ RandomRenameProcessor ------------
@@ -8,9 +8,9 @@ RandomRenameProcessor::RandomRenameProcessor(const int seed,
                                              const int max_tokens,
                                              const int max_token_len) {
     gen = new mt19937(seed);
-    token_len_generator = DistributionGenerator::createUniformIntGenerator(max_token_len);
-    tokens_num_generator = DistributionGenerator::createUniformIntGenerator(max_tokens);
-    char_generator = DistributionGenerator::createUniformIntGenerator(num_lat_chars);
+    token_len_generator = createUniformIntGenerator(max_token_len);
+    tokens_num_generator = createUniformIntGenerator(max_tokens);
+    char_generator = createUniformIntGenerator(num_lat_chars);
 }
 
 string RandomRenameProcessor::generateNewName(string * name) {
