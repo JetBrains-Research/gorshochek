@@ -18,7 +18,7 @@ sudo docker build -t gorshochek .
 # Usage
 Then to run a container from just created image run:
 ```(bash)
-./scripts/run.sh input_folder output_folder
+sh ./scripts/run.sh input_folder output_folder
 ```
 Note that `input_folder` will be traversed recursively and every `.cpp` file from it will be transformed.
 To specify which exact transformations to apply edit file `config.yaml`, which should have the following structure:
