@@ -26,6 +26,7 @@ int main(int argc, const char **argv) {
     const vector<ITransformation *> *transformations = getTransformationsFromYaml(config_path);
     // Getting number of transformations
     size_t n_transformations = getNumTransformationsFromYaml(config_path);
-    Runner(transformations, n_transformations).run(input_path, output_path);
+    size_t batch_size = getBatchSizeFromYaml(config_path);
+    Runner(transformations, n_transformations, batch_size).run(input_path, output_path);
     return 0;
 }

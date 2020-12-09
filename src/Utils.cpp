@@ -20,6 +20,8 @@ using std::string, std::function, std::cerr, std::endl, std::size_t;
 
 const char * CONFIG_TRANSFORMATIONS_KEY = "transformations";
 const char * CONFIG_NUM_TRANSFORMATIONS_KEY = "n transformations";
+const char * CONFIG_BATCH_SIZE_KEY = "batch size";
+size_t DEFAULT_BATCH_SIZE = 16;
 
 const map<string, function<ITransformation *(const YAML::Node &)>> transformFactory = {
         {"identity transform", IdentityTransformation::buildFromConfig },
@@ -65,4 +67,9 @@ size_t getNumTransformationsFromYaml(const string &config_path) {
              << "\" key" << endl;
     }
     return config[CONFIG_NUM_TRANSFORMATIONS_KEY].as<size_t>();
+}
+
+size_t getBatchSizeFromYaml(const string &config_path) {
+    YAML::Node config = YAML::LoadFile(config_path);
+    return config[CONFIG_BATCH_SIZE_KEY] != nullptr ? config[CONFIG_BATCH_SIZE_KEY].as<size_t>() : DEFAULT_BATCH_SIZE;
 }

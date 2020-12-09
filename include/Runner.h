@@ -17,7 +17,7 @@ static OptionCategory TransformationCategory("Transformation");
 class Runner {
  public:
     explicit Runner(const vector<ITransformation * > * transformations,
-                    size_t n_transformations);
+                    size_t n_transformations, size_t batch_size);
     void run(const string& input_path, const string& output_path);
 
  private:
@@ -31,14 +31,15 @@ class Runner {
     void createOutputFolders(const string& input_path,
                              const string& output_path,
                              vector<char **> * rewritable_cpaths,
-                             int * num_files);
+                             size_t * num_files);
     static void createDescriptionFile(const string& input_path,
                                       const string& output_path,
                                       const string &description);
-    void createOptionsParser(int num_files, vector<char **> * rewritable_cpaths,
-                             vector<CommonOptionsParser *> * option_parsers);
+    void createOptionsParser(size_t num_files, vector<char **> * rewritable_cpaths,
+                             vector<vector<CommonOptionsParser *> *> * option_parsers);
     const vector<ITransformation * > * transformations;
     size_t n_transformations;
+    size_t batch_size;
     mt19937 *gen;
 };
 

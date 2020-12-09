@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+#include <cmath>
+#include <algorithm>
 
 #include "../include/Runner.h"
 #include "../include/TransformationFrontendAction.h"
@@ -14,15 +16,16 @@
 using clang::tooling::FrontendActionFactory, clang::tooling::ClangTool,
 clang::FrontendAction;
 using std::size_t, std::vector, std::string, std::ofstream, std::ios_base,
-std::mt19937, std::copy, std::uniform_real_distribution, std::to_string;
+std::mt19937, std::copy, std::uniform_real_distribution, std::to_string, std::min;
 namespace fs = std::filesystem;
 
 const int SEED = 7;
 
 Runner::Runner(const vector<ITransformation *> *transformations,
-               size_t n_transformations):
+               size_t n_transformations, size_t batch_size):
         transformations(transformations),
         n_transformations(n_transformations),
+        batch_size(batch_size),
         gen(new mt19937(SEED)) {}
 
 void Runner::createDescriptionFile(const string& input_path,
@@ -48,7 +51,7 @@ void Runner::createDescriptionFile(const string& input_path,
 void Runner::createOutputFolders(const string& input_path,
                                  const string& output_path,
                                  vector<char **> * rewritable_cpaths,
-                                 int * num_files) {
+                                 size_t * num_files) {
     fs::path output_dir(output_path);
     fs::create_directory(output_dir);
 
@@ -90,30 +93,51 @@ void Runner::createOutputFolders(const string& input_path,
 }
 
 void Runner::createOptionsParser(
-        int num_files, vector<char **> * rewritable_cpaths,
-        vector<CommonOptionsParser *> * option_parsers) {
-    int argc = num_files + 3;
+        size_t num_files, vector<char **> * rewritable_cpaths,
+        vector<vector<CommonOptionsParser *> *> * option_parsers) {
+    size_t num_batches = ceil(static_cast<float>(num_files) / batch_size);
 
-    const char *argv[num_files + 3];
+    int argc = batch_size + 3;
+    const char *argv[argc];
     argv[0] = "./gorshochek";
     argv[1] = "-p";
     argv[2] = "build";
 
-    for (size_t transform_index = 0; transform_index < n_transformations; ++transform_index) {
-        copy(rewritable_cpaths->at(transform_index),
-             rewritable_cpaths->at(transform_index) + num_files,
-             argv + 3);
-        option_parsers->at(transform_index) = new CommonOptionsParser(argc, argv, TransformationCategory);
+    int last_batch_argc = num_files - (num_batches - 1) * batch_size + 3;
+    const char * last_batch_argv[last_batch_argc];
+    last_batch_argv[0] = "./gorshochek";
+    last_batch_argv[1] = "-p";
+    last_batch_argv[2] = "build";
+
+    for (auto transform_index = 0; transform_index < n_transformations; ++transform_index) {
+        option_parsers->at(transform_index) = new vector<CommonOptionsParser *>(num_batches);
+        for (auto batch_index = 0; batch_index < num_batches; ++batch_index) {
+            if ((batch_index + 1) * batch_size < num_files) {
+                copy(rewritable_cpaths->at(transform_index) + batch_index * batch_size,
+                     rewritable_cpaths->at(transform_index) + (batch_index + 1) * batch_size,
+                     argv + 3);
+                option_parsers->at(transform_index)
+                        ->at(batch_index) = new CommonOptionsParser(argc, argv, TransformationCategory);
+            } else {
+                copy(rewritable_cpaths->at(transform_index) + batch_index * batch_size,
+                     rewritable_cpaths->at(transform_index) + num_files,
+                     last_batch_argv + 3);
+                option_parsers->at(transform_index)
+                              ->at(batch_index) = new CommonOptionsParser(
+                                      last_batch_argc, last_batch_argv, TransformationCategory);
+            }
+        }
     }
 }
 
 void Runner::run(const string& input_path, const string& output_path) {
     vector<string> descr_per_transform(n_transformations);
-    int num_files;
+    size_t num_files;
     auto rewritable_cpaths = new vector<char **>(n_transformations);
     createOutputFolders(input_path, output_path, rewritable_cpaths, &num_files);
 
-    auto option_parsers = new vector<CommonOptionsParser *>(n_transformations);
+    auto num_batches = ceil(static_cast<float>(num_files) / batch_size);
+    auto option_parsers = new vector<vector<CommonOptionsParser *> *>(n_transformations);
     createOptionsParser(num_files, rewritable_cpaths, option_parsers);
 
     uniform_real_distribution<double> dis(0.0, 1.0);
@@ -127,13 +151,17 @@ void Runner::run(const string& input_path, const string& output_path) {
             // Run the Clang Tool, creating a new FrontendAction
             // The way to create new FrontendAction is similar to newFrontendActionFactory function
             for (auto transformation : *transformations) {
+                std::cout << "Transformation " << transformation->getName() << "\n";
                 // Constructs a clang tool to run over a list of files.
-                if (dis(*gen) < transformation->getProbability()) {
-                    ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
-                                   option_parsers->at(transform_index)->getSourcePathList());
-                    Tool.run(std::unique_ptr<FrontendActionFactory>(
-                            new TransformationFrontendActionFactory(transformation)).get());
-                    descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
+                for (auto batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
+                    std::cout << "- Batch " << batch_idx << "\n";
+                    if (dis(*gen) < transformation->getProbability()) {
+                        ClangTool Tool(option_parsers->at(transform_index)->at(batch_idx)->getCompilations(),
+                                       option_parsers->at(transform_index)->at(batch_idx)->getSourcePathList());
+                        Tool.run(std::unique_ptr<FrontendActionFactory>(
+                                new TransformationFrontendActionFactory(transformation)).get());
+                        descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
+                    }
                 }
             }
         }
