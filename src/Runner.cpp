@@ -149,9 +149,9 @@ void Runner::run(const string& input_path, const string& output_path) {
             for (auto transformation : *transformations) {
                 cout << "Transformation " << transformation->getName() << endl;
                 // Constructs a clang tool to run over a list of files.
-                for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
-                    cout << "- Batch " << batch_idx << endl;
-                    if (dis(*gen) < transformation->getProbability()) {
+                if (dis(*gen) < transformation->getProbability()) {
+                    for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
+                        cout << "- Batch " << batch_idx << endl;
                         for (auto batch_file : *rewritable_batched_string_paths->at(transform_index)->at(batch_idx)) {
                             cout << " - - " << batch_file << endl;
                         }
@@ -160,8 +160,8 @@ void Runner::run(const string& input_path, const string& output_path) {
                                        *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
                         Tool.run(std::unique_ptr<FrontendActionFactory>(
                                 new TransformationFrontendActionFactory(transformation)).get());
-                        descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
                     }
+                    descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
                 }
             }
         }
