@@ -30,12 +30,12 @@ class Runner {
      */
     void createOutputFolders(const string& input_path,
                              const string& output_path,
-                             vector<char **> * rewritable_cpaths,
+                             vector<vector<char **> *> * rewritable_cpaths,
                              size_t * num_files);
     static void createDescriptionFile(const string& input_path,
                                       const string& output_path,
                                       const string &description);
-    void createOptionsParser(size_t num_files, vector<char **> * rewritable_cpaths,
+    void createOptionsParser(size_t num_files, vector<vector<char **> *> * rewritable_cpaths,
                              vector<vector<CommonOptionsParser *> *> * option_parsers);
     const vector<ITransformation * > * transformations;
     size_t n_transformations;

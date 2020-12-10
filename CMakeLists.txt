@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-everything \
+                                            -Wno-error=unused-command-line-argument \
                                             -fparse-all-comments \
                                             -fno-strict-aliasing \
                                             -fno-rtti \

@@ -1,3 +1,4 @@
+#pragma clang diagnostic ignored "-Wunused-parameter"
 #include <omp.h>
 
 #include <string>
@@ -50,7 +51,7 @@ void Runner::createDescriptionFile(const string& input_path,
 
 void Runner::createOutputFolders(const string& input_path,
                                  const string& output_path,
-                                 vector<char **> * rewritable_cpaths,
+                                 vector<vector<char **> *> * rewritable_cpaths,
                                  size_t * num_files) {
     fs::path output_dir(output_path);
     fs::create_directory(output_dir);
@@ -70,22 +71,34 @@ void Runner::createOutputFolders(const string& input_path,
     }
 
     *num_files = files.size();
-    int file_index;
+    int file_index, batch_index;
+    size_t files_left;
+    size_t num_batches = ceil(static_cast<float>(*num_files) / batch_size);
 
     for (int transform_index = 0; transform_index < n_transformations + 1; ++transform_index) {
         if (transform_index != 0) {
-            rewritable_cpaths->at(transform_index - 1) = new char * [*num_files];
+            rewritable_cpaths->at(transform_index - 1) = new vector<char **>(num_batches);
+            files_left = static_cast<size_t>(*num_files);
+            for (batch_index = 0; batch_index < num_batches; ++batch_index) {
+                rewritable_cpaths->at(transform_index - 1)
+                                 ->at(batch_index) = new char *[min(batch_size, files_left)];
+                files_left = files_left - batch_size;
+            }
         }
         string transformation_name = "transformation_" + std::to_string(transform_index) + ".cpp";
         file_index = 0;
-        for (const auto& src_path : files) {
+
+        for (const auto &src_path : files) {
+            batch_index = floor(static_cast<float>(file_index) / batch_size);
             fs::path transformations_path = fs::path(output_path) / src_path.stem();
             fs::create_directory(transformations_path);
             fs::path dst_path = transformations_path / fs::path(transformation_name);
             fs::copy(src_path, dst_path, copy_options);
             if (transform_index != 0) {
-                rewritable_cpaths->at(transform_index - 1)[file_index] = new char[dst_path.string().size() + 1];
-                strcpy(rewritable_cpaths->at(transform_index - 1)[file_index], dst_path.string().c_str()); // NOLINT
+                rewritable_cpaths->at(transform_index - 1)
+                                 ->at(batch_index)[file_index % batch_size] = new char[dst_path.string().size() + 1];
+                strcpy(rewritable_cpaths->at(transform_index - 1)
+                                             ->at(batch_index)[file_index % batch_size], dst_path.string().c_str()); // NOLINT
             }
             file_index++;
         }
@@ -93,39 +106,38 @@ void Runner::createOutputFolders(const string& input_path,
 }
 
 void Runner::createOptionsParser(
-        size_t num_files, vector<char **> * rewritable_cpaths,
+        size_t num_files, vector<vector<char **> *> * rewritable_cpaths,
         vector<vector<CommonOptionsParser *> *> * option_parsers) {
     size_t num_batches = ceil(static_cast<float>(num_files) / batch_size);
 
     int argc = batch_size + 3;
-    const char *argv[argc];
-    argv[0] = "./gorshochek";
-    argv[1] = "-p";
-    argv[2] = "build";
+    auto argvs = vector<vector<char **>>(n_transformations);
 
-    int last_batch_argc = num_files - (num_batches - 1) * batch_size + 3;
-    const char * last_batch_argv[last_batch_argc];
-    last_batch_argv[0] = "./gorshochek";
-    last_batch_argv[1] = "-p";
-    last_batch_argv[2] = "build";
-
+    int right_bound;
     for (auto transform_index = 0; transform_index < n_transformations; ++transform_index) {
         option_parsers->at(transform_index) = new vector<CommonOptionsParser *>(num_batches);
+        argvs[transform_index] = vector<char **>(num_batches);
         for (auto batch_index = 0; batch_index < num_batches; ++batch_index) {
-            if ((batch_index + 1) * batch_size < num_files) {
-                copy(rewritable_cpaths->at(transform_index) + batch_index * batch_size,
-                     rewritable_cpaths->at(transform_index) + (batch_index + 1) * batch_size,
-                     argv + 3);
-                option_parsers->at(transform_index)
-                        ->at(batch_index) = new CommonOptionsParser(argc, argv, TransformationCategory);
+            if ((batch_index + 1) * batch_size > num_files) {
+                right_bound = num_files - batch_size * (batch_index);
             } else {
-                copy(rewritable_cpaths->at(transform_index) + batch_index * batch_size,
-                     rewritable_cpaths->at(transform_index) + num_files,
-                     last_batch_argv + 3);
-                option_parsers->at(transform_index)
-                              ->at(batch_index) = new CommonOptionsParser(
-                                      last_batch_argc, last_batch_argv, TransformationCategory);
+                right_bound = batch_size;
             }
+            argc = right_bound + 3;
+            argvs[transform_index][batch_index] = new char *[argc];
+            argvs[transform_index][batch_index][0] = "./gorshochek";
+            argvs[transform_index][batch_index][1] = "-p";
+            argvs[transform_index][batch_index][2] = "build";
+            copy(rewritable_cpaths->at(transform_index)->at(batch_index),
+                 rewritable_cpaths->at(transform_index)->at(batch_index) + right_bound,
+                 argvs[transform_index][batch_index] + 3);
+            for (int i = 0; i < argc; ++i) {
+                std::cout << argvs[transform_index][batch_index][i] << " ";
+            }
+            std::cout << "\n";
+            option_parsers->at(transform_index)
+                    ->at(batch_index) = new CommonOptionsParser(
+                    argc, const_cast<const char **>(argvs[transform_index][batch_index]), TransformationCategory);
         }
     }
 }
@@ -133,7 +145,7 @@ void Runner::createOptionsParser(
 void Runner::run(const string& input_path, const string& output_path) {
     vector<string> descr_per_transform(n_transformations);
     size_t num_files;
-    auto rewritable_cpaths = new vector<char **>(n_transformations);
+    auto rewritable_cpaths = new vector<vector<char **> *>(n_transformations);
     createOutputFolders(input_path, output_path, rewritable_cpaths, &num_files);
 
     auto num_batches = ceil(static_cast<float>(num_files) / batch_size);
@@ -142,8 +154,9 @@ void Runner::run(const string& input_path, const string& output_path) {
 
     uniform_real_distribution<double> dis(0.0, 1.0);
     size_t transform_index = 0;
+    size_t batch_idx = 0;
     #pragma omp parallel \
-        private(transform_index) \
+        private(transform_index, batch_idx) \
         shared(num_files, rewritable_cpaths, option_parsers, descr_per_transform)
     {  // NOLINT
         #pragma omp for
@@ -153,9 +166,13 @@ void Runner::run(const string& input_path, const string& output_path) {
             for (auto transformation : *transformations) {
                 std::cout << "Transformation " << transformation->getName() << "\n";
                 // Constructs a clang tool to run over a list of files.
-                for (auto batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
+                for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
                     std::cout << "- Batch " << batch_idx << "\n";
                     if (dis(*gen) < transformation->getProbability()) {
+                        for (auto elem: option_parsers->at(transform_index)->at(batch_idx)->getSourcePathList()) {
+                            std::cout << " - - " << elem << "\n";
+                        }
+                        std::cout << "\n\n";
                         ClangTool Tool(option_parsers->at(transform_index)->at(batch_idx)->getCompilations(),
                                        option_parsers->at(transform_index)->at(batch_idx)->getSourcePathList());
                         Tool.run(std::unique_ptr<FrontendActionFactory>(

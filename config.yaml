@@ -1,5 +1,5 @@
 n transformations: 1
-batch size: 16
+batch size: 3
 transformations:
   - remove comments:
       p: 1.0
