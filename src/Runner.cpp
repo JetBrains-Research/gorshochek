@@ -152,7 +152,7 @@ void Runner::run(const string& input_path, const string& output_path) {
                 for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
                     cout << "- Batch " << batch_idx << endl;
                     if (dis(*gen) < transformation->getProbability()) {
-                        for (auto batch_file: *rewritable_batched_string_paths->at(transform_index)->at(batch_idx)) {
+                        for (auto batch_file : *rewritable_batched_string_paths->at(transform_index)->at(batch_idx)) {
                             cout << " - - " << batch_file << endl;
                         }
                         cout << endl << endl;
