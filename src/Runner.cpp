@@ -16,8 +16,9 @@
 
 using clang::tooling::FrontendActionFactory, clang::tooling::ClangTool,
 clang::FrontendAction;
-using std::size_t, std::vector, std::string, std::ofstream, std::ios_base,
-std::mt19937, std::copy, std::uniform_real_distribution, std::to_string, std::min;
+using std::size_t, std::vector, std::string, std::ofstream, std::ios_base, std::to_string,
+std::mt19937, std::copy, std::uniform_real_distribution, std::to_string, std::min,
+std::cout, std::endl;
 namespace fs = std::filesystem;
 
 const int SEED = 7;
@@ -51,7 +52,8 @@ void Runner::createDescriptionFile(const string& input_path,
 
 void Runner::createOutputFolders(const string& input_path,
                                  const string& output_path,
-                                 vector<vector<char **> *> * rewritable_cpaths,
+                                 vector<char **> * rewritable_cpaths,
+                                 vector<vector<vector<string> *> *> * rewritable_batched_string_paths,
                                  size_t * num_files) {
     fs::path output_dir(output_path);
     fs::create_directory(output_dir);
@@ -77,15 +79,16 @@ void Runner::createOutputFolders(const string& input_path,
 
     for (int transform_index = 0; transform_index < n_transformations + 1; ++transform_index) {
         if (transform_index != 0) {
-            rewritable_cpaths->at(transform_index - 1) = new vector<char **>(num_batches);
+            rewritable_cpaths->at(transform_index - 1) = new char * [*num_files];
+            rewritable_batched_string_paths->at(transform_index - 1) = new vector<vector<string> *>(num_batches);
             files_left = static_cast<size_t>(*num_files);
             for (batch_index = 0; batch_index < num_batches; ++batch_index) {
-                rewritable_cpaths->at(transform_index - 1)
-                                 ->at(batch_index) = new char *[min(batch_size, files_left)];
+                rewritable_batched_string_paths->at(transform_index - 1)
+                                               ->at(batch_index) = new vector<string>(min(batch_size, files_left));
                 files_left = files_left - batch_size;
             }
         }
-        string transformation_name = "transformation_" + std::to_string(transform_index) + ".cpp";
+        string transformation_name = "transformation_" + to_string(transform_index) + ".cpp";
         file_index = 0;
 
         for (const auto &src_path : files) {
@@ -95,61 +98,41 @@ void Runner::createOutputFolders(const string& input_path,
             fs::path dst_path = transformations_path / fs::path(transformation_name);
             fs::copy(src_path, dst_path, copy_options);
             if (transform_index != 0) {
-                rewritable_cpaths->at(transform_index - 1)
-                                 ->at(batch_index)[file_index % batch_size] = new char[dst_path.string().size() + 1];
-                strcpy(rewritable_cpaths->at(transform_index - 1)
-                                             ->at(batch_index)[file_index % batch_size], dst_path.string().c_str()); // NOLINT
+                rewritable_batched_string_paths->at(transform_index - 1)
+                        ->at(batch_index)->at(file_index % batch_size) = dst_path.string();
+                rewritable_cpaths->at(transform_index - 1)[file_index] = new char[dst_path.string().size() + 1];
+                strcpy(rewritable_cpaths->at(transform_index - 1)[file_index], dst_path.string().c_str()); // NOLINT
             }
             file_index++;
         }
     }
 }
 
-void Runner::createOptionsParser(
-        size_t num_files, vector<vector<char **> *> * rewritable_cpaths,
-        vector<vector<CommonOptionsParser *> *> * option_parsers) {
-    size_t num_batches = ceil(static_cast<float>(num_files) / batch_size);
+void Runner::createOptionsParser(size_t num_files, vector<char **> * rewritable_cpaths,
+            vector<CommonOptionsParser *> * option_parsers) {
+    int argc = num_files + 3;
+    const char *argv[argc];
+    argv[0] = "./gorshochek";
+    argv[1] = "-p";
+    argv[2] = "build";
 
-    int argc = batch_size + 3;
-    auto argvs = vector<vector<char **>>(n_transformations);
-
-    int right_bound;
-    for (auto transform_index = 0; transform_index < n_transformations; ++transform_index) {
-        option_parsers->at(transform_index) = new vector<CommonOptionsParser *>(num_batches);
-        argvs[transform_index] = vector<char **>(num_batches);
-        for (auto batch_index = 0; batch_index < num_batches; ++batch_index) {
-            if ((batch_index + 1) * batch_size > num_files) {
-                right_bound = num_files - batch_size * (batch_index);
-            } else {
-                right_bound = batch_size;
-            }
-            argc = right_bound + 3;
-            argvs[transform_index][batch_index] = new char *[argc];
-            argvs[transform_index][batch_index][0] = "./gorshochek";
-            argvs[transform_index][batch_index][1] = "-p";
-            argvs[transform_index][batch_index][2] = "build";
-            copy(rewritable_cpaths->at(transform_index)->at(batch_index),
-                 rewritable_cpaths->at(transform_index)->at(batch_index) + right_bound,
-                 argvs[transform_index][batch_index] + 3);
-            for (int i = 0; i < argc; ++i) {
-                std::cout << argvs[transform_index][batch_index][i] << " ";
-            }
-            std::cout << "\n";
-            option_parsers->at(transform_index)
-                    ->at(batch_index) = new CommonOptionsParser(
-                    argc, const_cast<const char **>(argvs[transform_index][batch_index]), TransformationCategory);
-        }
+    for (size_t transform_index = 0; transform_index < n_transformations; ++transform_index) {
+        copy(rewritable_cpaths->at(transform_index),
+             rewritable_cpaths->at(transform_index) + num_files,
+             argv + 3);
+        option_parsers->at(transform_index) = new CommonOptionsParser(argc, argv, TransformationCategory);
     }
 }
 
 void Runner::run(const string& input_path, const string& output_path) {
     vector<string> descr_per_transform(n_transformations);
     size_t num_files;
-    auto rewritable_cpaths = new vector<vector<char **> *>(n_transformations);
-    createOutputFolders(input_path, output_path, rewritable_cpaths, &num_files);
+    auto rewritable_cpaths = new vector<char **>(n_transformations);
+    auto rewritable_batched_string_paths = new vector<vector<vector<string> *> *>(n_transformations);
+    createOutputFolders(input_path, output_path, rewritable_cpaths, rewritable_batched_string_paths, &num_files);
 
     auto num_batches = ceil(static_cast<float>(num_files) / batch_size);
-    auto option_parsers = new vector<vector<CommonOptionsParser *> *>(n_transformations);
+    auto option_parsers = new vector<CommonOptionsParser *>(n_transformations);
     createOptionsParser(num_files, rewritable_cpaths, option_parsers);
 
     uniform_real_distribution<double> dis(0.0, 1.0);
@@ -164,17 +147,17 @@ void Runner::run(const string& input_path, const string& output_path) {
             // Run the Clang Tool, creating a new FrontendAction
             // The way to create new FrontendAction is similar to newFrontendActionFactory function
             for (auto transformation : *transformations) {
-                std::cout << "Transformation " << transformation->getName() << "\n";
+                cout << "Transformation " << transformation->getName() << endl;
                 // Constructs a clang tool to run over a list of files.
                 for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
-                    std::cout << "- Batch " << batch_idx << "\n";
+                    cout << "- Batch " << batch_idx << endl;
                     if (dis(*gen) < transformation->getProbability()) {
-                        for (auto elem: option_parsers->at(transform_index)->at(batch_idx)->getSourcePathList()) {
-                            std::cout << " - - " << elem << "\n";
+                        for (auto batch_file: *rewritable_batched_string_paths->at(transform_index)->at(batch_idx)) {
+                            cout << " - - " << batch_file << endl;
                         }
-                        std::cout << "\n\n";
-                        ClangTool Tool(option_parsers->at(transform_index)->at(batch_idx)->getCompilations(),
-                                       option_parsers->at(transform_index)->at(batch_idx)->getSourcePathList());
+                        cout << endl << endl;
+                        ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
+                                       *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
                         Tool.run(std::unique_ptr<FrontendActionFactory>(
                                 new TransformationFrontendActionFactory(transformation)).get());
                         descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
