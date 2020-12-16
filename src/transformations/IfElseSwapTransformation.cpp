@@ -12,10 +12,14 @@ IfElseSwapVisitor::IfElseSwapVisitor(Rewriter * rewriter) :
 
 void IfElseSwapVisitor::rewriteCondition(IfStmt * ifStmt) {
     // Rewriting if conditions, e.g condition "if(x == 0)" will be transformed to "if(!(x == 0))"
-    rewriter->InsertTextAfter(ifStmt->getCond()->getBeginLoc(), "!(");
-    rewriter->InsertTextAfter(
-            Lexer::getLocForEndOfToken(ifStmt->getCond()->getEndLoc(), 1, sm, opt).getLocWithOffset(1),
-            ")");
+    auto range = ifStmt->getCond()->getSourceRange();
+    auto condString = Lexer::getSourceText(CharSourceRange::getCharRange(range), sm, opt).str();
+    if (!condString.empty()) {
+        rewriter->InsertTextAfter(ifStmt->getCond()->getBeginLoc(), "!(");
+        rewriter->InsertTextAfter(
+                Lexer::getLocForEndOfToken(ifStmt->getCond()->getEndLoc(), 1, sm, opt).getLocWithOffset(1),
+                ")");
+    }
 }
 
 string IfElseSwapVisitor::getBodyAsString(SourceRange * range) {
