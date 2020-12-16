@@ -1,4 +1,3 @@
-#pragma clang diagnostic ignored "-Wunused-parameter"
 #include <omp.h>
 
 #include <string>
@@ -7,7 +6,6 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
-#include <cmath>
 #include <algorithm>
 
 #include "../include/Runner.h"
