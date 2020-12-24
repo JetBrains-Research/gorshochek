@@ -20,3 +20,15 @@ sudo docker run --ipc=host --uts=host \
                 -v $PWD/"${INPUT_PATH}":/gorshochek/data/input \
                 -v $PWD/"${OUTPUT_PATH}":/gorshochek/data/output \
                 -i -t gorshochek "${CONFIG_PATH}"
+
+files=$(find "$OUTPUT_PATH"/* -type d)
+for file in $files;
+  do
+    fdupes -dN -r "$file"
+    transformed=$(find "$file" -type f -name "*.cpp")
+    if [[ -z $transformed ]]
+    then
+      echo "remove all"
+      rm -rf "$file"
+    fi
+  done
