@@ -37,7 +37,7 @@ void ForToWhileVisitor::processBody(ForStmt *forStmt) {
     if (forStmt->getInc()) {
         if (!isa<clang::CompoundStmt>(body)) {
             rewriter->InsertText(body->getBeginLoc(), "{\n", true, true);
-            rewriter->InsertText(body->getEndLoc().getLocWithOffset(1),
+            rewriter->InsertText(body->getEndLoc().getLocWithOffset(2),
                                  "}", true, true);
         }
     }
@@ -48,7 +48,7 @@ void ForToWhileVisitor::processInit(ForStmt * forStmt) {
     if (init) {
         SourceRange initRange = init->getSourceRange();
         if (isa<clang::ValueStmt>(*init)) {
-            initRange.setEnd(init->getEndLoc().getLocWithOffset(1));
+            initRange.setEnd(Lexer::getLocForEndOfToken(init->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
         }
         auto initText = getTextFromRange(initRange) + ";\n";
         rewriter->InsertText(forStmt->getBeginLoc(), initText, true, true);
@@ -93,7 +93,7 @@ void ForToWhileVisitor::processInc(ForStmt * forStmt) {
         const Stmt * body = forStmt->getBody();
         clang::SourceLocation forEndLoc;
         if (!isa<clang::CompoundStmt>(body)) {
-            forEndLoc = forStmt->getEndLoc().getLocWithOffset(1);
+            forEndLoc = forStmt->getEndLoc().getLocWithOffset(2);
             incText = "\n" + incText;
         } else {
             forEndLoc = forStmt->getEndLoc();
