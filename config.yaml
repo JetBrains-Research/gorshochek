@@ -3,6 +3,15 @@ batch size: 16
 transformations:
   - remove comments:
       p: 1.0
+  - rename entities:
+      p: 1
+      rename functions: true
+      rename variables: true
+      strategy:
+        name: random
+        seed: 9
+        max tokens: 2
+        max token len: 3
   - for to while:
       p: 1.0
   - if else swap:

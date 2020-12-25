@@ -23,7 +23,7 @@ void a(int *x) {
 
 int main(void) {
     int val = 4;
-    for(int i=1000; i < 4; i++)
+    for(int i=1000; i < 4000; i++)
         int k = 5;
     a(&val);
     int x = 0;
@@ -36,5 +36,8 @@ int main(void) {
     a(&x);
     for(;x != 0;);
     for(;;);
+    int om, M;
+    int B[2], comp[4];
+    for(om=1; om<=M; om++) B[om]=comp[om]-comp[om-1];
     return 0;
 }

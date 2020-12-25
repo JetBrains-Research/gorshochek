@@ -20,21 +20,21 @@ void a(int *x) {
             ++k; continue;
         int d = 4;
         while (d<5) {
-            int z;	
-            d--; 
-            }
-    	++k; 
+            int z;
+	
+    d--; 
+    }    	++k; 
     }
 }
 
 int main(void) {
     int val = 4;
     int i=1000;
-    while (i < 4) {
-        int k = 5;	
-        i++; 
-        }
-    a(&val);
+    while (i < 4000) {
+        int k = 5;
+	
+    i++; 
+    }    a(&val);
     int x = 0;
     int very_long_var = 100;
     int s = very_long_var;
@@ -47,5 +47,12 @@ int main(void) {
     a(&x);
     while (x != 0) ;
     while (1) ;
+    int om, M;
+    int B[2], comp[4];
+    om=1;
+    while (om<=M) {
+    B[om]=comp[om]-comp[om-1];	
+    om++; 
+    }
     return 0;
 }

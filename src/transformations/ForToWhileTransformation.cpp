@@ -1,6 +1,6 @@
 #include "../../include/transformations/ForToWhileTransformation.h"
 
-using clang::Expr, clang::ContinueStmt;
+using clang::Expr, clang::ContinueStmt, clang::ValueStmt;
 using clang::Lexer, clang::CharSourceRange;
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string;
@@ -37,7 +37,7 @@ void ForToWhileVisitor::processBody(ForStmt *forStmt) {
     if (forStmt->getInc()) {
         if (!isa<clang::CompoundStmt>(body)) {
             rewriter->InsertText(body->getBeginLoc(), "{\n", true, true);
-            rewriter->InsertText(body->getEndLoc().getLocWithOffset(1),
+            rewriter->InsertText(body->getEndLoc().getLocWithOffset(2),
                                  "}", true, true);
         }
     }
@@ -48,7 +48,7 @@ void ForToWhileVisitor::processInit(ForStmt * forStmt) {
     if (init) {
         SourceRange initRange = init->getSourceRange();
         if (isa<clang::ValueStmt>(*init)) {
-            initRange.setEnd(init->getEndLoc().getLocWithOffset(1));
+            initRange.setEnd(Lexer::getLocForEndOfToken(init->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
         }
         auto initText = getTextFromRange(initRange) + ";\n";
         rewriter->InsertText(forStmt->getBeginLoc(), initText, true, true);
@@ -60,7 +60,7 @@ void ForToWhileVisitor::processCond(ForStmt * forStmt) {
     string condText;
     if (cond) {
         SourceRange condRange = cond->getSourceRange();
-        if (isa<clang::ValueStmt>(*cond->getExprStmt())) {
+        if (isa<ValueStmt>(*cond->getExprStmt())) {
             condRange.setEnd(Lexer::getLocForEndOfToken(cond->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
         }
         condText = getTextFromRange(condRange);
@@ -93,7 +93,7 @@ void ForToWhileVisitor::processInc(ForStmt * forStmt) {
         const Stmt * body = forStmt->getBody();
         clang::SourceLocation forEndLoc;
         if (!isa<clang::CompoundStmt>(body)) {
-            forEndLoc = forStmt->getEndLoc().getLocWithOffset(1);
+            forEndLoc = forStmt->getEndLoc().getLocWithOffset(2);
             incText = "\n" + incText;
         } else {
             forEndLoc = forStmt->getEndLoc();
