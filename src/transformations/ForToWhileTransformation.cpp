@@ -1,6 +1,6 @@
 #include "../../include/transformations/ForToWhileTransformation.h"
 
-using clang::Expr, clang::ContinueStmt;
+using clang::Expr, clang::ContinueStmt, clang::ValueStmt;
 using clang::Lexer, clang::CharSourceRange;
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string;
@@ -60,7 +60,7 @@ void ForToWhileVisitor::processCond(ForStmt * forStmt) {
     string condText;
     if (cond) {
         SourceRange condRange = cond->getSourceRange();
-        if (isa<clang::ValueStmt>(*cond->getExprStmt())) {
+        if (isa<ValueStmt>(*cond->getExprStmt())) {
             condRange.setEnd(Lexer::getLocForEndOfToken(cond->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
         }
         condText = getTextFromRange(condRange);
