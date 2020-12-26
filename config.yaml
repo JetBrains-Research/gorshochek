@@ -1,35 +1,37 @@
 n transformations: 1
 batch size: 16
 transformations:
-  - remove comments:
+  - open macros:
       p: 1.0
+#  - remove comments:
+#      p: 1.0
   - rename entities:
       p: 1
       rename functions: true
       rename variables: true
       strategy:
-        name: random
+        name: test
         seed: 9
         max tokens: 2
         max token len: 3
-  - for to while:
-      p: 1.0
-  - if else swap:
-      p: 1.0
-  - printf to cout:
-      p: 1.0
-  - while to for:
-      p: 1.0
-  - reorder function decls:
-      p: 1.0
-      seed: 9
-      test: true
-  - rename entities:
-      p: 1
-      rename functions: true
-      rename variables: true
-      strategy:
-          name: random
-          seed: 9
-          max tokens: 2
-          max token len: 3
+#  - for to while:
+#      p: 1.0
+#  - if else swap:
+#      p: 1.0
+#  - printf to cout:
+#      p: 1.0
+#  - while to for:
+#      p: 1.0
+#  - reorder function decls:
+#      p: 1.0
+#      seed: 9
+#      test: true
+#  - rename entities:
+#      p: 1
+#      rename functions: true
+#      rename variables: true
+#      strategy:
+#          name: random
+#          seed: 9
+#          max tokens: 2
+#          max token len: 3

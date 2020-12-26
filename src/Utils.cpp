@@ -14,6 +14,7 @@
 #include "../include/transformations/input_output/PrintfToCoutTransformation.h"
 #include "../include/transformations/ForToWhileTransformation.h"
 #include "../include/transformations/WhileToForTransformation.h"
+#include "../include/transformations/OpenMacrosTransformation.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
 using std::string, std::function, std::cerr, std::endl, std::size_t;
@@ -32,7 +33,8 @@ const map<string, function<ITransformation *(const YAML::Node &)>> transformFact
         {"if else swap", IfElseSwapTransformation::buildFromConfig },
         {"printf to cout", PrintfToCoutTransformation::buildFromConfig },
         {"for to while", ForToWhileTransformation::buildFromConfig },
-        {"while to for", WhileToForTransformation::buildFromConfig }
+        {"while to for", WhileToForTransformation::buildFromConfig },
+        {"open macros", OpenMacrosTransformation::buildFromConfig }
 };
 
 vector<ITransformation *> *getTransformationsFromYaml(const string &config_path) {
