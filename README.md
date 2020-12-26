@@ -57,6 +57,7 @@ More examples can be found in `tests` folder
 - [x] Rearranging function declarations
 - [x] Replace `for` with `while` and vice versa 
 - [x] Replace `printf` with `std::cout`
+- [x] Open macros
 - [ ] Random change between `x++`, `++x`, `x+=1`, `x=x+1`
 - [ ] Change the signature of functions by making variables global
 - [ ] Replace `std::cout` with `printf`
