@@ -16,22 +16,23 @@ OpenMacrosVisitor::OpenMacrosVisitor(Rewriter * rewriter):
 
 bool OpenMacrosVisitor::VisitFunctionDecl(FunctionDecl * func) {
     auto loc = func->getBeginLoc();
-    if (sm.isWrittenInMainFile(loc)) {
-        string opened_macros;
-        raw_string_ostream stream(opened_macros);
-        PrintingPolicy pp(opt);
-        pp.adjustForCPlusPlus();
-        func->print(stream, pp);
-        stream.flush();
-        auto expansionRange = Lexer::getAsCharRange(func->getSourceRange(), sm, opt);
-        if (loc.isMacroID()) {
-            expansionRange = sm.getImmediateExpansionRange(loc);
-            loc = expansionRange.getBegin();
-        }
-
-        auto old_macros = Lexer::getSourceText(expansionRange, sm, opt).str();
-        rewriter->ReplaceText(loc, old_macros.length(), opened_macros);
+    if (!sm.isWrittenInMainFile(loc)) {
+        return true;
     }
+    string opened_macros;
+    raw_string_ostream stream(opened_macros);
+    PrintingPolicy pp(opt);
+    pp.adjustForCPlusPlus();
+    func->print(stream, pp);
+    stream.flush();
+    auto expansionRange = Lexer::getAsCharRange(func->getSourceRange(), sm, opt);
+    if (loc.isMacroID()) {
+        expansionRange = sm.getImmediateExpansionRange(loc);
+        loc = expansionRange.getBegin();
+    }
+
+    auto old_macros = Lexer::getSourceText(expansionRange, sm, opt).str();
+    rewriter->ReplaceText(loc, old_macros.length(), opened_macros);
     return true;
 }
 
