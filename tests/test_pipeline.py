@@ -112,3 +112,9 @@ def test_while_to_for() -> None:
     config_path = path.join(configs_dir_path, "test_while_to_for_config.yaml")
     input_ = "test_while_to_for.cpp"
     _test(input_, config_path)
+
+
+def test_open_macros() -> None:
+    config_path = path.join(configs_dir_path, "test_open_macros_config.yaml")
+    input_ = "test_open_macros.cpp"
+    _test(input_, config_path)
