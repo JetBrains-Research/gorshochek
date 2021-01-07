@@ -8,12 +8,14 @@
 #include <fstream>
 #include <algorithm>
 
+#include "../include/logging/Logger.h"
 #include "../include/Runner.h"
 #include "../include/TransformationFrontendAction.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
+
 using clang::tooling::FrontendActionFactory, clang::tooling::ClangTool,
-clang::FrontendAction;
+clang::FrontendAction, clang::tooling::newFrontendActionFactory;
 using std::size_t, std::vector, std::string, std::ofstream, std::ios_base, std::to_string,
 std::mt19937, std::copy, std::uniform_real_distribution, std::to_string, std::min,
 std::cout, std::endl;
@@ -158,6 +160,8 @@ void Runner::run(const string& input_path, const string& output_path) {
                                        *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
                         Tool.run(std::unique_ptr<FrontendActionFactory>(
                                 new TransformationFrontendActionFactory(transformation)).get());
+                        std::cout << "!!!!\n";
+                        Tool.run(newFrontendActionFactory<LoggingFrontendAction>().get());
                     }
                     descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
                 }
