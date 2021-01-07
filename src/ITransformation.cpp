@@ -1,6 +1,7 @@
 #include "../include/ITransformation.h"
 
 using std::move, std::logic_error;
+
 // ------------ ITransformation ------------
 
 ITransformation::ITransformation(const float p, const string name) :
