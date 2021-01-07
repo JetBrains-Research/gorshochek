@@ -1,0 +1,6 @@
+./tests/resources/input/test_logging/test1.cpp
+    int j = 0
+./tests/resources/input/test_logging/test2.cpp
+    while() {
+./tests/resources/input/test_logging/test3.cpp
+    return j;
