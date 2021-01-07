@@ -14,7 +14,7 @@
 #include "clang/Rewrite/Frontend/FixItRewriter.h"
 #include "clang/Tooling/Tooling.h"
 
-#include "../ITransformation.h"
+#include "ITransformation.h"
 
 using clang::ASTConsumer, clang::ASTContext, clang::ASTFrontendAction, clang::FixItOptions, clang::FixItRewriter;
 using clang::CompilerInstance, clang::StringRef;
@@ -32,7 +32,7 @@ class LoggingFrontendAction : public ASTFrontendAction {
 
 public:
     LoggingFrontendAction() {}
-    std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(CompilerInstance & CI, StringRef file) override;
+    std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance & CI, StringRef file) override;
     void EndSourceFileAction() override;
 };
 
@@ -40,9 +40,10 @@ public:
 class FixItASTConsumer : public clang::ASTConsumer {
 
 public:
-    // override the constructor in order to pass CI
-    explicit FixItASTConsumer();
+    explicit FixItASTConsumer(FixItRewriter * rewriter);
     void HandleTranslationUnit(ASTContext &ctx) override;
+private:
+    FixItRewriter * rewriter;
 };
 
 #endif //GORSHOCHEK_LOGGER_H

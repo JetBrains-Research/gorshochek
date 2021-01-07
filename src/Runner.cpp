@@ -8,7 +8,7 @@
 #include <fstream>
 #include <algorithm>
 
-#include "../include/logging/Logger.h"
+#include "include/Logger.h"
 #include "../include/Runner.h"
 #include "../include/TransformationFrontendAction.h"
 #include "../include/TransformationFrontendActionFactory.h"
@@ -160,7 +160,6 @@ void Runner::run(const string& input_path, const string& output_path) {
                                        *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
                         Tool.run(std::unique_ptr<FrontendActionFactory>(
                                 new TransformationFrontendActionFactory(transformation)).get());
-                        std::cout << "!!!!\n";
                         Tool.run(newFrontendActionFactory<LoggingFrontendAction>().get());
                     }
                     descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
