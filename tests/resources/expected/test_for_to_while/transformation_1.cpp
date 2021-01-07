@@ -36,6 +36,12 @@ int main(void) {
     i++; 
     }    a(&val);
     int x = 0;
+    int feeeee=0;
+    while (feeeee < 3) {
+        if (1)
+            break;	
+            feeeee++; 
+            }
     int very_long_var = 100;
     int s = very_long_var;
     while (1) {
