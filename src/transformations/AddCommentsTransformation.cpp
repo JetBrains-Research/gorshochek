@@ -11,35 +11,37 @@ AddCommentsVisitor::AddCommentsVisitor(Rewriter * rewriter, const vector<string>
 
 bool AddCommentsVisitor::VisitStmt(Stmt *s) {
     auto loc = s->getBeginLoc();
-    if (isa<IfStmt>(s) && sm.isWrittenInMainFile(loc)) {
-        auto IfStatement = cast<IfStmt>(s);
-        if (containStatement(ifInside)) {
-            rewriter->InsertText(IfStatement->getThen()->getBeginLoc(), "/* 'if' inside */\n",
-                                 true, true);
-        }
-        if (containStatement(ifBegin)) {
-            rewriter->InsertText(IfStatement->getBeginLoc(), "/* 'if' begin */\n",
-                                 true, true);
-        }
-    } else if (isa<ForStmt>(s)) {
-        auto ForStatement = cast<ForStmt>(s);
-        if (containStatement(forInside)) {
-            rewriter->InsertText(ForStatement->getBody()->getBeginLoc(), "/* 'for' inside */\n",
-                                 true, true);
-        }
-        if (containStatement(forBegin)) {
-            rewriter->InsertText(ForStatement->getBeginLoc(), "/* 'for' begin */\n",
-                                 true, true);
-        }
-    } else if (isa<WhileStmt>(s)) {
-        auto WhileStatement = cast<WhileStmt>(s);
-        if (containStatement(whileInside)) {
-            rewriter->InsertText(WhileStatement->getBody()->getBeginLoc(), "/* 'while' inside */\n",
-                                 true, true);
-        }
-        if (containStatement(whileBegin)) {
-            rewriter->InsertText(WhileStatement->getBeginLoc(), "/* 'while' begin */\n",
-                                 true, true);
+    if (sm.isWrittenInMainFile(loc)) {
+        if (isa<IfStmt>(s)) {
+            auto IfStatement = cast<IfStmt>(s);
+            if (containStatement(ifInside)) {
+                rewriter->InsertText(IfStatement->getThen()->getBeginLoc(), "/* 'if' inside */\n",
+                                     true, true);
+            }
+            if (containStatement(ifBegin)) {
+                rewriter->InsertText(IfStatement->getBeginLoc(), "/* 'if' begin */\n",
+                                     true, true);
+            }
+        } else if (isa<ForStmt>(s)) {
+            auto ForStatement = cast<ForStmt>(s);
+            if (containStatement(forInside)) {
+                rewriter->InsertText(ForStatement->getBody()->getBeginLoc(), "/* 'for' inside */\n",
+                                     true, true);
+            }
+            if (containStatement(forBegin)) {
+                rewriter->InsertText(ForStatement->getBeginLoc(), "/* 'for' begin */\n",
+                                     true, true);
+            }
+        } else if (isa<WhileStmt>(s)) {
+            auto WhileStatement = cast<WhileStmt>(s);
+            if (containStatement(whileInside)) {
+                rewriter->InsertText(WhileStatement->getBody()->getBeginLoc(), "/* 'while' inside */\n",
+                                     true, true);
+            }
+            if (containStatement(whileBegin)) {
+                rewriter->InsertText(WhileStatement->getBeginLoc(), "/* 'while' begin */\n",
+                                     true, true);
+            }
         }
     }
     return true;
