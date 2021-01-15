@@ -1,5 +1,5 @@
-#ifndef GORSHOCHEK_LOGGER_H
-#define GORSHOCHEK_LOGGER_H
+#ifndef INCLUDE_LOGGER_H_
+#define INCLUDE_LOGGER_H_
 
 #include <yaml-cpp/yaml.h>
 
@@ -20,30 +20,29 @@ using clang::ASTConsumer, clang::ASTContext, clang::ASTFrontendAction, clang::Fi
 using clang::CompilerInstance, clang::StringRef;
 using std::string;
 
-class LoggingOptions : public FixItOptions {
-public:
-    LoggingOptions();
+class LoggerOptions : public FixItOptions {
+ public:
+    LoggerOptions();
     string RewriteFilename(const string &Filename, int &fd) override;
 };
 
 
-class LoggingFrontendAction : public ASTFrontendAction {
+class LoggerFrontendAction : public ASTFrontendAction {
     std::unique_ptr<FixItRewriter> rewriter = nullptr;
 
-public:
-    LoggingFrontendAction() {}
+ public:
+    LoggerFrontendAction() {}
     std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance & CI, StringRef file) override;
     void EndSourceFileAction() override;
 };
 
 
 class FixItASTConsumer : public clang::ASTConsumer {
-
-public:
+ public:
     explicit FixItASTConsumer(FixItRewriter * rewriter);
     void HandleTranslationUnit(ASTContext &ctx) override;
-private:
+ private:
     FixItRewriter * rewriter;
 };
 
-#endif //GORSHOCHEK_LOGGER_H
+#endif  // INCLUDE_LOGGER_H_

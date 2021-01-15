@@ -10,8 +10,8 @@ using std::ios_base, std::ofstream, std::move;
 using llvm::raw_string_ostream;
 namespace fs = std::filesystem;
 
-std::unique_ptr<ASTConsumer> LoggingFrontendAction::CreateASTConsumer(CompilerInstance & CI, StringRef file) {
-    auto fixItOptions = new LoggingOptions();
+std::unique_ptr<ASTConsumer> LoggerFrontendAction::CreateASTConsumer(CompilerInstance & CI, StringRef file) {
+    auto fixItOptions = new LoggerOptions();
 
     rewriter = std::make_unique<FixItRewriter>(
             CI.getDiagnostics(),
@@ -24,27 +24,21 @@ std::unique_ptr<ASTConsumer> LoggingFrontendAction::CreateASTConsumer(CompilerIn
     return llvm::make_unique<FixItASTConsumer>(rewriter.get());
 }
 
-void LoggingFrontendAction::EndSourceFileAction() {
+void LoggerFrontendAction::EndSourceFileAction() {
     auto current_file = this->getCurrentFile().str();
-    std::ifstream t(current_file);
-    std::string str((std::istreambuf_iterator<char>(t)),
-                    std::istreambuf_iterator<char>());
-    auto log_path = fs::path(current_file).parent_path().parent_path() / fs::path("log.cpp");
-    ofstream description_stream(log_path, ios_base::app);
-    description_stream << "//" << current_file << "\t" << rewriter->getNumErrors() <<  "\n\n\n" << str << "\n\n\n";
+    auto log_path = fs::path(current_file).parent_path().parent_path() / fs::path("log.txt");
+    ofstream log_stream(log_path, ios_base::app);
+    log_stream << current_file << "\t" << rewriter->getNumErrors() <<  "\n";
 }
 
-LoggingOptions::LoggingOptions() {
+LoggerOptions::LoggerOptions() {
     InPlace = false;
     FixWhatYouCan = false;
     FixOnlyWarnings = false;
     Silent = false;
 }
 
-string LoggingOptions::RewriteFilename(const string &Filename, int &fd) {
-    auto log_path = fs::path(Filename).parent_path().parent_path() / fs::path("log.cpp");
-    ofstream description_stream(log_path, ios_base::app);
-    description_stream << "------- Bad file " << Filename << "\n";
+string LoggerOptions::RewriteFilename(const string &Filename, int &fd) {
     fd = -1;
     return Filename;
 }
