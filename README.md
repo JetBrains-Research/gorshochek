@@ -46,7 +46,20 @@ output_path
 │   └── transformation_2.cpp
 ...
 ```
-Here `log.txt` file contains data on what errors appeared after applying each transformation from `config.yaml`.
+Here `log.txt` file contains data on how many errors appeared after applying each transformation from `config.yaml`.
+Logs are stored in the following format:
+```
+ - transformation_1
+file1/transformation_1.cpp	1
+file2/transformation_1.cpp	1
+file3/transformation_1.cpp	1
+ - transformation_2
+file1/transformation_1.cpp	1
+...
+```
+The `log.txt` file is split in several blocks, each titled as follows: ` - transformation_i`. 
+Each block belongs to a certain transformation. After block title each line corresponds to a 
+transformed file and the number of errors found in that file, for instance: `file1/transformation_1.cpp  1`. 
 More examples can be found in `tests` folder
 
 --------------
