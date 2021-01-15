@@ -33,6 +33,7 @@ transformations:
 The output will have structure as follows:
 ```
 output_path
+├── log.txt
 ├── file1
 |   ├── description.txt
 │   ├── transformation_0.cpp
@@ -45,6 +46,7 @@ output_path
 │   └── transformation_2.cpp
 ...
 ```
+Here `log.txt` file contains data on what errors appeared after applying each transformation from `config.yaml`.
 More examples can be found in `tests` folder
 
 --------------
