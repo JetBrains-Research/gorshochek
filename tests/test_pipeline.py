@@ -15,6 +15,14 @@ tricky_path = path.join("scripts", "..", "tests", "..", "tests", "resources", "i
 build = path.join("build", "gorshochek")
 
 
+def _parse_logs(text):
+    logs_ = text.split(" - ")[1:]
+    logs_ = {
+        elem.rsplit("\n")[0]: set(elem.split("\n")[1:]) for elem in logs_
+    }
+    return logs_
+
+
 def _test(
         input_: str,
         config_path: str,
@@ -64,12 +72,11 @@ def _test(
             assert transformed_data == expected_data, "Actual and expected files mismatch"
     expected_log_path = path.join(expected_path, "log.txt")
     actual_log_path = path.join(actual_path, "log.txt")
-    print(actual_log_path, expected_log_path, path.exists(actual_log_path), path.exists(expected_log_path))
     if path.exists(actual_log_path) and path.exists(expected_log_path):
         with open(expected_log_path) as exp:
-            expected_log = exp.read()
+            expected_log = _parse_logs(exp.read())
         with open(actual_log_path) as act:
-            actual_log = act.read()
+            actual_log = _parse_logs(act.read())
         assert expected_log == actual_log
     shutil.rmtree(actual_path)
 

@@ -150,7 +150,7 @@ void Runner::run(const string& input_path, const string& output_path) {
             // The way to create new FrontendAction is similar to newFrontendActionFactory function
             for (auto transformation : *transformations) {
                 log_stream.open(log_path, ios_base::app);
-                log_stream << transformation->getName() << "\n";
+                log_stream << " - " << transformation->getName() << "\n";
                 log_stream.close();
                 cout << "Transformation " << transformation->getName() << endl;
                 // Constructs a clang tool to run over a list of files.
