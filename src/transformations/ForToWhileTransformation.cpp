@@ -37,7 +37,7 @@ void ForToWhileVisitor::processBody(ForStmt *forStmt) {
     if (forStmt->getInc()) {
         if (!isa<clang::CompoundStmt>(body)) {
             rewriter->InsertText(body->getBeginLoc(), "{\n", true, true);
-            rewriter->InsertText(body->getEndLoc().getLocWithOffset(2),
+            rewriter->InsertText(Lexer::getLocForEndOfToken(body->getEndLoc(), 1, sm, opt).getLocWithOffset(2),
                                  "}", true, true);
         }
     }
@@ -69,7 +69,7 @@ void ForToWhileVisitor::processCond(ForStmt * forStmt) {
     }
     auto whileText = "while (" + condText + ") ";
     ptrdiff_t diff = sm.getCharacterData(forStmt->getBody()->getBeginLoc()) -
-                      sm.getCharacterData(forStmt->getBeginLoc());
+                     sm.getCharacterData(forStmt->getBeginLoc());
     rewriter->ReplaceText(forStmt->getBeginLoc(),
                           static_cast<unsigned int>(diff), whileText);
 }
@@ -91,12 +91,10 @@ void ForToWhileVisitor::processInc(ForStmt * forStmt) {
         }
         incText += "\n";
         const Stmt * body = forStmt->getBody();
-        clang::SourceLocation forEndLoc;
+        clang::SourceLocation forEndLoc = Lexer::getLocForEndOfToken(forStmt->getEndLoc(), 1, sm, opt);
         if (!isa<clang::CompoundStmt>(body)) {
-            forEndLoc = forStmt->getEndLoc().getLocWithOffset(2);
+            forEndLoc = forEndLoc.getLocWithOffset(2);
             incText = "\n" + incText;
-        } else {
-            forEndLoc = forStmt->getEndLoc();
         }
         rewriter->InsertText(forEndLoc, "\t" + incText, true, true);
     }

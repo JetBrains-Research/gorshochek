@@ -16,8 +16,8 @@
 
 Config is a `.yaml` file having the following structure:
 ```
-output path: "path/to/output"
 n transformations: 2
+batch size: 16
 transformations:
   - identity transform:
       p: 0.2
@@ -32,8 +32,8 @@ transformations:
 Applying transformations is a randomized process. Therefore, each transformation has an attribute
 `p` which determines the probability of certain transformation to be applied. 
 
-- `output path` -- relative path to dir where transformed code will be saved
 - `transformations` -- a fixed set of transformations
+- `batch size` -- files from `input path` are processed by batches which size is determined by this argument
 - `n transformations` determines how many times transformations should be applied to each file. 
 Since transformations is applied with some probability `p`, running the same transformations multiple 
 times will produce different transformed code.
@@ -52,9 +52,7 @@ all files passed through `argv`.
 <!-- FRONTEND ACTION -->
 ## FrontendAction
 
-`FrontendAction` is an interface to create and run `ASTConsumer` and then save the result.
- After each file `FrontendAction` calls 
-`EndSourceFileAction` method and save transformed code on disk.
+`FrontendAction` is an interface to run `ASTConsumer`.
 
 <!-- ITRANSFORMATION -->
 ### ITransformation
@@ -67,7 +65,10 @@ creating `ASTConsumer` instances.
 ### ASTConsumer
 
 `ASTConsumer` is an interface for interacting with AST, this abstraction layer allows
-to be independent of the AST producer. For more detailed 
+to be independent of the AST producer. `ASTConsumer` calls method `HandleTranslationUnit` for every
+`ASTContext` instance obtained from AST. Then `RecursiveASTVisitor` goes through top declaration context 
+which is obtained from `ASTContext`, collects information about transformation in `RewriteBuffer`. Finally, 
+the transformations are applied and saved in `ASTConsumer` using `overwriteChangedFiles` method. to For more detailed 
 information go to [clang doc](https://clang.llvm.org/doxygen/classclang_1_1ASTConsumer.html)
 
 

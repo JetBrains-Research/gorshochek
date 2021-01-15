@@ -27,6 +27,9 @@ int main(void) {
         int k = 5;
     a(&val);
     int x = 0;
+    for(int feeeee=0; feeeee < 3; feeeee++)
+        if (1)
+            break;
     int very_long_var = 100;
     for(int s = very_long_var;; s += 1){
         if (s == 6) {

@@ -1,9 +1,6 @@
 #ifndef INCLUDE_TRANSFORMATIONFRONTENDACTIONFACTORY_H_
 #define INCLUDE_TRANSFORMATIONFRONTENDACTIONFACTORY_H_
 
-#include <string>
-#include <vector>
-
 #include "clang/Frontend/FrontendActions.h"
 #include "clang/Tooling/Tooling.h"
 
