@@ -29,6 +29,7 @@ void LoggerFrontendAction::EndSourceFileAction() {
     auto log_path = fs::path(current_file).parent_path().parent_path() / fs::path("log.txt");
     ofstream log_stream(log_path, ios_base::app);
     log_stream << current_file << "\t" << rewriter->getNumErrors() <<  "\n";
+    log_stream.close();
 }
 
 LoggerOptions::LoggerOptions() {

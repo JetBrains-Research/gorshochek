@@ -163,7 +163,7 @@ void Runner::run(const string& input_path, const string& output_path) {
                         cout << endl << endl;
                         ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
                                        *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
-                        Tool.run(newFrontendActionFactory<LoggingFrontendAction>().get());
+                        Tool.run(newFrontendActionFactory<LoggerFrontendAction>().get());
                         Tool.run(std::unique_ptr<FrontendActionFactory>(
                                 new TransformationFrontendActionFactory(transformation)).get());
                     }
