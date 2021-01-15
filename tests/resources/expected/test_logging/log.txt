@@ -1,12 +1,12 @@
 identity
-/Users/maximzubkov/Desktop/JetBrains/gorshochek/tests/resources/actual/test_logging_3/transformation_1.cpp	1
-/Users/maximzubkov/Desktop/JetBrains/gorshochek/tests/resources/actual/test_logging_2/transformation_1.cpp	1
-/Users/maximzubkov/Desktop/JetBrains/gorshochek/tests/resources/actual/test_logging_1/transformation_1.cpp	1
+test_logging_3/transformation_1.cpp	1
+test_logging_2/transformation_1.cpp	1
+test_logging_1/transformation_1.cpp	1
 identity
-/Users/maximzubkov/Desktop/JetBrains/gorshochek/tests/resources/actual/test_logging_3/transformation_1.cpp	1
-/Users/maximzubkov/Desktop/JetBrains/gorshochek/tests/resources/actual/test_logging_2/transformation_1.cpp	1
-/Users/maximzubkov/Desktop/JetBrains/gorshochek/tests/resources/actual/test_logging_1/transformation_1.cpp	1
+test_logging_3/transformation_1.cpp	1
+test_logging_2/transformation_1.cpp	1
+test_logging_1/transformation_1.cpp	1
 identity
-/Users/maximzubkov/Desktop/JetBrains/gorshochek/tests/resources/actual/test_logging_3/transformation_1.cpp	1
-/Users/maximzubkov/Desktop/JetBrains/gorshochek/tests/resources/actual/test_logging_2/transformation_1.cpp	1
-/Users/maximzubkov/Desktop/JetBrains/gorshochek/tests/resources/actual/test_logging_1/transformation_1.cpp	1
+test_logging_3/transformation_1.cpp	1
+test_logging_2/transformation_1.cpp	1
+test_logging_1/transformation_1.cpp	1

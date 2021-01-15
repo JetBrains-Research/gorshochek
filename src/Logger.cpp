@@ -26,9 +26,11 @@ std::unique_ptr<ASTConsumer> LoggerFrontendAction::CreateASTConsumer(CompilerIns
 
 void LoggerFrontendAction::EndSourceFileAction() {
     auto current_file = this->getCurrentFile().str();
-    auto log_path = fs::path(current_file).parent_path().parent_path() / fs::path("log.txt");
+    auto current_file_path = fs::path(current_file);
+    auto log_path = current_file_path.parent_path().parent_path() / fs::path("log.txt");
     ofstream log_stream(log_path, ios_base::app);
-    log_stream << current_file << "\t" << rewriter->getNumErrors() <<  "\n";
+    log_stream << (current_file_path.parent_path().filename() / current_file_path.filename()).string()
+               << "\t" << rewriter->getNumErrors() << "\n";
     log_stream.close();
 }
 
