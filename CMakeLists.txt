@@ -93,6 +93,7 @@ add_executable(${PROJECT_NAME}
         src/Runner.cpp
         src/TransformationFrontendAction.cpp
         src/TransformationFrontendActionFactory.cpp
+        src/Logger.cpp
         src/transformations/IdentityTransformation.cpp
         src/transformations/AddCommentsTransformation.cpp
         src/transformations/RemoveCommentsTransformation.cpp

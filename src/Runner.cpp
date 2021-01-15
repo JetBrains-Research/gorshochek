@@ -8,12 +8,14 @@
 #include <fstream>
 #include <algorithm>
 
+#include "include/Logger.h"
 #include "../include/Runner.h"
 #include "../include/TransformationFrontendAction.h"
 #include "../include/TransformationFrontendActionFactory.h"
 
+
 using clang::tooling::FrontendActionFactory, clang::tooling::ClangTool,
-clang::FrontendAction;
+clang::FrontendAction, clang::tooling::newFrontendActionFactory;
 using std::size_t, std::vector, std::string, std::ofstream, std::ios_base, std::to_string,
 std::mt19937, std::copy, std::uniform_real_distribution, std::to_string, std::min,
 std::cout, std::endl;
@@ -136,6 +138,8 @@ void Runner::run(const string& input_path, const string& output_path) {
     uniform_real_distribution<double> dis(0.0, 1.0);
     size_t transform_index = 0;
     size_t batch_idx = 0;
+    auto log_path = fs::path(output_path) / fs::path("log.txt");
+    ofstream log_stream;
     #pragma omp parallel \
         private(transform_index, batch_idx) \
         shared(num_files, rewritable_cpaths, option_parsers, descr_per_transform)
@@ -145,6 +149,9 @@ void Runner::run(const string& input_path, const string& output_path) {
             // Run the Clang Tool, creating a new FrontendAction
             // The way to create new FrontendAction is similar to newFrontendActionFactory function
             for (auto transformation : *transformations) {
+                log_stream.open(log_path, ios_base::app);
+                log_stream << " - " << transformation->getName() << "\n";
+                log_stream.close();
                 cout << "Transformation " << transformation->getName() << endl;
                 // Constructs a clang tool to run over a list of files.
                 if (dis(*gen) < transformation->getProbability()) {
@@ -156,6 +163,7 @@ void Runner::run(const string& input_path, const string& output_path) {
                         cout << endl << endl;
                         ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
                                        *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
+                        Tool.run(newFrontendActionFactory<LoggerFrontendAction>().get());
                         Tool.run(std::unique_ptr<FrontendActionFactory>(
                                 new TransformationFrontendActionFactory(transformation)).get());
                     }

@@ -1,0 +1,12 @@
+ - identity
+test_logging_3/transformation_1.cpp	1
+test_logging_2/transformation_1.cpp	1
+test_logging_1/transformation_1.cpp	1
+ - identity
+test_logging_3/transformation_1.cpp	1
+test_logging_2/transformation_1.cpp	1
+test_logging_1/transformation_1.cpp	1
+ - identity
+test_logging_3/transformation_1.cpp	1
+test_logging_2/transformation_1.cpp	1
+test_logging_1/transformation_1.cpp	1
