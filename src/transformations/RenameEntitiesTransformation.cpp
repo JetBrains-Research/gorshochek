@@ -1,7 +1,6 @@
 #include "../../include/transformations/RenameEntitiesTransformation.h"
 
 #include <utility>
-#include <iostream>
 #include "include/transformations/renaming/BaseRenameProcessor.h"
 #include "include/transformations/renaming/RandomRenameProcessor.h"
 #include "include/transformations/renaming/TestRenameProcessor.h"
