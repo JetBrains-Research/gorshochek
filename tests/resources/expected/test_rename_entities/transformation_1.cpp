@@ -37,6 +37,8 @@ void test_tmppp(int test_k) {
 
 int main(void) {
     int test_result = -1, test_val = 4;
+    int test_k0 = 1;
+    std::vector<int> test_lam = {test_k0};
     int test_x;
     int test_omega = test_join(test_result);
     test_do_math(&test_val);

@@ -37,6 +37,8 @@ void tmppp(int k) {
 
 int main(void) {
     int result = -1, val = 4;
+    int k0 = 1;
+    std::vector<int> lam = {k0};
     int x;
     int omega = join(result);
     do_math(&val);

@@ -53,7 +53,7 @@ def _test(
             actual_transform_path = path.join(actual_file_dir, f"transformation_{i}.cpp")
             if check_compilation:
                 try:
-                    subprocess.check_output([clang_path, actual_transform_path, "-o",
+                    subprocess.check_output([clang_path, "-std=c++11", actual_transform_path, "-o",
                                              path.join(actual_path, f"{i}.o")],
                                             universal_newlines=True,
                                             stderr=subprocess.STDOUT)

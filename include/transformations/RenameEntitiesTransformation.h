@@ -64,6 +64,8 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
     BaseRenameProcessor * processor;
 
     map<Decl *, string> decl2name;
+    vector<Stmt *> processed;
+
     void processVarDecl(Decl * decl, string * name);
 };
 

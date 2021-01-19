@@ -44,7 +44,10 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
                 if (decl2name.find(decl) == decl2name.end()) {
                     processVarDecl(decl, &name);
                 }
-                rewriter->ReplaceText(de->getExprLoc(), name.length(), decl2name.at(decl));
+                if (find(processed.begin(), processed.end(), stmt) == processed.end()) {
+                    rewriter->ReplaceText(de->getExprLoc(), name.length(), decl2name.at(decl));
+                    processed.push_back(stmt);
+                }
             }
         }
         if (isa<DeclStmt>(stmt)) {
