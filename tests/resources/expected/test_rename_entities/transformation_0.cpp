@@ -35,8 +35,16 @@ void tmppp(int k) {
     k += 1;
 }
 
+template<class T> int chkmax(T &a, T b) {
+    if (b > a) {
+        a = b;
+        return 1;
+    }
+    return 0;
+}
+
 int main(void) {
-    int result = -1, val = 4;
+    int result = -1.0, val = 4;
     int k0 = 1;
     std::vector<int> lam = {k0};
     int x;
@@ -50,5 +58,7 @@ int main(void) {
     auto o = Class();
     o.ffff(val);
     o.ffff(result);
+    chkmax(x, k0);
+    chkmax(result, result);
     return result;
 }
