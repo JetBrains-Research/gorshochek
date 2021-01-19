@@ -35,6 +35,14 @@ void tmppp(int k) {
     k += 1;
 }
 
+struct event {
+    int x, type, id;
+};
+
+bool operator<(event a, event b) {
+    return make_pair(a.x, a.type) < make_pair(b.x, b.type);
+}
+
 template<class T> int chkmax(T &a, T b) {
     if (b > a) {
         a = b;
