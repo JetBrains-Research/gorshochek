@@ -50,7 +50,7 @@ void ForToWhileVisitor::processInit(ForStmt * forStmt) {
         if (isa<clang::ValueStmt>(*init)) {
             initRange.setEnd(Lexer::getLocForEndOfToken(init->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
         }
-        auto initText = getTextFromRange(initRange) + ";\n";
+        auto initText = "{\n" + getTextFromRange(initRange) + ";\n";
         rewriter->InsertText(forStmt->getBeginLoc(), initText, true, true);
     }
 }
@@ -96,7 +96,10 @@ void ForToWhileVisitor::processInc(ForStmt * forStmt) {
             forEndLoc = forEndLoc.getLocWithOffset(2);
             incText = "\n" + incText;
         }
-        rewriter->InsertText(forEndLoc, "\t" + incText, true, true);
+        if (forStmt->getInit()) {
+            incText += "\n}";
+        }
+        rewriter->InsertText(forEndLoc, "\t" + incText , true, true);
     }
 }
 

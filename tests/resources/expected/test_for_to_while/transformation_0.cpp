@@ -25,6 +25,8 @@ int main(void) {
     int val = 4;
     for(int i=1000; i < 4000; i++)
         int k = 5;
+    for(int i=1000; i < 4000; i++)
+        int k = 5;
     a(&val);
     int x = 0;
     for(int feeeee=0; feeeee < 3; feeeee++)
