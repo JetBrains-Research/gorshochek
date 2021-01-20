@@ -24,7 +24,7 @@ void a(int *x) {
         int d = 4;
         while (d<5) {
             int z;
-	
+
     d--; 
     }    	++k; 
     
@@ -37,23 +37,36 @@ int main(void) {
     int i=1000;
     while (i < 4000) {
         int k = 5;
-	
+
     i++; 
     
     }}    {
     int i=1000;
     while (i < 4000) {
         int k = 5;
-	
+
     i++; 
     
     }}    a(&val);
     int x = 0;
     {
+    int i = 1;
+    while (i <= 5) {
+        {
+        int j = 2;
+        while (j < 6) {
+            val = 9;}
+            ++ j; 
+            
+            }
+            ++ i; 
+            
+            }}
+    {
     int feeeee=0;
     while (feeeee < 3) {
         if (1)
-            break;	
+            break;
             feeeee++; 
             
             }}
@@ -75,7 +88,7 @@ int main(void) {
     {
     om=1;
     while (om<=M) {
-    B[om]=comp[om]-comp[om-1];	
+    B[om]=comp[om]-comp[om-1];
     om++; 
     
     }}

@@ -29,6 +29,9 @@ int main(void) {
         int k = 5;
     a(&val);
     int x = 0;
+    for (int i = 1; i <= 5; ++ i)
+        for (int j = 2; j < 6; ++ j)
+            val = 9;
     for(int feeeee=0; feeeee < 3; feeeee++)
         if (1)
             break;

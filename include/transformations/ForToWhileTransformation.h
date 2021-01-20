@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <utility>
+#include <stack>
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -22,8 +24,8 @@
 
 using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor,
 clang::ASTContext, clang::ForStmt, clang::SourceManager, clang::LangOptions,
-clang::ContinueStmt, clang::Stmt, clang::SourceRange;
-using std::unique_ptr, std::vector, std::string;
+clang::ContinueStmt, clang::Stmt, clang::SourceRange, clang::SourceLocation;
+using std::unique_ptr, std::vector, std::string, std::stack, std::pair;
 
 /// RecursiveASTVisitor is a set of actions that are done
 /// when a certain node of AST is reached
@@ -38,6 +40,7 @@ class ForToWhileVisitor : public RecursiveASTVisitor<ForToWhileVisitor> {
     Rewriter * rewriter;
     SourceManager & sm;
     LangOptions opt;
+    stack<pair<SourceLocation, string>> rewritingStack;
     void collectContinues(const Stmt * s, vector<const ContinueStmt *> *continues);
     void processBody(ForStmt * forStmt);
     void processInit(ForStmt * forStmt);
