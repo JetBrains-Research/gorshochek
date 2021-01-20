@@ -35,8 +35,26 @@ void tmppp(int k) {
     k += 1;
 }
 
+struct event {
+    int x, type, id;
+};
+
+bool operator<(event a, event b) {
+    return make_pair(a.x, a.type) < make_pair(b.x, b.type);
+}
+
+template<class T> int chkmax(T &a, T b) {
+    if (b > a) {
+        a = b;
+        return 1;
+    }
+    return 0;
+}
+
 int main(void) {
-    int result = -1, val = 4;
+    int result = -1.0, val = 4;
+    int k0 = 1;
+    std::vector<int> lam = {k0};
     int x;
     int omega = join(result);
     do_math(&val);
@@ -48,5 +66,7 @@ int main(void) {
     auto o = Class();
     o.ffff(val);
     o.ffff(result);
+    chkmax(x, k0);
+    chkmax(result, result);
     return result;
 }

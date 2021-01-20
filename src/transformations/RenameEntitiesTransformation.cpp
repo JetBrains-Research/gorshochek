@@ -23,10 +23,10 @@ RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const bool ren
 bool RenameEntitiesVisitor::VisitFunctionDecl(FunctionDecl * fdecl) {
     if (rename_func) {
         auto loc = fdecl->getBeginLoc();
-        if (sm.isWrittenInMainFile(loc) && !(fdecl->isMain())) {
+        if (sm.isWrittenInMainFile(loc) && !(fdecl->isMain()) && !(fdecl->isOverloadedOperator())) {
             string name = fdecl->getNameInfo().getName().getAsString();
-            if (decl2name.find(fdecl) == decl2name.end()) {
-                processVarDecl(fdecl, &name);
+            if (!(fdecl->isTemplated()) && (decl2name.find(fdecl->getCanonicalDecl()) == decl2name.end())) {
+                processVarDecl(fdecl->getCanonicalDecl(), &name);
             }
         }
     }
@@ -44,7 +44,10 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
                 if (decl2name.find(decl) == decl2name.end()) {
                     processVarDecl(decl, &name);
                 }
-                rewriter->ReplaceText(de->getExprLoc(), name.length(), decl2name.at(decl));
+                if (find(processed.begin(), processed.end(), stmt) == processed.end()) {
+                    rewriter->ReplaceText(de->getExprLoc(), name.length(), decl2name.at(decl));
+                    processed.push_back(stmt);
+                }
             }
         }
         if (isa<DeclStmt>(stmt)) {
@@ -69,12 +72,15 @@ bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
     if (rename_func && call->getDirectCallee()) {
         FunctionDecl * fdecl  = call->getDirectCallee();
         auto loc = fdecl->getBeginLoc();
-        if (sm.isWrittenInMainFile(loc)) {
+        if (sm.isWrittenInMainFile(loc) && !(fdecl->isMain()) && !(fdecl->isOverloadedOperator())) {
             string name = fdecl->getNameInfo().getName().getAsString();
-            if (decl2name.find(fdecl) == decl2name.end()) {
-                processVarDecl(fdecl, &name);
+            if (decl2name.find(fdecl->getCanonicalDecl()) == decl2name.end()) {
+                processVarDecl(fdecl->getCanonicalDecl(), &name);
             }
-            rewriter->ReplaceText(call->getExprLoc(), name.length(), decl2name.at(fdecl));
+            if (find(processed.begin(), processed.end(), cast<Stmt>(call)) == processed.end()) {
+                rewriter->ReplaceText(call->getExprLoc(), name.length(), decl2name.at(fdecl));
+                processed.push_back(cast<Stmt>(call));
+            }
         }
     }
     return true;

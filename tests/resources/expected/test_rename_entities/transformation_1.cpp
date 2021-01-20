@@ -35,8 +35,26 @@ void test_tmppp(int test_k) {
     test_k += 1;
 }
 
+struct event {
+    int x, type, id;
+};
+
+bool operator<(event test_a, event test_b) {
+    return make_pair(test_a.x, test_a.type) < make_pair(test_b.x, test_b.type);
+}
+
+template<class T> int test_chkmax(T &test_a, T test_b) {
+    if (test_b > test_a) {
+        test_a = test_b;
+        return 1;
+    }
+    return 0;
+}
+
 int main(void) {
-    int test_result = -1, test_val = 4;
+    int test_result = -1.0, test_val = 4;
+    int test_k0 = 1;
+    std::vector<int> test_lam = {test_k0};
     int test_x;
     int test_omega = test_join(test_result);
     test_do_math(&test_val);
@@ -48,5 +66,7 @@ int main(void) {
     auto test_o = Class();
     test_o.test_ffff(test_val);
     test_o.test_ffff(test_result);
+    test_chkmax(test_x, test_k0);
+    test_chkmax(test_result, test_result);
     return test_result;
 }
