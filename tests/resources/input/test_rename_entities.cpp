@@ -51,6 +51,15 @@ template<class T> int chkmax(T &a, T b) {
     return 0;
 }
 
+class Event {
+public:
+    int x, type, id;
+
+    Event() = default;
+
+    Event(int x, int type, int id) : x(x), type(type), id(id) {}
+};
+
 int main(void) {
     int result = -1.0, val = 4;
     int k0 = 1;
@@ -66,6 +75,7 @@ int main(void) {
     auto o = Class();
     o.ffff(val);
     o.ffff(result);
+    auto ev = Event();
     chkmax(x, k0);
     chkmax(result, result);
     return result;

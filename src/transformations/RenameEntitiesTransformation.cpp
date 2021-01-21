@@ -23,7 +23,11 @@ RenameEntitiesVisitor::RenameEntitiesVisitor(Rewriter * rewriter, const bool ren
 bool RenameEntitiesVisitor::VisitFunctionDecl(FunctionDecl * fdecl) {
     if (rename_func) {
         auto loc = fdecl->getBeginLoc();
-        if (sm.isWrittenInMainFile(loc) && !(fdecl->isMain()) && !(fdecl->isOverloadedOperator())) {
+        if (sm.isWrittenInMainFile(loc)
+            && !(fdecl->isMain())
+            && !(fdecl->isOverloadedOperator())
+            && !(isa<clang::CXXConstructorDecl>(fdecl))
+            && !(isa<clang::CXXDestructorDecl>(fdecl))) {
             string name = fdecl->getNameInfo().getName().getAsString();
             if (!(fdecl->isTemplated()) && (decl2name.find(fdecl->getCanonicalDecl()) == decl2name.end())) {
                 processVarDecl(fdecl->getCanonicalDecl(), &name);
@@ -72,7 +76,11 @@ bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
     if (rename_func && call->getDirectCallee()) {
         FunctionDecl * fdecl  = call->getDirectCallee();
         auto loc = fdecl->getBeginLoc();
-        if (sm.isWrittenInMainFile(loc) && !(fdecl->isMain()) && !(fdecl->isOverloadedOperator())) {
+        if (sm.isWrittenInMainFile(loc)
+            && !(fdecl->isMain())
+            && !(fdecl->isOverloadedOperator())
+            && !(isa<clang::CXXConstructorDecl>(fdecl))
+            && !(isa<clang::CXXDestructorDecl>(fdecl))) {
             string name = fdecl->getNameInfo().getName().getAsString();
             if (decl2name.find(fdecl->getCanonicalDecl()) == decl2name.end()) {
                 processVarDecl(fdecl->getCanonicalDecl(), &name);
