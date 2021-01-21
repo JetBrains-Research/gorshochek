@@ -1,7 +1,7 @@
 #include "../../include/transformations/ForToWhileTransformation.h"
-
-using clang::Expr, clang::ContinueStmt, clang::ValueStmt;
-using clang::Lexer, clang::CharSourceRange;
+#include <iostream>
+using clang::Expr, clang::ContinueStmt, clang::ValueStmt, clang::CompoundStmt;
+using clang::Lexer, clang::CharSourceRange, clang::SourceLocation;
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string;
 
@@ -50,7 +50,7 @@ void ForToWhileVisitor::processInit(ForStmt * forStmt) {
         if (isa<clang::ValueStmt>(*init)) {
             initRange.setEnd(Lexer::getLocForEndOfToken(init->getEndLoc(), 1, sm, opt).getLocWithOffset(1));
         }
-        auto initText = getTextFromRange(initRange) + ";\n";
+        auto initText = "{\n" + getTextFromRange(initRange) + ";\n";
         rewriter->InsertText(forStmt->getBeginLoc(), initText, true, true);
     }
 }
@@ -90,13 +90,27 @@ void ForToWhileVisitor::processInc(ForStmt * forStmt) {
             rewriter->InsertText(countinue_stmt->getBeginLoc(), incText, true, true);
         }
         incText += "\n";
-        const Stmt * body = forStmt->getBody();
-        clang::SourceLocation forEndLoc = Lexer::getLocForEndOfToken(forStmt->getEndLoc(), 1, sm, opt);
-        if (!isa<clang::CompoundStmt>(body)) {
-            forEndLoc = forEndLoc.getLocWithOffset(2);
-            incText = "\n" + incText;
+        if (forStmt->getInit()) {
+            incText += "\n}";
         }
-        rewriter->InsertText(forEndLoc, "\t" + incText, true, true);
+        const Stmt * body = forStmt->getBody();
+        SourceLocation forEndLoc;
+        if (!isa<CompoundStmt>(body)) {
+            forEndLoc = Lexer::getLocForEndOfToken(forStmt->getEndLoc(), 0, sm, opt).getLocWithOffset(1);
+            incText = "\n" + incText;
+            rewritingStack.push(pair(forEndLoc, incText));
+            if (!isa<ForStmt>(body)) {
+                pair<SourceLocation, string> pair_;
+                while (!rewritingStack.empty()) {
+                    pair_ = rewritingStack.top();
+                    rewriter->InsertText(pair_.first, pair_.second, true, true);
+                    rewritingStack.pop();
+                }
+            }
+        } else {
+            forEndLoc = cast<CompoundStmt>(body)->getRBracLoc();
+            rewriter->InsertText(forEndLoc, "\t" + incText , true, true);
+        }
     }
 }
 
