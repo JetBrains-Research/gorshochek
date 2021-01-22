@@ -1,6 +1,7 @@
 #include "../../include/transformations/RenameEntitiesTransformation.h"
 
 #include <utility>
+#include <iostream>
 #include "include/transformations/renaming/BaseRenameProcessor.h"
 #include "include/transformations/renaming/RandomRenameProcessor.h"
 #include "include/transformations/renaming/TestRenameProcessor.h"
@@ -8,7 +9,7 @@
 
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string, std::to_string, std::hash, std::function;
-using clang::CXXMemberCallExpr;
+using clang::CXXMemberCallExpr, clang::CXXDestructorDecl, clang::CXXConstructorDecl;
 
 // ------------ RenameEntitiesVisitor ------------
 
@@ -25,8 +26,10 @@ bool RenameEntitiesVisitor::VisitFunctionDecl(FunctionDecl * fdecl) {
         if (sm.isWrittenInMainFile(loc)
             && !(fdecl->isMain())
             && !(fdecl->isOverloadedOperator())
-            && !(isa<clang::CXXConstructorDecl>(fdecl))
-            && !(isa<clang::CXXDestructorDecl>(fdecl))) {
+            && !(isa<CXXConstructorDecl>(fdecl))
+            && !(isa<CXXDestructorDecl>(fdecl))
+            && !(fdecl->getBuiltinID()))
+        {
             string name = fdecl->getNameInfo().getName().getAsString();
             auto decl = fdecl->getCanonicalDecl();
             if (!(fdecl->isTemplated()) && (decl2name.find(decl) == decl2name.end())) {
@@ -70,8 +73,10 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
                 if (sm.isWrittenInMainFile(loc)
                     && !(fdecl->isMain())
                     && !(fdecl->isOverloadedOperator())
-                    && !(isa<clang::CXXConstructorDecl>(fdecl))
-                    && !(isa<clang::CXXDestructorDecl>(fdecl))) {
+                    && !(isa<CXXConstructorDecl>(fdecl))
+                    && !(isa<CXXDestructorDecl>(fdecl))
+                    && !(fdecl->getBuiltinID()))
+                {
                     string name = fdecl->getNameInfo().getName().getAsString();
                     processStmt(stmt, fdecl, &de->getExprLoc(), &name);
                 }
