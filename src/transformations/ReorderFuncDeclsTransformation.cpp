@@ -32,29 +32,31 @@ bool ReorderFuncDeclsVisitor::compare(FunctionDecl * a, FunctionDecl * b) {
 }
 
 void ReorderFuncDeclsVisitor::rewriteFunctions() {
-    if (!test) {
-        shuffle(funcdecls.begin(), funcdecls.end(), *gen);
-    } else {
-        sort(funcdecls.begin(), funcdecls.end(), compare);
-    }
-    SourceManager & sm = rewriter->getSourceMgr();
-    SourceLocation endFile;
-    FileID fid;
-    for (auto & funcdecl : funcdecls) {
-        fid = sm.getFileID(funcdecls[0]->getLocation());
-        endFile = sm.getLocForEndOfFile(fid);
-        rewriter->ReplaceText(endFile, "\n\n");
-        endFile = sm.getLocForEndOfFile(fid);
-        rewriter->ReplaceText(endFile, funcdecl->getSourceRange());
-        if (funcdecl->isFirstDecl()) {
-            SourceRange funcDeclOldRange = funcdecl->getBody()->getSourceRange();
-            rewriter->ReplaceText(funcDeclOldRange, ";");
+    if (!funcdecls.empty()) {
+        if (!test) {
+            shuffle(funcdecls.begin(), funcdecls.end(), *gen);
         } else {
-            SourceRange funcDeclOldRange = funcdecl->getSourceRange();
-            rewriter->RemoveText(funcDeclOldRange);
+            sort(funcdecls.begin(), funcdecls.end(), compare);
         }
+        SourceManager & sm = rewriter->getSourceMgr();
+        SourceLocation endFile;
+        FileID fid;
+        for (auto &funcdecl : funcdecls) {
+            fid = sm.getFileID(funcdecls[0]->getLocation());
+            endFile = sm.getLocForEndOfFile(fid);
+            rewriter->ReplaceText(endFile, "\n\n");
+            endFile = sm.getLocForEndOfFile(fid);
+            rewriter->ReplaceText(endFile, funcdecl->getSourceRange());
+            if (funcdecl->isFirstDecl()) {
+                SourceRange funcDeclOldRange = funcdecl->getBody()->getSourceRange();
+                rewriter->ReplaceText(funcDeclOldRange, ";");
+            } else {
+                SourceRange funcDeclOldRange = funcdecl->getSourceRange();
+                rewriter->RemoveText(funcDeclOldRange);
+            }
+        }
+        rewriter->ReplaceText(endFile, "\n\n");
     }
-    rewriter->ReplaceText(endFile, "\n\n");
 }
 
 ReorderFuncDeclsASTConsumer::ReorderFuncDeclsASTConsumer(Rewriter * rewriter, mt19937 * gen, const bool test) :
