@@ -3,7 +3,7 @@
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::sort, std::shuffle, std::find, std::reverse,
 std::vector, std::string;
-using clang::SourceRange, clang::SourceManager, clang::FileID;
+using clang::SourceRange, clang::SourceManager, clang::FileID, clang::CXXMethodDecl;
 
 ReorderFuncDeclsVisitor::ReorderFuncDeclsVisitor(Rewriter * rewriter, mt19937 * gen, const bool test) :
                                                  rewriter(rewriter), sm(rewriter->getSourceMgr()),
@@ -12,7 +12,9 @@ ReorderFuncDeclsVisitor::ReorderFuncDeclsVisitor(Rewriter * rewriter, mt19937 * 
 bool ReorderFuncDeclsVisitor::VisitFunctionDecl(FunctionDecl * decl) {
     if (!isFuncDeclProcessed(decl)) {
         auto loc = decl->getBeginLoc();
-        if (decl->isThisDeclarationADefinition() && sm.isWrittenInMainFile(loc)) {
+        if (decl->isThisDeclarationADefinition()
+            && sm.isWrittenInMainFile(loc)
+            && !(isa<CXXMethodDecl>(decl))) {
             funcdecls.push_back(decl);
         }
     }
