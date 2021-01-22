@@ -89,10 +89,14 @@ bool IfElseSwapVisitor::isChildOfVisited(IfStmt * ifStmt) {
     for (IfStmt * stmt : visitedIfStmt) {
         thenStmt = stmt->getThen();
         elseStmt = stmt->getElse();
+        // If in AST children of thenStmt consists ifStmt
         if (isChild(thenStmt, ifStmt)) {
             return true;
         }
+        // If else part of current stmt is "else if" then change elseStmt to body of "else if"
         elseStmt = isa<IfStmt>(elseStmt) ? cast<IfStmt>(elseStmt)->getThen() : elseStmt;
+        // If in AST children of elseStmt consists ifStmt return
+        // "false" if current stmt has "else if", "true" otherwise
         if (isChild(elseStmt, ifStmt)) {
             return !isa<IfStmt>(stmt->getElse());
         }
