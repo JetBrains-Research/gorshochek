@@ -45,7 +45,7 @@ class RenameEntitiesVisitor : public RecursiveASTVisitor<RenameEntitiesVisitor> 
      */
     bool VisitCallExpr(CallExpr * call);
     /**
-     * This function is called a certain clang::VarDecl is visited. Here get all the vareables
+     * This function is called a certain clang::VarDecl is visited. Here get all the variables
      * declarations and rename them
      */
     bool VisitVarDecl(VarDecl * vdecl);
