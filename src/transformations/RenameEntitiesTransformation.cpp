@@ -1,6 +1,8 @@
 #include "../../include/transformations/RenameEntitiesTransformation.h"
 
 #include <utility>
+#include <string>
+#include <iostream>
 #include "include/transformations/renaming/BaseRenameProcessor.h"
 #include "include/transformations/renaming/RandomRenameProcessor.h"
 #include "include/transformations/renaming/TestRenameProcessor.h"
@@ -29,8 +31,9 @@ bool RenameEntitiesVisitor::VisitFunctionDecl(FunctionDecl * fdecl) {
             && !(isa<CXXDestructorDecl>(fdecl))
             && !(fdecl->getBuiltinID())) {
             string name = fdecl->getNameInfo().getName().getAsString();
+            name.erase(remove_if(name.begin(), name.end(), isspace), name.end());
             auto decl = fdecl->getCanonicalDecl();
-            if (!(fdecl->isTemplated()) && (decl2name.find(decl) == decl2name.end())) {
+            if (!name.empty() && !(fdecl->isTemplated()) && (decl2name.find(decl) == decl2name.end())) {
                 processDecl(decl, &name);
             }
         }
@@ -43,8 +46,9 @@ bool RenameEntitiesVisitor::VisitVarDecl(VarDecl * vdecl) {
         auto loc = vdecl->getBeginLoc();
         if (sm.isWrittenInMainFile(loc)) {
             string name = vdecl->getNameAsString();
+            name.erase(remove_if(name.begin(), name.end(), isspace), name.end());
             auto decl = vdecl->getCanonicalDecl();
-            if (decl2name.find(decl) == decl2name.end()) {
+            if (!name.empty() && (decl2name.find(decl) == decl2name.end())) {
                 processDecl(decl, &name);
             }
         }
@@ -60,7 +64,10 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
             auto loc = decl->getBeginLoc();
             if (isa<VarDecl>(decl) && sm.isWrittenInMainFile(loc)) {
                 string name = de->getNameInfo().getAsString();
-                processStmt(stmt, decl, &de->getExprLoc(), &name);
+                name.erase(remove_if(name.begin(), name.end(), isspace), name.end());
+                if (!name.empty()) {
+                    processStmt(stmt, decl, &de->getExprLoc(), &name);
+                }
             }
         }
         if (rename_func) {
@@ -75,7 +82,10 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
                     && !(isa<CXXDestructorDecl>(fdecl))
                     && !(fdecl->getBuiltinID())) {
                     string name = fdecl->getNameInfo().getName().getAsString();
-                    processStmt(stmt, fdecl, &de->getExprLoc(), &name);
+                    name.erase(remove_if(name.begin(), name.end(), isspace), name.end());
+                    if (!name.empty()) {
+                        processStmt(stmt, fdecl, &de->getExprLoc(), &name);
+                    }
                 }
             }
         }
@@ -89,7 +99,10 @@ bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
         auto loc = fdecl->getBeginLoc();
         if (sm.isWrittenInMainFile(loc) && isa<CXXMemberCallExpr>(call)) {
             string name = fdecl->getNameInfo().getName().getAsString();
-            processStmt(cast<Stmt>(call), fdecl, &call->getExprLoc(), &name);
+            name.erase(remove_if(name.begin(), name.end(), isspace), name.end());
+            if (!name.empty()) {
+                processStmt(cast<Stmt>(call), fdecl, &call->getExprLoc(), &name);
+            }
         }
     }
     return true;

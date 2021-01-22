@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+typedef long long ll;
 
 void do_math(int *x) {
     cout << "hello";
@@ -87,5 +88,8 @@ int main(void) {
     chkmax(result, result);
     vector<int> vector_int = {1, 2, 3, 4};
     sort(vector_int.begin(), vector_int.end(), cmp);
+    std::function<ll (ll, ll)> go = [&](ll mask1, ll mask2) {
+        return mask1 + mask2;
+    };
     return result;
 }
