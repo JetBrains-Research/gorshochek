@@ -38,7 +38,9 @@ class IfElseSwapVisitor : public RecursiveASTVisitor<IfElseSwapVisitor> {
     SourceManager & sm;
     LangOptions opt;
     vector<IfStmt *> visitedIfStmt;
-    bool isNotVisited(IfStmt * ifStmt);
+    bool isElseStmtOfVisited(IfStmt * ifStmt);
+    bool isChildOfVisited(IfStmt * ifStmt);
+    bool isChild(Stmt * root, Stmt * leaf);
     void swapBodies(IfStmt * ifStmt);
     void rewriteCondition(IfStmt * ifStmt);
     void processIfStmt(IfStmt * ifStmt);

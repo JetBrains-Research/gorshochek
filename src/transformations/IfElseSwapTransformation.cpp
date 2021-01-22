@@ -1,5 +1,5 @@
 #include "../../include/transformations/IfElseSwapTransformation.h"
-
+#include <iostream>
 using clang::IfStmt, clang::ForStmt, clang::WhileStmt;
 using clang::Lexer, clang::CharSourceRange;
 using llvm::isa, llvm::cast;
@@ -49,29 +49,55 @@ void IfElseSwapVisitor::swapBodies(IfStmt * ifStmt) {
 void IfElseSwapVisitor::processIfStmt(IfStmt * ifStmt) {
     auto elseStmt = ifStmt->getElse();
     // Checking if visitor come to "else if"
-    if ((!isa<IfStmt>(elseStmt))) {
+    if (!isa<IfStmt>(elseStmt)) {
         // Checking if visitor come to "else" part of "else if"
-        if (isNotVisited(ifStmt)) {
+        if (!isElseStmtOfVisited(ifStmt) && !isChildOfVisited(ifStmt)) {
             rewriteCondition(ifStmt);
             swapBodies(ifStmt);
         }
-    } else {
-        visitedIfStmt.push_back(cast<IfStmt>(elseStmt));
     }
+    visitedIfStmt.push_back(ifStmt);
 }
 
 bool IfElseSwapVisitor::VisitIfStmt(IfStmt * ifStmt) {
     auto loc = ifStmt->getBeginLoc();
     if (sm.isWrittenInMainFile(loc)) {
-        if (ifStmt->hasElseStorage()) {
+        if (ifStmt->hasElseStorage() && !ifStmt->hasVarStorage()) {
             processIfStmt(ifStmt);
         }
     }
     return true;
 }
 
-bool IfElseSwapVisitor::isNotVisited(IfStmt * ifStmt) {
-    return find(visitedIfStmt.begin(), visitedIfStmt.end(), ifStmt) == visitedIfStmt.end();
+bool IfElseSwapVisitor::isElseStmtOfVisited(IfStmt * ifStmt) {
+    for (auto stmt : visitedIfStmt) {
+        if (ifStmt == stmt->getElse()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool IfElseSwapVisitor::isChild(Stmt * root, Stmt * leaf) {
+    return find(root->child_begin(), root->child_end(), leaf) != root->child_end();
+}
+
+bool IfElseSwapVisitor::isChildOfVisited(IfStmt * ifStmt) {
+    Stmt * elseStmt;
+    Stmt * thenStmt;
+
+    for (IfStmt * stmt : visitedIfStmt) {
+        thenStmt = stmt->getThen();
+        elseStmt = stmt->getElse();
+        if (isChild(thenStmt, ifStmt)) {
+            return true;
+        }
+        elseStmt = isa<IfStmt>(elseStmt) ? cast<IfStmt>(elseStmt)->getThen() : elseStmt;
+        if (isChild(elseStmt, ifStmt)) {
+            return !isa<IfStmt>(stmt->getElse());
+        }
+    }
+    return false;
 }
 
 // ------------ AddCommentsASTConsumer ------------

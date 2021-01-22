@@ -42,5 +42,15 @@ int main() {
     } else {
         return 2;
     }
+    vector<int> v = {1, 2, 3};
+    if(foo(x) == 1) {
+        int tmp_sz = 11;
+    } else {
+        if(foo(7) == 0) {
+            v.push_back(x);
+        } else {
+            v[0] = max(1, x);
+        }
+    }
     return 0;
 }
