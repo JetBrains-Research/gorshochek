@@ -1,7 +1,6 @@
 #include "../../include/transformations/RenameEntitiesTransformation.h"
 
 #include <utility>
-#include <iostream>
 #include "include/transformations/renaming/BaseRenameProcessor.h"
 #include "include/transformations/renaming/RandomRenameProcessor.h"
 #include "include/transformations/renaming/TestRenameProcessor.h"
@@ -28,8 +27,7 @@ bool RenameEntitiesVisitor::VisitFunctionDecl(FunctionDecl * fdecl) {
             && !(fdecl->isOverloadedOperator())
             && !(isa<CXXConstructorDecl>(fdecl))
             && !(isa<CXXDestructorDecl>(fdecl))
-            && !(fdecl->getBuiltinID()))
-        {
+            && !(fdecl->getBuiltinID())) {
             string name = fdecl->getNameInfo().getName().getAsString();
             auto decl = fdecl->getCanonicalDecl();
             if (!(fdecl->isTemplated()) && (decl2name.find(decl) == decl2name.end())) {
@@ -75,8 +73,7 @@ bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
                     && !(fdecl->isOverloadedOperator())
                     && !(isa<CXXConstructorDecl>(fdecl))
                     && !(isa<CXXDestructorDecl>(fdecl))
-                    && !(fdecl->getBuiltinID()))
-                {
+                    && !(fdecl->getBuiltinID())) {
                     string name = fdecl->getNameInfo().getName().getAsString();
                     processStmt(stmt, fdecl, &de->getExprLoc(), &name);
                 }
