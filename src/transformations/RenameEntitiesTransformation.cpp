@@ -8,8 +8,7 @@
 
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::find, std::vector, std::string, std::to_string, std::hash, std::function;
-using clang::DeclStmt, clang::FunctionDecl, clang::VarDecl, clang::DeclRefExpr,
-clang::NamedDecl;
+using clang::CXXMemberCallExpr;
 
 // ------------ RenameEntitiesVisitor ------------
 
@@ -29,8 +28,23 @@ bool RenameEntitiesVisitor::VisitFunctionDecl(FunctionDecl * fdecl) {
             && !(isa<clang::CXXConstructorDecl>(fdecl))
             && !(isa<clang::CXXDestructorDecl>(fdecl))) {
             string name = fdecl->getNameInfo().getName().getAsString();
-            if (!(fdecl->isTemplated()) && (decl2name.find(fdecl->getCanonicalDecl()) == decl2name.end())) {
-                processVarDecl(fdecl->getCanonicalDecl(), &name);
+            auto decl = fdecl->getCanonicalDecl();
+            if (!(fdecl->isTemplated()) && (decl2name.find(decl) == decl2name.end())) {
+                processDecl(decl, &name);
+            }
+        }
+    }
+    return true;
+}
+
+bool RenameEntitiesVisitor::VisitVarDecl(VarDecl * vdecl) {
+    if (rename_var) {
+        auto loc = vdecl->getBeginLoc();
+        if (sm.isWrittenInMainFile(loc)) {
+            string name = vdecl->getNameAsString();
+            auto decl = vdecl->getCanonicalDecl();
+            if (decl2name.find(decl) == decl2name.end()) {
+                processDecl(decl, &name);
             }
         }
     }
@@ -38,33 +52,28 @@ bool RenameEntitiesVisitor::VisitFunctionDecl(FunctionDecl * fdecl) {
 }
 
 bool RenameEntitiesVisitor::VisitStmt(Stmt * stmt) {
-    if (rename_var) {
-        if (isa<DeclRefExpr>(stmt)) {
+    if (isa<DeclRefExpr>(stmt)) {
+        if (rename_var) {
             auto * de = cast<DeclRefExpr>(stmt);
             auto * decl = de->getDecl();
             auto loc = decl->getBeginLoc();
             if (isa<VarDecl>(decl) && sm.isWrittenInMainFile(loc)) {
                 string name = de->getNameInfo().getAsString();
-                if (decl2name.find(decl) == decl2name.end()) {
-                    processVarDecl(decl, &name);
-                }
-                if (find(processed.begin(), processed.end(), stmt) == processed.end()) {
-                    rewriter->ReplaceText(de->getExprLoc(), name.length(), decl2name.at(decl));
-                    processed.push_back(stmt);
-                }
+                processStmt(stmt, decl, &de->getExprLoc(), &name);
             }
         }
-        if (isa<DeclStmt>(stmt)) {
-            auto * de = cast<DeclStmt>(stmt);
-            if (de->isSingleDecl()) {
-                auto * decl = de->getSingleDecl();
-                auto loc = decl->getBeginLoc();
-                if (isa<VarDecl>(decl) && sm.isWrittenInMainFile(loc)) {
-                    auto * vardecl = cast<VarDecl>(decl);
-                    string name = vardecl->getNameAsString();
-                    if (decl2name.find(decl) == decl2name.end()) {
-                        processVarDecl(decl, &name);
-                    }
+        if (rename_func) {
+            auto * de = cast<DeclRefExpr>(stmt);
+            if (isa<FunctionDecl>(de->getDecl())) {
+                auto * fdecl = cast<FunctionDecl>(de->getDecl());
+                auto loc = fdecl->getBeginLoc();
+                if (sm.isWrittenInMainFile(loc)
+                    && !(fdecl->isMain())
+                    && !(fdecl->isOverloadedOperator())
+                    && !(isa<clang::CXXConstructorDecl>(fdecl))
+                    && !(isa<clang::CXXDestructorDecl>(fdecl))) {
+                    string name = fdecl->getNameInfo().getName().getAsString();
+                    processStmt(stmt, fdecl, &de->getExprLoc(), &name);
                 }
             }
         }
@@ -76,28 +85,28 @@ bool RenameEntitiesVisitor::VisitCallExpr(CallExpr * call) {
     if (rename_func && call->getDirectCallee()) {
         FunctionDecl * fdecl  = call->getDirectCallee();
         auto loc = fdecl->getBeginLoc();
-        if (sm.isWrittenInMainFile(loc)
-            && !(fdecl->isMain())
-            && !(fdecl->isOverloadedOperator())
-            && !(isa<clang::CXXConstructorDecl>(fdecl))
-            && !(isa<clang::CXXDestructorDecl>(fdecl))) {
+        if (sm.isWrittenInMainFile(loc) && isa<CXXMemberCallExpr>(call)) {
             string name = fdecl->getNameInfo().getName().getAsString();
-            if (decl2name.find(fdecl->getCanonicalDecl()) == decl2name.end()) {
-                processVarDecl(fdecl->getCanonicalDecl(), &name);
-            }
-            if (find(processed.begin(), processed.end(), cast<Stmt>(call)) == processed.end()) {
-                rewriter->ReplaceText(call->getExprLoc(), name.length(), decl2name.at(fdecl));
-                processed.push_back(cast<Stmt>(call));
-            }
+            processStmt(cast<Stmt>(call), fdecl, &call->getExprLoc(), &name);
         }
     }
     return true;
 }
 
-void RenameEntitiesVisitor::processVarDecl(Decl * decl, string * name) {
+void RenameEntitiesVisitor::processDecl(Decl * decl, string * name) {
     string randomName = processor->generateNewName(name);
     rewriter->ReplaceText(decl->getLocation(), name->length(), randomName);
     decl2name[decl] = randomName;
+}
+
+void RenameEntitiesVisitor::processStmt(Stmt * stmt, Decl * decl, SourceLocation * stmt_loc, string * name) {
+    if (decl2name.find(decl) == decl2name.end()) {
+        processDecl(decl, name);
+    }
+    if (find(processed.begin(), processed.end(), stmt) == processed.end()) {
+        rewriter->ReplaceText(*stmt_loc, name->length(), decl2name.at(decl));
+        processed.push_back(stmt);
+    }
 }
 
 // ------------ RenameEntitiesASTConsumer ------------
