@@ -1,12 +1,16 @@
 n transformations: 1
 batch size: 16
 transformations:
+  - reorder function decls:
+      p: 1.0
+      seed: 9
+      test: true
   - open macros:
       p: 1.0
   - remove comments:
       p: 1.0
   - rename entities:
-      p: 1
+      p: 1.0
       rename functions: true
       rename variables: true
       strategy:
@@ -22,7 +26,6 @@ transformations:
       p: 1.0
   - while to for:
       p: 1.0
-  - reorder function decls:
+  - add comments:
       p: 1.0
-      seed: 9
-      test: true
+      statements: ["forInside", "ifBegin", "ifInside"]
