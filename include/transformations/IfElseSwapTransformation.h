@@ -20,7 +20,7 @@
 
 #include "../ITransformation.h"
 
-using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::IfStmt,
+using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::IfStmt, clang::ConstStmtVisitor,
 clang::ASTContext, clang::Stmt, clang::SourceManager, clang::LangOptions, clang::SourceRange;
 using std::unique_ptr, std::vector, std::string;
 
@@ -45,6 +45,16 @@ class IfElseSwapVisitor : public RecursiveASTVisitor<IfElseSwapVisitor> {
     void rewriteCondition(IfStmt * ifStmt);
     void processIfStmt(IfStmt * ifStmt);
     string getBodyAsString(SourceRange * range);
+};
+
+class ChildFinder : public RecursiveASTVisitor<ChildFinder> {
+public:
+    ChildFinder(const Stmt * leaf);
+    bool VisitStmt(Stmt * stmt);
+    bool isChild();
+private:
+    const Stmt * leaf;
+    bool isChild_ = false;
 };
 
 class IfElseSwapASTConsumer : public ASTConsumer {

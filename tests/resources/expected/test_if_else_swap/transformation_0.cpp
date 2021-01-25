@@ -45,11 +45,20 @@ int main() {
     vector<int> v = {1, 2, 3};
     if(foo(x) == 1) {
         int tmp_sz = 11;
+        for(auto &z : v) {
+            if (foo(3) == 0) {
+                v.push_back(x + 2);
+            } else {
+                v[0] = max(14, x);
+            }
+        }
     } else {
-        if(foo(7) == 0) {
-            v.push_back(x);
-        } else {
-            v[0] = max(1, x);
+        for(auto &z : v) {
+            if (foo(7) == 0) {
+                v.push_back(x);
+            } else {
+                v[0] = max(1, x);
+            }
         }
     }
     return 0;

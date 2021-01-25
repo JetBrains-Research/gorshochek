@@ -79,7 +79,9 @@ bool IfElseSwapVisitor::isElseStmtOfVisited(IfStmt * ifStmt) {
 }
 
 bool IfElseSwapVisitor::isChild(Stmt * root, Stmt * leaf) {
-    return find(root->child_begin(), root->child_end(), leaf) != root->child_end();
+    auto finder = ChildFinder(leaf);
+    finder.TraverseStmt(root);
+    return finder.isChild();
 }
 
 bool IfElseSwapVisitor::isChildOfVisited(IfStmt * ifStmt) {
@@ -102,6 +104,17 @@ bool IfElseSwapVisitor::isChildOfVisited(IfStmt * ifStmt) {
         }
     }
     return false;
+}
+
+ChildFinder::ChildFinder(const Stmt * leaf) : leaf(leaf) {}
+
+bool ChildFinder::VisitStmt(Stmt * stmt) {
+    isChild_ = isChild_ || (stmt == leaf);
+    return true;
+}
+
+bool ChildFinder::isChild() {
+    return isChild_;
 }
 
 // ------------ AddCommentsASTConsumer ------------
