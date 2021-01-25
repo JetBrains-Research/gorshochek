@@ -7,6 +7,7 @@ using namespace std;
 #include <cstdio>
 
 void foo1(int n) {
+    if(n==1)  cin.tie(0);
     int x = 9;
 }
 
@@ -39,6 +40,7 @@ int main() {
         for(i=0;i<1010;i++) {
             if(a[i]==1) {
                 std::cout << i;
+                std::cout << "%d\n" << a[i + 10];
                 break;
             }
         }

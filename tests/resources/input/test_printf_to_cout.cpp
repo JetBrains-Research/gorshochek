@@ -5,6 +5,7 @@ using namespace std;
 #include <cstdio>
 
 void foo1(int n) {
+    if(n==1) ios::sync_with_stdio(false), cin.tie(0);
     int x = 9;
 }
 
@@ -37,6 +38,7 @@ int main() {
         for(i=0;i<1010;i++) {
             if(a[i]==1) {
                 printf("%d",i);
+                printf("%d\n", a[i + 10]);
                 break;
             }
         }
