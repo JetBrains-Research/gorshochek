@@ -1,6 +1,19 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+class Event {
+public:
+    int x, type, id;
+
+    Event() = default;
+
+    Event(int x, int type, int id) : x(x), type(type), id(id) {}
+
+    bool operator<(const Event& other) const {
+        return x < other.x || (x == other.x && type < other.type);
+    }
+};
+
 int external() {
     int ti,tn;
     scanf("%d",&tn);

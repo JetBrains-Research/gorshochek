@@ -3,7 +3,7 @@
 using llvm::isa, llvm::cast;
 using std::unique_ptr, std::sort, std::shuffle, std::find, std::reverse,
 std::vector, std::string;
-using clang::SourceRange, clang::SourceManager, clang::FileID;
+using clang::SourceRange, clang::SourceManager, clang::FileID, clang::CXXMethodDecl;
 
 ReorderFuncDeclsVisitor::ReorderFuncDeclsVisitor(Rewriter * rewriter, mt19937 * gen, const bool test) :
                                                  rewriter(rewriter), sm(rewriter->getSourceMgr()),
@@ -12,7 +12,9 @@ ReorderFuncDeclsVisitor::ReorderFuncDeclsVisitor(Rewriter * rewriter, mt19937 * 
 bool ReorderFuncDeclsVisitor::VisitFunctionDecl(FunctionDecl * decl) {
     if (!isFuncDeclProcessed(decl)) {
         auto loc = decl->getBeginLoc();
-        if (decl->isThisDeclarationADefinition() && sm.isWrittenInMainFile(loc)) {
+        if (decl->isThisDeclarationADefinition()
+            && sm.isWrittenInMainFile(loc)
+            && !(isa<CXXMethodDecl>(decl))) {
             funcdecls.push_back(decl);
         }
     }
@@ -30,29 +32,31 @@ bool ReorderFuncDeclsVisitor::compare(FunctionDecl * a, FunctionDecl * b) {
 }
 
 void ReorderFuncDeclsVisitor::rewriteFunctions() {
-    if (!test) {
-        shuffle(funcdecls.begin(), funcdecls.end(), *gen);
-    } else {
-        sort(funcdecls.begin(), funcdecls.end(), compare);
-    }
-    SourceManager & sm = rewriter->getSourceMgr();
-    SourceLocation endFile;
-    FileID fid;
-    for (auto & funcdecl : funcdecls) {
-        fid = sm.getFileID(funcdecls[0]->getLocation());
-        endFile = sm.getLocForEndOfFile(fid);
-        rewriter->ReplaceText(endFile, "\n\n");
-        endFile = sm.getLocForEndOfFile(fid);
-        rewriter->ReplaceText(endFile, funcdecl->getSourceRange());
-        if (funcdecl->isFirstDecl()) {
-            SourceRange funcDeclOldRange = funcdecl->getBody()->getSourceRange();
-            rewriter->ReplaceText(funcDeclOldRange, ";");
+    if (!funcdecls.empty()) {
+        if (!test) {
+            shuffle(funcdecls.begin(), funcdecls.end(), *gen);
         } else {
-            SourceRange funcDeclOldRange = funcdecl->getSourceRange();
-            rewriter->RemoveText(funcDeclOldRange);
+            sort(funcdecls.begin(), funcdecls.end(), compare);
         }
+        SourceManager & sm = rewriter->getSourceMgr();
+        SourceLocation endFile;
+        FileID fid;
+        for (auto &funcdecl : funcdecls) {
+            fid = sm.getFileID(funcdecls[0]->getLocation());
+            endFile = sm.getLocForEndOfFile(fid);
+            rewriter->ReplaceText(endFile, "\n\n");
+            endFile = sm.getLocForEndOfFile(fid);
+            rewriter->ReplaceText(endFile, funcdecl->getSourceRange());
+            if (funcdecl->isFirstDecl()) {
+                SourceRange funcDeclOldRange = funcdecl->getBody()->getSourceRange();
+                rewriter->ReplaceText(funcDeclOldRange, ";");
+            } else {
+                SourceRange funcDeclOldRange = funcdecl->getSourceRange();
+                rewriter->RemoveText(funcDeclOldRange);
+            }
+        }
+        rewriter->ReplaceText(endFile, "\n\n");
     }
-    rewriter->ReplaceText(endFile, "\n\n");
 }
 
 ReorderFuncDeclsASTConsumer::ReorderFuncDeclsASTConsumer(Rewriter * rewriter, mt19937 * gen, const bool test) :

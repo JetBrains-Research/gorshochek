@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+typedef long long ll;
 
 void do_math(int *x) {
     cout << "hello";
@@ -51,6 +52,22 @@ template<class T> int chkmax(T &a, T b) {
     return 0;
 }
 
+class Event {
+public:
+    int x, type, id;
+
+    Event() = default;
+
+    Event(int x, int type, int id) : x(x), type(type), id(id) {}
+};
+
+bool cmp(int a, int b) {
+    if (a % 2 == 0) {
+        return a < b;
+    }
+    return a > b;
+}
+
 int main(void) {
     int result = -1.0, val = 4;
     int k0 = 1;
@@ -66,7 +83,13 @@ int main(void) {
     auto o = Class();
     o.ffff(val);
     o.ffff(result);
+    auto ev = Event();
     chkmax(x, k0);
     chkmax(result, result);
+    vector<int> vector_int = {1, 2, 3, 4};
+    sort(vector_int.begin(), vector_int.end(), cmp);
+    std::function<ll (ll, ll)> go = [&](ll mask1, ll mask2) {
+        return mask1 + mask2;
+    };
     return result;
 }
