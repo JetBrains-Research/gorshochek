@@ -47,12 +47,13 @@ class IfElseSwapVisitor : public RecursiveASTVisitor<IfElseSwapVisitor> {
     string getBodyAsString(SourceRange * range);
 };
 
-class ChildFinder : public RecursiveASTVisitor<ChildFinder> {
-public:
-    ChildFinder(const Stmt * leaf);
+/// Class to check if "root" statement has a child "leaf"
+class ChildStmtChecker : public RecursiveASTVisitor<ChildStmtChecker> {
+ public:
+    explicit ChildStmtChecker(const Stmt * leaf);
     bool VisitStmt(Stmt * stmt);
     bool isChild();
-private:
+ private:
     const Stmt * leaf;
     bool isChild_ = false;
 };

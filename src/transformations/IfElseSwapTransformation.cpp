@@ -106,14 +106,16 @@ bool IfElseSwapVisitor::isChildOfVisited(IfStmt * ifStmt) {
     return false;
 }
 
-ChildFinder::ChildFinder(const Stmt * leaf) : leaf(leaf) {}
+// ------------ ChildStmtChecker ------------
 
-bool ChildFinder::VisitStmt(Stmt * stmt) {
+ChildStmtChecker::ChildStmtChecker(const Stmt * leaf) : leaf(leaf) {}
+
+bool ChildStmtChecker::VisitStmt(Stmt * stmt) {
     isChild_ = isChild_ || (stmt == leaf);
     return true;
 }
 
-bool ChildFinder::isChild() {
+bool ChildStmtChecker::isChild() {
     return isChild_;
 }
 
