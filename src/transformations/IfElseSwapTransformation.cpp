@@ -1,8 +1,8 @@
-#include "../../include/transformations/IfElseSwapTransformation.h"
-#include <vector>
-#include <iostream>
 #include <iterator>
 #include <algorithm>
+
+#include "../../include/transformations/IfElseSwapTransformation.h"
+
 using clang::IfStmt, clang::ForStmt, clang::WhileStmt;
 using clang::Lexer, clang::CharSourceRange;
 using llvm::isa, llvm::cast;
@@ -102,7 +102,7 @@ bool IfElseSwapVisitor::isChildOfVisited(IfStmt * ifStmt) {
             if (it + 1 != visitedIfStmt.rend()) {
                 return !(prev->getElse() == stmt);
             } else {
-                return false;
+                return true;
             }
         }
         // If else part of current stmt is "else if" then change elseStmt to body of "else if"
@@ -113,7 +113,7 @@ bool IfElseSwapVisitor::isChildOfVisited(IfStmt * ifStmt) {
             if (it + 1 != visitedIfStmt.rend()) {
                 return !(prev->getElse() == stmt);
             } else {
-                return false;
+                return true;
             }
         }
     }

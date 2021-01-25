@@ -40,7 +40,7 @@ int main() {
             return 0;
         return a;
     } else {
-        return 2;
+        x = 2;
     }
     vector<int> v = {1, 2, 3};
     if(foo(x) == 1) {
