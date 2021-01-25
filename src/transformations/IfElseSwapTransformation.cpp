@@ -38,8 +38,10 @@ void IfElseSwapVisitor::swapBodies(IfStmt * ifStmt) {
     auto elseStmt = ifStmt->getElse();
     // Getting bodies of "if" and "else" statements
     auto ifRange = ifStmt->getThen()->getSourceRange();
+    ifRange.setEnd(Lexer::getLocForEndOfToken(ifRange.getEnd(), 1, sm, opt));
     auto ifBodyText = getBodyAsString(&ifRange);
     auto elseRange = elseStmt->getSourceRange();
+    elseRange.setEnd(Lexer::getLocForEndOfToken(elseRange.getEnd(), 1, sm, opt));
     auto elseBodyText = getBodyAsString(&elseRange);
     // Swap if and else parts
     rewriter->ReplaceText(elseRange, ifBodyText);
@@ -79,9 +81,9 @@ bool IfElseSwapVisitor::isElseStmtOfVisited(IfStmt * ifStmt) {
 }
 
 bool IfElseSwapVisitor::isChild(Stmt * root, Stmt * leaf) {
-    auto finder = ChildFinder(leaf);
-    finder.TraverseStmt(root);
-    return finder.isChild();
+    auto checker = ChildStmtChecker(leaf);
+    checker.TraverseStmt(root);
+    return checker.isChild();
 }
 
 bool IfElseSwapVisitor::isChildOfVisited(IfStmt * ifStmt) {

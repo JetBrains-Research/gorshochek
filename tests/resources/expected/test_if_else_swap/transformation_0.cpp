@@ -61,5 +61,12 @@ int main() {
             }
         }
     }
+    for (long long k = 0; k < 30; k++)
+        if (1 & (1 << k)) {
+            if (k == -1)
+                continue;
+            else
+                x += 1 << k;
+        }
     return 0;
 }
