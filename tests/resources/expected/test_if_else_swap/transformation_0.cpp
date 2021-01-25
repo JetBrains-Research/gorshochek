@@ -68,5 +68,26 @@ int main() {
             else
                 x += 1 << k;
         }
+    if(x - 1 < 0) {
+        return 1;
+    } else if (x > 0) {
+        for (int mask = 0; mask < 1 << 8; ++mask) {
+            if (x == 5) {
+                if (v[0] % 2) {
+                    x += (x - 1);
+                }
+                if (v[0] & (1 << v[1])) {
+                    x += (x - 2);
+
+                } else {
+                    x++;
+                }
+            } else {
+                x = 0;
+            }
+        }
+    } else {
+        return -1;
+    }
     return 0;
 }

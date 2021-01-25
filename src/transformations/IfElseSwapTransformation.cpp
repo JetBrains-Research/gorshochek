@@ -1,5 +1,8 @@
 #include "../../include/transformations/IfElseSwapTransformation.h"
+#include <vector>
 #include <iostream>
+#include <iterator>
+#include <algorithm>
 using clang::IfStmt, clang::ForStmt, clang::WhileStmt;
 using clang::Lexer, clang::CharSourceRange;
 using llvm::isa, llvm::cast;
@@ -13,18 +16,17 @@ IfElseSwapVisitor::IfElseSwapVisitor(Rewriter * rewriter) :
 void IfElseSwapVisitor::rewriteCondition(IfStmt * ifStmt) {
     // Rewriting if conditions, e.g condition "if(x == 0)" will be transformed to "if(!(x == 0))"
     auto range = ifStmt->getCond()->getSourceRange();
+    range.setEnd(Lexer::getLocForEndOfToken(range.getEnd(), 1, sm, opt).getLocWithOffset(1));
     auto condString = Lexer::getSourceText(CharSourceRange::getCharRange(range), sm, opt).str();
     if (!condString.empty()) {
-        rewriter->InsertTextAfter(ifStmt->getCond()->getBeginLoc(), "!(");
-        rewriter->InsertTextAfter(
-                Lexer::getLocForEndOfToken(ifStmt->getCond()->getEndLoc(), 1, sm, opt).getLocWithOffset(1),
-                ")");
+        rewriter->InsertTextAfter(range.getBegin(), "!(");
+        rewriter->InsertTextAfter(range.getEnd(), ")");
     }
 }
 
 string IfElseSwapVisitor::getBodyAsString(SourceRange * range) {
     range->setBegin(range->getBegin());
-    range->setEnd(range->getEnd().getLocWithOffset(1));
+    range->setEnd(Lexer::getLocForEndOfToken(range->getEnd(), 1, sm, opt).getLocWithOffset(1));
     auto text = Lexer::getSourceText(CharSourceRange::getCharRange(*range), sm, opt);
     // If no brackets found then we add a small offset
     if (text.str()[0] != '{') {
@@ -35,13 +37,10 @@ string IfElseSwapVisitor::getBodyAsString(SourceRange * range) {
 }
 
 void IfElseSwapVisitor::swapBodies(IfStmt * ifStmt) {
-    auto elseStmt = ifStmt->getElse();
     // Getting bodies of "if" and "else" statements
     auto ifRange = ifStmt->getThen()->getSourceRange();
-    ifRange.setEnd(Lexer::getLocForEndOfToken(ifRange.getEnd(), 1, sm, opt));
     auto ifBodyText = getBodyAsString(&ifRange);
-    auto elseRange = elseStmt->getSourceRange();
-    elseRange.setEnd(Lexer::getLocForEndOfToken(elseRange.getEnd(), 1, sm, opt));
+    auto elseRange = ifStmt->getElse()->getSourceRange();
     auto elseBodyText = getBodyAsString(&elseRange);
     // Swap if and else parts
     rewriter->ReplaceText(elseRange, ifBodyText);
@@ -89,20 +88,33 @@ bool IfElseSwapVisitor::isChild(Stmt * root, Stmt * leaf) {
 bool IfElseSwapVisitor::isChildOfVisited(IfStmt * ifStmt) {
     Stmt * elseStmt;
     Stmt * thenStmt;
+    IfStmt * stmt;
+    IfStmt * prev;
 
-    for (IfStmt * stmt : visitedIfStmt) {
+    for (auto it = visitedIfStmt.rbegin(); it != visitedIfStmt.rend(); ++it) {
+        stmt = *it;
+        prev = *(it + 1);
         thenStmt = stmt->getThen();
         elseStmt = stmt->getElse();
         // If in AST children of thenStmt consists ifStmt
+
         if (isChild(thenStmt, ifStmt)) {
-            return true;
+            if (it + 1 != visitedIfStmt.rend()) {
+                return !(prev->getElse() == stmt);
+            } else {
+                return false;
+            }
         }
         // If else part of current stmt is "else if" then change elseStmt to body of "else if"
         elseStmt = isa<IfStmt>(elseStmt) ? cast<IfStmt>(elseStmt)->getThen() : elseStmt;
         // If in AST children of elseStmt consists ifStmt return
         // "false" if current stmt has "else if", "true" otherwise
         if (isChild(elseStmt, ifStmt)) {
-            return !isa<IfStmt>(stmt->getElse());
+            if (it + 1 != visitedIfStmt.rend()) {
+                return !(prev->getElse() == stmt);
+            } else {
+                return false;
+            }
         }
     }
     return false;
