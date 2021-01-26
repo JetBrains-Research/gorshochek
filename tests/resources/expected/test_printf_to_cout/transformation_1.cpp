@@ -40,7 +40,7 @@ int main() {
         for(i=0;i<1010;i++) {
             if(a[i]==1) {
                 std::cout << i;
-                std::cout << "%d\n" << a[i + 10];
+                std::cout << a[i + 10] << "\n";
                 break;
             }
         }
