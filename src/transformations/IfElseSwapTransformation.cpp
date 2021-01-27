@@ -1,3 +1,6 @@
+#include <iterator>
+#include <algorithm>
+
 #include "../../include/transformations/IfElseSwapTransformation.h"
 
 using clang::IfStmt, clang::ForStmt, clang::WhileStmt;
@@ -13,18 +16,17 @@ IfElseSwapVisitor::IfElseSwapVisitor(Rewriter * rewriter) :
 void IfElseSwapVisitor::rewriteCondition(IfStmt * ifStmt) {
     // Rewriting if conditions, e.g condition "if(x == 0)" will be transformed to "if(!(x == 0))"
     auto range = ifStmt->getCond()->getSourceRange();
+    range.setEnd(Lexer::getLocForEndOfToken(range.getEnd(), 1, sm, opt).getLocWithOffset(1));
     auto condString = Lexer::getSourceText(CharSourceRange::getCharRange(range), sm, opt).str();
     if (!condString.empty()) {
-        rewriter->InsertTextAfter(ifStmt->getCond()->getBeginLoc(), "!(");
-        rewriter->InsertTextAfter(
-                Lexer::getLocForEndOfToken(ifStmt->getCond()->getEndLoc(), 1, sm, opt).getLocWithOffset(1),
-                ")");
+        rewriter->InsertTextAfter(range.getBegin(), "!(");
+        rewriter->InsertTextAfter(range.getEnd(), ")");
     }
 }
 
 string IfElseSwapVisitor::getBodyAsString(SourceRange * range) {
     range->setBegin(range->getBegin());
-    range->setEnd(range->getEnd().getLocWithOffset(1));
+    range->setEnd(Lexer::getLocForEndOfToken(range->getEnd(), 1, sm, opt).getLocWithOffset(1));
     auto text = Lexer::getSourceText(CharSourceRange::getCharRange(*range), sm, opt);
     // If no brackets found then we add a small offset
     if (text.str()[0] != '{') {
@@ -35,11 +37,10 @@ string IfElseSwapVisitor::getBodyAsString(SourceRange * range) {
 }
 
 void IfElseSwapVisitor::swapBodies(IfStmt * ifStmt) {
-    auto elseStmt = ifStmt->getElse();
     // Getting bodies of "if" and "else" statements
     auto ifRange = ifStmt->getThen()->getSourceRange();
     auto ifBodyText = getBodyAsString(&ifRange);
-    auto elseRange = elseStmt->getSourceRange();
+    auto elseRange = ifStmt->getElse()->getSourceRange();
     auto elseBodyText = getBodyAsString(&elseRange);
     // Swap if and else parts
     rewriter->ReplaceText(elseRange, ifBodyText);
@@ -49,29 +50,87 @@ void IfElseSwapVisitor::swapBodies(IfStmt * ifStmt) {
 void IfElseSwapVisitor::processIfStmt(IfStmt * ifStmt) {
     auto elseStmt = ifStmt->getElse();
     // Checking if visitor come to "else if"
-    if ((!isa<IfStmt>(elseStmt))) {
+    if (!isa<IfStmt>(elseStmt)) {
         // Checking if visitor come to "else" part of "else if"
-        if (isNotVisited(ifStmt)) {
+        if (!isElseStmtOfVisited(ifStmt) && !isChildOfVisited(ifStmt)) {
             rewriteCondition(ifStmt);
             swapBodies(ifStmt);
         }
-    } else {
-        visitedIfStmt.push_back(cast<IfStmt>(elseStmt));
     }
+    visitedIfStmt.push_back(ifStmt);
 }
 
 bool IfElseSwapVisitor::VisitIfStmt(IfStmt * ifStmt) {
     auto loc = ifStmt->getBeginLoc();
     if (sm.isWrittenInMainFile(loc)) {
-        if (ifStmt->hasElseStorage()) {
+        if (ifStmt->hasElseStorage() && !ifStmt->hasVarStorage()) {
             processIfStmt(ifStmt);
         }
     }
     return true;
 }
 
-bool IfElseSwapVisitor::isNotVisited(IfStmt * ifStmt) {
-    return find(visitedIfStmt.begin(), visitedIfStmt.end(), ifStmt) == visitedIfStmt.end();
+bool IfElseSwapVisitor::isElseStmtOfVisited(IfStmt * ifStmt) {
+    for (auto stmt : visitedIfStmt) {
+        if (ifStmt == stmt->getElse()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool IfElseSwapVisitor::isChild(Stmt * root, Stmt * leaf) {
+    auto checker = ChildStmtChecker(leaf);
+    checker.TraverseStmt(root);
+    return checker.isChild();
+}
+
+bool IfElseSwapVisitor::isChildOfVisited(IfStmt * ifStmt) {
+    Stmt * elseStmt;
+    Stmt * thenStmt;
+    IfStmt * stmt;
+    IfStmt * prev;
+
+    for (auto it = visitedIfStmt.rbegin(); it != visitedIfStmt.rend(); ++it) {
+        stmt = *it;
+        prev = *(it + 1);
+        thenStmt = stmt->getThen();
+        elseStmt = stmt->getElse();
+        // If in AST children of thenStmt consists ifStmt
+
+        if (isChild(thenStmt, ifStmt)) {
+            if (it + 1 != visitedIfStmt.rend()) {
+                return !(prev->getElse() == stmt);
+            } else {
+                return true;
+            }
+        }
+        // If else part of current stmt is "else if" then change elseStmt to body of "else if"
+        elseStmt = isa<IfStmt>(elseStmt) ? cast<IfStmt>(elseStmt)->getThen() : elseStmt;
+        // If in AST children of elseStmt consists ifStmt return
+        // "false" if current stmt has "else if", "true" otherwise
+        if (isChild(elseStmt, ifStmt)) {
+            if (it + 1 != visitedIfStmt.rend()) {
+                return !(prev->getElse() == stmt);
+            } else {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// ------------ ChildStmtChecker ------------
+
+ChildStmtChecker::ChildStmtChecker(const Stmt * leaf) : leaf(leaf) {}
+
+bool ChildStmtChecker::VisitStmt(Stmt * stmt) {
+    isChild_ = isChild_ || (stmt == leaf);
+    return true;
+}
+
+bool ChildStmtChecker::isChild() {
+    return isChild_;
 }
 
 // ------------ AddCommentsASTConsumer ------------

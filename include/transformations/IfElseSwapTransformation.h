@@ -20,7 +20,7 @@
 
 #include "../ITransformation.h"
 
-using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::IfStmt,
+using clang::ASTConsumer, clang::Rewriter, clang::RecursiveASTVisitor, clang::IfStmt, clang::ConstStmtVisitor,
 clang::ASTContext, clang::Stmt, clang::SourceManager, clang::LangOptions, clang::SourceRange;
 using std::unique_ptr, std::vector, std::string;
 
@@ -38,11 +38,24 @@ class IfElseSwapVisitor : public RecursiveASTVisitor<IfElseSwapVisitor> {
     SourceManager & sm;
     LangOptions opt;
     vector<IfStmt *> visitedIfStmt;
-    bool isNotVisited(IfStmt * ifStmt);
+    bool isElseStmtOfVisited(IfStmt * ifStmt);
+    bool isChildOfVisited(IfStmt * ifStmt);
+    bool isChild(Stmt * root, Stmt * leaf);
     void swapBodies(IfStmt * ifStmt);
     void rewriteCondition(IfStmt * ifStmt);
     void processIfStmt(IfStmt * ifStmt);
     string getBodyAsString(SourceRange * range);
+};
+
+/// Class to check if "root" statement has a child "leaf"
+class ChildStmtChecker : public RecursiveASTVisitor<ChildStmtChecker> {
+ public:
+    explicit ChildStmtChecker(const Stmt * leaf);
+    bool VisitStmt(Stmt * stmt);
+    bool isChild();
+ private:
+    const Stmt * leaf;
+    bool isChild_ = false;
 };
 
 class IfElseSwapASTConsumer : public ASTConsumer {
