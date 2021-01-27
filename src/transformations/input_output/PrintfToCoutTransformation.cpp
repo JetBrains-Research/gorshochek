@@ -19,9 +19,9 @@ bool PrintfToCoutVisitor::VisitCallExpr(CallExpr *e) {
         auto const exprText = getAsText(SourceRange(e->getBeginLoc(), e->getEndLoc()));
         if (exprText->find("sync_with_stdio") != string::npos) {
             SourceLocation LocStart = e->getBeginLoc();
-            SourceLocation LocEnd = Lexer::getLocForEndOfToken(e->getEndLoc(), 0, sm, opt);
+            SourceLocation LocEnd = Lexer::getLocForEndOfToken(e->getEndLoc(), 1, sm, opt).getLocWithOffset(1);
             SourceRange rangeToDelete(LocStart, LocEnd);
-            rewriter->ReplaceText(rangeToDelete, "");
+            rewriter->RemoveText(rangeToDelete);
         }
 
         // Collecting printf or std::printf expressions
@@ -47,7 +47,7 @@ bool PrintfToCoutVisitor::VisitUsingDirectiveDecl(UsingDirectiveDecl *ud) {
 
 bool PrintfToCoutVisitor::determineIfSimplePrintfCommand(const CallExpr * e) {
     SourceLocation ArgLocStart = e->getArg(0)->getBeginLoc();
-    SourceLocation ArgLocEnd = Lexer::getLocForEndOfToken(ArgLocStart, 0, sm, opt);
+    SourceLocation ArgLocEnd = Lexer::getLocForEndOfToken(e->getArg(0)->getEndLoc(), 0, sm, opt);
     SourceRange range(ArgLocStart, ArgLocEnd);
     string formatstring = getAsText(range)->str();
 
@@ -111,7 +111,7 @@ bool PrintfToCoutVisitor::rewriteSimplePrintfCommand(const CallExpr *e) {
     // A. Definitions
     // Get the first printf argument = the format string with all the placeholders..
     SourceLocation ArgLocStart = e->getArg(0)->getBeginLoc();
-    SourceLocation ArgLocEnd = Lexer::getLocForEndOfToken(ArgLocStart, 0, sm, opt);
+    SourceLocation ArgLocEnd = Lexer::getLocForEndOfToken(e->getArg(0)->getEndLoc(), 0, sm, opt);
     SourceRange range(ArgLocStart, ArgLocEnd);
     string format = getAsText(range)->str();
 
@@ -157,7 +157,7 @@ bool PrintfToCoutVisitor::rewriteSimplePrintfCommand(const CallExpr *e) {
             sstream << "\"" + splits->at(i - 1) + "\"" << " << ";
         }
         SourceLocation ArgLocStart = e->getArg(i)->getBeginLoc();
-        SourceLocation ArgLocEnd = Lexer::getLocForEndOfToken(ArgLocStart, 0, sm, opt);
+        SourceLocation ArgLocEnd = Lexer::getLocForEndOfToken(e->getArg(i)->getEndLoc(), 0, sm, opt);
         SourceRange range(ArgLocStart, ArgLocEnd);
         sstream << prefixForEachPlaceholder->at(i - 1)
                 << getAsText(range)->str();
