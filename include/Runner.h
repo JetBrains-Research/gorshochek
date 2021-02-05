@@ -10,6 +10,7 @@
 
 using clang::tooling::ClangTool, clang::tooling::CommonOptionsParser, llvm::cl::OptionCategory;
 using std::string, std::vector, std::mt19937, std::size_t;
+namespace fs = std::filesystem;
 
 static OptionCategory TransformationCategory("Transformation");
 
@@ -17,7 +18,8 @@ static OptionCategory TransformationCategory("Transformation");
 class Runner {
  public:
     explicit Runner(const vector<ITransformation * > * transformations,
-                    size_t n_transformations, size_t batch_size);
+                    size_t n_transformations, size_t batch_size,
+                    bool logging_flag);
     void run(const string& input_path, const string& output_path);
 
  private:
@@ -38,9 +40,12 @@ class Runner {
                                       const string &description);
     void createOptionsParser(size_t num_files, vector<char **> * rewritable_cpaths,
                              vector<CommonOptionsParser *> * option_parsers);
+    static void logTransfromation(fs::path log_path, string name);
+    static void printBatch(vector<string> * batch, size_t * batch_idx);
     const vector<ITransformation * > * transformations;
     size_t n_transformations;
     size_t batch_size;
+    bool logging_flag;
     mt19937 *gen;
 };
 
