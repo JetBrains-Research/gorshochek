@@ -174,7 +174,6 @@ void Runner::run(const string& input_path, const string& output_path) {
         for (const auto &descr : file_descr.second) {
             description += descr;
         }
-        std::cout << "descr " << file_descr.first << "\n";
         createDescriptionFile(file_descr.first, description);
     }
 }
