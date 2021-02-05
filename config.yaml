@@ -1,5 +1,6 @@
 n transformations: 1
 batch size: 16
+logging: true
 transformations:
   - reorder function decls:
       p: 1.0
