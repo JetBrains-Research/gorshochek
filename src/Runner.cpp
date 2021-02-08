@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <random>
 #include <filesystem>
 #include <iostream>
@@ -17,7 +18,7 @@
 using clang::tooling::FrontendActionFactory, clang::tooling::ClangTool,
 clang::FrontendAction, clang::tooling::newFrontendActionFactory;
 using std::size_t, std::vector, std::string, std::ofstream, std::ios_base, std::to_string,
-std::mt19937, std::copy, std::uniform_real_distribution, std::to_string, std::min,
+std::mt19937, std::copy, std::uniform_real_distribution, std::to_string, std::min, std::map,
 std::cout, std::endl;
 
 const int SEED = 7;
@@ -31,23 +32,12 @@ Runner::Runner(const vector<ITransformation *> *transformations,
         logging_flag(logging_flag),
         gen(new mt19937(SEED)) {}
 
-void Runner::createDescriptionFile(const string& input_path,
-                                   const string& output_path,
+void Runner::createDescriptionFile(const string& file_path,
                                    const string &description) {
-    if (fs::is_regular_file(fs::path(input_path))) {
-        fs::path transformations_path = fs::path(output_path) / fs::path(input_path).stem();
-        fs::path description_path = transformations_path / "description.txt";
+    if (fs::is_regular_file(fs::path(file_path))) {
+        fs::path description_path = fs::path(file_path).parent_path() / "description.txt";
         ofstream description_stream(description_path, ios_base::app);
         description_stream << description;
-    } else {
-        for (const auto &src_path : fs::recursive_directory_iterator(input_path)) {
-            if (fs::is_regular_file(src_path)) {
-                fs::path transformations_path = fs::path(output_path) / src_path.path().stem();
-                fs::path description_path = transformations_path / "description.txt";
-                ofstream description_stream(description_path, ios_base::app);
-                description_stream << description;
-            }
-        }
     }
 }
 
@@ -55,7 +45,7 @@ void Runner::createOutputFolders(const string& input_path,
                                  const string& output_path,
                                  vector<char **> * rewritable_cpaths,
                                  vector<vector<vector<string> *> *> * rewritable_batched_string_paths,
-                                 size_t * num_files) {
+                                 size_t * num_files) const const {
     fs::path output_dir(output_path);
     fs::create_directory(output_dir);
 
@@ -110,7 +100,7 @@ void Runner::createOutputFolders(const string& input_path,
 }
 
 void Runner::createOptionsParser(size_t num_files, vector<char **> * rewritable_cpaths,
-            vector<CommonOptionsParser *> * option_parsers) {
+            vector<CommonOptionsParser *> * option_parsers) const {
     int argc = num_files + 3;
     const char *argv[argc];
     argv[0] = "./gorshochek";
@@ -126,11 +116,12 @@ void Runner::createOptionsParser(size_t num_files, vector<char **> * rewritable_
 }
 
 void Runner::run(const string& input_path, const string& output_path) {
-    vector<string> descr_per_transform(n_transformations);
     size_t num_files;
     auto rewritable_cpaths = new vector<char **>(n_transformations);
     auto rewritable_batched_string_paths = new vector<vector<vector<string> *> *>(n_transformations);
     createOutputFolders(input_path, output_path, rewritable_cpaths, rewritable_batched_string_paths, &num_files);
+
+    map<string, vector<string>> descr_per_transform;
 
     auto num_batches = ceil(static_cast<float>(num_files) / batch_size);
     auto option_parsers = new vector<CommonOptionsParser *>(n_transformations);
@@ -145,7 +136,7 @@ void Runner::run(const string& input_path, const string& output_path) {
         private(transform_index, batch_idx) \
         shared(num_files, rewritable_cpaths, option_parsers, descr_per_transform)
     {  // NOLINT
-        #pragma omp for
+#pragma omp for
         for (transform_index = 0; transform_index < n_transformations; ++transform_index) {
             auto log_path = fs::path(output_path) / fs::path("log_" + to_string(transform_index + 1) + ".txt");
             if (logging_flag) {
@@ -167,7 +158,6 @@ void Runner::run(const string& input_path, const string& output_path) {
                         Tool.run(std::unique_ptr<FrontendActionFactory>(
                                 new TransformationFrontendActionFactory(transformation)).get());
                     }
-                    descr_per_transform[transform_index] += "\t\t" + transformation->getName() + "\n";
                 }
                 if (logging_flag) {
                     logTransfromation(log_path, transformation->getName());
@@ -184,11 +174,12 @@ void Runner::run(const string& input_path, const string& output_path) {
     }
 
     string description;
-    for (const auto & descr : descr_per_transform) {
-        description += descr;
+    for (const auto &file_descr : descr_per_transform) {
+        for (const auto &descr : file_descr.second) {
+            description += descr;
+        }
+        createDescriptionFile(file_descr.first, description);
     }
-
-    createDescriptionFile(input_path, output_path, description);
 }
 
 void Runner::logTransfromation(fs::path log_path, string name) {

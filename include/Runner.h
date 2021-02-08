@@ -34,9 +34,8 @@ class Runner {
                              const string& output_path,
                              vector<char **> * rewritable_cpaths,
                              vector<vector<vector<string> *> *> * rewritable_string_paths,
-                             size_t * num_files);
-    static void createDescriptionFile(const string& input_path,
-                                      const string& output_path,
+                             size_t * num_files) const const;
+    static void createDescriptionFile(const string& file_path,
                                       const string &description);
     void createOptionsParser(size_t num_files, vector<char **> * rewritable_cpaths,
                              vector<CommonOptionsParser *> * option_parsers);
