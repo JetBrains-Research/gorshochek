@@ -171,6 +171,7 @@ void Runner::run(const string& input_path, const string& output_path) {
 
     string description;
     for (const auto &file_descr : descr_per_transform) {
+        description = "";
         for (const auto &descr : file_descr.second) {
             description += descr;
         }
