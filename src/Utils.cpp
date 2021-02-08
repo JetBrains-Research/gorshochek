@@ -80,5 +80,5 @@ size_t getBatchSizeFromYaml(const string &config_path) {
 
 bool getLoggingFlagFromYaml(const string &config_path) {
     YAML::Node config = YAML::LoadFile(config_path);
-    return config[CONFIG_LOGGING_KEY] != nullptr ? config[CONFIG_LOGGING_KEY].as<size_t>() : DEFAULT_LOGGING_FLAG;
+    return config[CONFIG_LOGGING_KEY] != nullptr ? config[CONFIG_LOGGING_KEY].as<bool>() : DEFAULT_LOGGING_FLAG;
 }

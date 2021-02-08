@@ -39,8 +39,8 @@ class Runner {
                                       const string &description);
     void createOptionsParser(size_t num_files, vector<char **> * rewritable_cpaths,
                              vector<CommonOptionsParser *> * option_parsers);
-    static void logTransfromation(fs::path log_path, string name);
-    static void printBatch(vector<string> * batch, size_t * batch_idx);
+    static void logTransfromation(const fs::path log_path, const string name);
+    static void printBatch(const vector<string> * batch, const size_t * batch_idx);
     const vector<ITransformation * > * transformations;
     size_t n_transformations;
     size_t batch_size;

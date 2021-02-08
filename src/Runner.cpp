@@ -100,7 +100,7 @@ void Runner::createOutputFolders(const string& input_path,
 }
 
 void Runner::createOptionsParser(size_t num_files, vector<char **> * rewritable_cpaths,
-            vector<CommonOptionsParser *> * option_parsers) const {
+            vector<CommonOptionsParser *> * option_parsers) {
     int argc = num_files + 3;
     const char *argv[argc];
     argv[0] = "./gorshochek";
@@ -147,9 +147,17 @@ void Runner::run(const string& input_path, const string& output_path) {
             for (auto transformation : *transformations) {
                 cout << "Transformation " << transformation->getName() << endl;
                 // Constructs a clang tool to run over a list of files.
-                if (dis(*gen) < transformation->getProbability()) {
-                    for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
+                for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
+                    if (dis(*gen) < transformation->getProbability()) {
                         printBatch(rewritable_batched_string_paths->at(transform_index)->at(batch_idx), &batch_idx);
+                        for (const auto& batch_file : *rewritable_batched_string_paths->at(transform_index)->at(
+                                batch_idx)) {
+                            if (descr_per_transform.find(batch_file) == descr_per_transform.end()) {
+                                descr_per_transform[batch_file] = vector<string>(n_transformations);
+                            }
+                            descr_per_transform[batch_file][transform_index] +=
+                                    "\t\t" + transformation->getName() + "\n";
+                        }
                         ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
                                        *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
                         if (logging_flag) {
@@ -182,16 +190,16 @@ void Runner::run(const string& input_path, const string& output_path) {
     }
 }
 
-void Runner::logTransfromation(fs::path log_path, string name) {
+void Runner::logTransfromation(const fs::path log_path, const string name) {
     ofstream log_stream;
     log_stream.open(log_path, ios_base::app);
     log_stream << " - " << name << "\n";
     log_stream.close();
 }
 
-void Runner::printBatch(vector<string> * batch, size_t * batch_idx) {
+void Runner::printBatch(const vector<string> * batch, const size_t * batch_idx) {
     cout << "- Batch " << *batch_idx << endl;
-    for (auto batch_file : *batch) {
+    for (const auto& batch_file : *batch) {
         cout << " - - " << batch_file << endl;
     }
     cout << endl << endl;
