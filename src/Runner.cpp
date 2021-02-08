@@ -140,7 +140,8 @@ void Runner::run(const string& input_path, const string& output_path) {
         for (transform_index = 0; transform_index < n_transformations; ++transform_index) {
             auto log_path = fs::path(output_path) / fs::path("log_" + to_string(transform_index + 1) + ".txt");
             if (logging_flag) {
-                logTransfromation(log_path, "initial");
+                string init = "initial";
+                logTransfromation(&log_path, &init);
             }
             // Run the Clang Tool, creating a new FrontendAction
             // The way to create new FrontendAction is similar to newFrontendActionFactory function
@@ -168,7 +169,7 @@ void Runner::run(const string& input_path, const string& output_path) {
                     }
                 }
                 if (logging_flag) {
-                    logTransfromation(log_path, transformation->getName());
+                    logTransfromation(&log_path, &transformation->getName());
                     cout << "Last check " << endl;
                     for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
                         printBatch(rewritable_batched_string_paths->at(transform_index)->at(batch_idx), &batch_idx);
@@ -190,10 +191,10 @@ void Runner::run(const string& input_path, const string& output_path) {
     }
 }
 
-void Runner::logTransfromation(const fs::path log_path, const string name) {
+void Runner::logTransfromation(const fs::path * log_path, const string * name) {
     ofstream log_stream;
-    log_stream.open(log_path, ios_base::app);
-    log_stream << " - " << name << "\n";
+    log_stream.open(*log_path, ios_base::app);
+    log_stream << " - " << *name << "\n";
     log_stream.close();
 }
 
