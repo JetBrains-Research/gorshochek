@@ -70,8 +70,8 @@ def _test(
             with open(actual_transform_path, "r") as transformed:
                 transformed_data = transformed.read()
             assert transformed_data == expected_data, "Actual and expected files mismatch"
-    expected_log_path = path.join(expected_path, "log.txt")
-    actual_log_path = path.join(actual_path, "log.txt")
+    expected_log_path = path.join(expected_path, "log_1.txt")
+    actual_log_path = path.join(actual_path, "log_1.txt")
     if path.exists(actual_log_path) and path.exists(expected_log_path):
         with open(expected_log_path) as exp:
             expected_log = _parse_logs(exp.read())

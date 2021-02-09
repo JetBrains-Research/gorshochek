@@ -27,6 +27,7 @@ int main(int argc, const char **argv) {
     // Getting number of transformations
     size_t n_transformations = getNumTransformationsFromYaml(config_path);
     size_t batch_size = getBatchSizeFromYaml(config_path);
-    Runner(transformations, n_transformations, batch_size).run(input_path, output_path);
+    bool logging_flag = getLoggingFlagFromYaml(config_path);
+    Runner(transformations, n_transformations, batch_size, logging_flag).run(input_path, output_path);
     return 0;
 }

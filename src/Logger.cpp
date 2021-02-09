@@ -6,7 +6,7 @@
 
 #include "include/Logger.h"
 
-using std::ios_base, std::ofstream, std::move;
+using std::ios_base, std::ofstream, std::move, std::stoi, std::to_string;
 using llvm::raw_string_ostream;
 namespace fs = std::filesystem;
 
@@ -27,7 +27,9 @@ std::unique_ptr<ASTConsumer> LoggerFrontendAction::CreateASTConsumer(CompilerIns
 void LoggerFrontendAction::EndSourceFileAction() {
     auto current_file = this->getCurrentFile().str();
     auto current_file_path = fs::path(current_file);
-    auto log_path = current_file_path.parent_path().parent_path() / fs::path("log.txt");
+    auto file_name = current_file_path.filename().stem().string();
+    auto transform_index = file_name.substr(file_name.find_last_of('_') + 1);
+    auto log_path = current_file_path.parent_path().parent_path() / fs::path("log_" + transform_index + ".txt");
     ofstream log_stream(log_path, ios_base::app);
     log_stream << (current_file_path.parent_path().filename() / current_file_path.filename()).string()
                << "\t" << rewriter->getNumErrors() << "\n";

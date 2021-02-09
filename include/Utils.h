@@ -29,4 +29,12 @@ size_t getNumTransformationsFromYaml(const string &config_path);
  * @return               batch size
  */
 size_t getBatchSizeFromYaml(const string &config_path);
+/**
+ * Util for extracting the flag of logging from config.
+ * If the param has true value than the number of warnings
+ * occurred after applying of each transformetion logged.
+ * @param config_path    path to the .yaml config
+ * @return               batch size
+ */
+bool getLoggingFlagFromYaml(const string &config_path);
 #endif  // INCLUDE_UTILS_H_

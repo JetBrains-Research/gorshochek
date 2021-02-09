@@ -22,7 +22,9 @@ using std::string, std::function, std::cerr, std::endl, std::size_t;
 const char * CONFIG_TRANSFORMATIONS_KEY = "transformations";
 const char * CONFIG_NUM_TRANSFORMATIONS_KEY = "n transformations";
 const char * CONFIG_BATCH_SIZE_KEY = "batch size";
+const char * CONFIG_LOGGING_KEY = "logging";
 size_t DEFAULT_BATCH_SIZE = 16;
+bool DEFAULT_LOGGING_FLAG = true;
 
 const map<string, function<ITransformation *(const YAML::Node &)>> transformFactory = {
         {"identity transform", IdentityTransformation::buildFromConfig },
@@ -74,4 +76,9 @@ size_t getNumTransformationsFromYaml(const string &config_path) {
 size_t getBatchSizeFromYaml(const string &config_path) {
     YAML::Node config = YAML::LoadFile(config_path);
     return config[CONFIG_BATCH_SIZE_KEY] != nullptr ? config[CONFIG_BATCH_SIZE_KEY].as<size_t>() : DEFAULT_BATCH_SIZE;
+}
+
+bool getLoggingFlagFromYaml(const string &config_path) {
+    YAML::Node config = YAML::LoadFile(config_path);
+    return config[CONFIG_LOGGING_KEY] != nullptr ? config[CONFIG_LOGGING_KEY].as<bool>() : DEFAULT_LOGGING_FLAG;
 }
