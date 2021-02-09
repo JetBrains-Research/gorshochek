@@ -170,13 +170,15 @@ void Runner::run(const string& input_path, const string& output_path) {
                 }
                 if (logging_flag) {
                     logTransfromation(&log_path, &transformation->getName());
-                    cout << "Last check " << endl;
-                    for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
-                        printBatch(rewritable_batched_string_paths->at(transform_index)->at(batch_idx), &batch_idx);
-                        ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
-                                       *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
-                        Tool.run(newFrontendActionFactory<LoggerFrontendAction>().get());
-                    }
+                }
+            }
+            if (logging_flag) {
+                cout << "Last check " << endl;
+                for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
+                    printBatch(rewritable_batched_string_paths->at(transform_index)->at(batch_idx), &batch_idx);
+                    ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
+                                   *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
+                    Tool.run(newFrontendActionFactory<LoggerFrontendAction>().get());
                 }
             }
         }
