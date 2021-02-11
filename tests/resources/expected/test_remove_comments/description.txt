@@ -1,2 +1,2 @@
 transformation_1
-		remove
+		remove comments
