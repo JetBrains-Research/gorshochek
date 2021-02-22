@@ -121,14 +121,14 @@ void Runner::run(const string& input_path, const string& output_path) {
     auto rewritable_batched_string_paths = new vector<vector<vector<string> *> *>(n_transformations);
     createOutputFolders(input_path, output_path, rewritable_cpaths, rewritable_batched_string_paths, &num_files);
 
-    map<string, vector<string>> descr_per_transform;
+    vector<map<string, string>> descr_per_transform(n_transformations);
 
     auto num_batches = ceil(static_cast<float>(num_files) / batch_size);
     auto option_parsers = new vector<CommonOptionsParser *>(n_transformations);
     createOptionsParser(num_files, rewritable_cpaths, option_parsers);
 
     uniform_real_distribution<double> dis(0.0, 1.0);
-    size_t transform_index;
+    size_t transform_index = 0;
     size_t batch_idx = 0;
     ofstream log_stream;
 
@@ -151,12 +151,13 @@ void Runner::run(const string& input_path, const string& output_path) {
                 for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
                     if (dis(*gen) < transformation->getProbability()) {
                         printBatch(rewritable_batched_string_paths->at(transform_index)->at(batch_idx), &batch_idx);
-                        for (const auto& batch_file : *rewritable_batched_string_paths->at(transform_index)->at(
+                        for (const auto &batch_file : *rewritable_batched_string_paths->at(transform_index)->at(
                                 batch_idx)) {
-                            if (descr_per_transform.find(batch_file) == descr_per_transform.end()) {
-                                descr_per_transform[batch_file] = vector<string>(n_transformations);
+                            if (descr_per_transform[transform_index].find(batch_file)
+                                == descr_per_transform[transform_index].end()) {
+                                descr_per_transform[transform_index][batch_file] = "";
                             }
-                            descr_per_transform[batch_file][transform_index] +=
+                            descr_per_transform[transform_index][batch_file] +=
                                     "\t\t" + transformation->getName() + "\n";
                         }
                         ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
@@ -184,13 +185,17 @@ void Runner::run(const string& input_path, const string& output_path) {
         }
     }
 
-    string description;
-    for (const auto &file_descr : descr_per_transform) {
-        description = "";
-        for (const auto &descr : file_descr.second) {
-            description += descr;
+    map<string, string> descr_per_file;
+    for (transform_index = 0; transform_index < n_transformations; ++transform_index) {
+        for (const auto &file_descr : descr_per_transform[transform_index]) {
+            if (descr_per_file.find(file_descr.first) == descr_per_file.end()) {
+                descr_per_file[file_descr.first] = "transformation_" + to_string(transform_index + 1) + "\n";
+            }
+            descr_per_file[file_descr.first] += file_descr.second;
         }
-        createDescriptionFile(file_descr.first, description);
+    }
+    for (const auto &file_descr : descr_per_file) {
+        createDescriptionFile(file_descr.first, file_descr.second);
     }
 }
 
