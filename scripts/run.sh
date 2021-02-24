@@ -9,30 +9,31 @@
 
 BUFFER_SIZE=100
 
-IN_BUFFER=in_buffer
-if [ ! -d "$IN_BUFFER" ]
-then
-  mkdir -p "$IN_BUFFER"
-fi
-
-OUT_BUFFER=out_buffer
-if [ ! -d "$OUT_BUFFER" ]
-then
-  mkdir -p "$OUT_BUFFER"
-fi
-
-LOG_BUFFER=log_buffer
-if [ ! -d "$LOG_BUFFER" ]
-then
-  mkdir -p "$LOG_BUFFER"
-fi
-
 INPUT_PATH=$1
 OUTPUT_PATH=$2
 if [ ! -d $OUTPUT_PATH ]
 then
   mkdir "$OUTPUT_PATH"
 fi
+
+IN_BUFFER=in_buffer_$(basename "$INPUT_PATH")
+if [ ! -d "$IN_BUFFER" ]
+then
+  mkdir -p "$IN_BUFFER"
+fi
+
+OUT_BUFFER=out_buffer_$(basename "$INPUT_PATH")
+if [ ! -d "$OUT_BUFFER" ]
+then
+  mkdir -p "$OUT_BUFFER"
+fi
+
+LOG_BUFFER=log_buffer_$(basename "$INPUT_PATH")
+if [ ! -d "$LOG_BUFFER" ]
+then
+  mkdir -p "$LOG_BUFFER"
+fi
+
 
 if [[ -n $3 ]]
 then
