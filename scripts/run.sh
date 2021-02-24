@@ -39,10 +39,10 @@ transform () {
                 -v $PWD/"${IN_BUFFER}":/gorshochek/data/input \
                 -v $PWD/"${OUT_BUFFER}":/gorshochek/data/output \
                 -i -t gorshochek "${CONFIG_PATH}"
-  logs=$(find "${OUT_BUFFER}"/* -name "*.txt")
+  logs=$(find "${OUT_BUFFER}"/* -type f -maxdepth 0 -name "*.txt")
   for log in $logs
   do
-    "$log" > "$LOG_BUFFER"
+    cat "$log" >> "$LOG_BUFFER"
   done
   mv "$OUT_BUFFER"/* "$OUTPUT_PATH"
 }
