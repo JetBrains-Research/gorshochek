@@ -34,19 +34,6 @@ else
   CONFIG_PATH=config.yaml
 fi
 
-transform () {
-  docker run --ipc=host --uts=host \
-                -v $PWD/"${IN_BUFFER}":/gorshochek/data/input \
-                -v $PWD/"${OUT_BUFFER}":/gorshochek/data/output \
-                -i -t gorshochek "${CONFIG_PATH}"
-  logs=$(find "${OUT_BUFFER}"/* -type f -maxdepth 0 -name "*.txt")
-  for log in $logs
-  do
-    cat "$log" >> "$LOG_BUFFER"
-  done
-  mv "$OUT_BUFFER"/* "$OUTPUT_PATH"
-}
-
 index=0;
 files=$(find "${INPUT_PATH}"/* -type f)
 for file in $files
@@ -56,13 +43,32 @@ do
         if ((index % BUFFER_SIZE == BUFFER_SIZE - 1))
         then
           echo "$OUT_BUFFER"
-          transform
+          docker run --ipc=host --uts=host \
+                -v $PWD/"${IN_BUFFER}":/gorshochek/data/input \
+                -v $PWD/"${OUT_BUFFER}":/gorshochek/data/output \
+                -i -t gorshochek "${CONFIG_PATH}"
+          logs=$(find "${OUT_BUFFER}"/* -type f -maxdepth 0 -name "*.txt")
+          for log in $logs
+          do
+            cat "$log" >> "$LOG_BUFFER"
+          done
+          mv "$OUT_BUFFER"/* "$OUTPUT_PATH"
           find "$IN_BUFFER" -type f -delete
         fi
         index=$((index+1))
 done
 
-transform
+docker run --ipc=host --uts=host \
+      -v $PWD/"${IN_BUFFER}":/gorshochek/data/input \
+      -v $PWD/"${OUT_BUFFER}":/gorshochek/data/output \
+      -i -t gorshochek "${CONFIG_PATH}"
+logs=$(find "${OUT_BUFFER}"/* -type f -maxdepth 0 -name "*.txt")
+for log in $logs
+do
+  cat "$log" >> "$LOG_BUFFER"
+done
+mv "$OUT_BUFFER"/* "$OUTPUT_PATH"
+
 mv "$LOG_BUFFER" "$OUTPUT_PATH"
 rm -rf "$IN_BUFFER"
 rm -rf "$OUT_BUFFER"
