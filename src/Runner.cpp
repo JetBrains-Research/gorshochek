@@ -16,7 +16,7 @@
 
 
 using clang::tooling::FrontendActionFactory, clang::tooling::ClangTool,
-clang::FrontendAction, clang::tooling::newFrontendActionFactory;
+clang::FrontendAction, clang::tooling::newFrontendActionFactory, clang::tooling::getInsertArgumentAdjuster;
 using std::size_t, std::vector, std::string, std::ofstream, std::ios_base, std::to_string,
 std::mt19937, std::copy, std::uniform_real_distribution, std::to_string, std::min, std::map,
 std::cout, std::endl;
@@ -157,6 +157,7 @@ void Runner::run(const string& input_path, const string& output_path) {
                     }
                     ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
                                    *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
+                    Tool.appendArgumentsAdjuster(getInsertArgumentAdjuster("-ferror-limit=0"));
                     if (logging_flag) {
                         Tool.run(newFrontendActionFactory<LoggerFrontendAction>().get());
                     }
@@ -174,6 +175,7 @@ void Runner::run(const string& input_path, const string& output_path) {
                 printBatch(rewritable_batched_string_paths->at(transform_index)->at(batch_idx), &batch_idx);
                 ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
                                *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
+                Tool.appendArgumentsAdjuster(getInsertArgumentAdjuster("-ferror-limit=0"));
                 Tool.run(newFrontendActionFactory<LoggerFrontendAction>().get());
             }
         }
