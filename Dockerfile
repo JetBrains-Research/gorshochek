@@ -13,6 +13,7 @@ RUN apt-get update \
                        g++-9-multilib \
                        git \
                        wget \
+                       fdupes \
                        lsb-release \
                        libomp5 libomp-dev \
                        libtinfo-dev lib32z1-dev \
