@@ -48,6 +48,15 @@ def _test(
         actual_num_transforms = len(listdir(actual_file_dir))
         assert actual_num_transforms == expected_num_transforms, \
             f"Num transformed files is not equal to num expected"
+
+        expected_descr_path = path.join(expected_file_dir, f"description.txt")
+        actual_descr_path = path.join(actual_file_dir, f"description.txt")
+        with open(expected_descr_path, "r") as expected:
+            expected_desrc = expected.read()
+        with open(actual_descr_path, "r") as transformed:
+            transformed_desrc = transformed.read()
+        assert expected_desrc == transformed_desrc, "Actual and expected description mismatch"
+
         for i in range(expected_num_transforms - 1):
             expected_transform_path = path.join(expected_file_dir, f"transformation_{i}.cpp")
             actual_transform_path = path.join(actual_file_dir, f"transformation_{i}.cpp")

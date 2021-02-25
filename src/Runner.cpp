@@ -16,7 +16,7 @@
 
 
 using clang::tooling::FrontendActionFactory, clang::tooling::ClangTool,
-clang::FrontendAction, clang::tooling::newFrontendActionFactory;
+clang::FrontendAction, clang::tooling::newFrontendActionFactory, clang::tooling::getInsertArgumentAdjuster;
 using std::size_t, std::vector, std::string, std::ofstream, std::ios_base, std::to_string,
 std::mt19937, std::copy, std::uniform_real_distribution, std::to_string, std::min, std::map,
 std::cout, std::endl;
@@ -121,76 +121,77 @@ void Runner::run(const string& input_path, const string& output_path) {
     auto rewritable_batched_string_paths = new vector<vector<vector<string> *> *>(n_transformations);
     createOutputFolders(input_path, output_path, rewritable_cpaths, rewritable_batched_string_paths, &num_files);
 
-    map<string, vector<string>> descr_per_transform;
+    vector<map<string, string>> descr_per_transform(n_transformations);
 
     auto num_batches = ceil(static_cast<float>(num_files) / batch_size);
     auto option_parsers = new vector<CommonOptionsParser *>(n_transformations);
     createOptionsParser(num_files, rewritable_cpaths, option_parsers);
 
     uniform_real_distribution<double> dis(0.0, 1.0);
-    size_t transform_index;
+    size_t transform_index = 0;
     size_t batch_idx = 0;
     ofstream log_stream;
 
-    #pragma omp parallel \
-        private(transform_index, batch_idx) \
-        shared(num_files, rewritable_cpaths, option_parsers, descr_per_transform)
-    {  // NOLINT
-#pragma omp for
-        for (transform_index = 0; transform_index < n_transformations; ++transform_index) {
-            auto log_path = fs::path(output_path) / fs::path("log_" + to_string(transform_index + 1) + ".txt");
-            if (logging_flag) {
-                string init = "initial";
-                logTransfromation(&log_path, &init);
-            }
-            // Run the Clang Tool, creating a new FrontendAction
-            // The way to create new FrontendAction is similar to newFrontendActionFactory function
-            for (auto transformation : *transformations) {
-                cout << "Transformation " << transformation->getName() << endl;
-                // Constructs a clang tool to run over a list of files.
-                for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
-                    if (dis(*gen) < transformation->getProbability()) {
-                        printBatch(rewritable_batched_string_paths->at(transform_index)->at(batch_idx), &batch_idx);
-                        for (const auto& batch_file : *rewritable_batched_string_paths->at(transform_index)->at(
-                                batch_idx)) {
-                            if (descr_per_transform.find(batch_file) == descr_per_transform.end()) {
-                                descr_per_transform[batch_file] = vector<string>(n_transformations);
-                            }
-                            descr_per_transform[batch_file][transform_index] +=
-                                    "\t\t" + transformation->getName() + "\n";
-                        }
-                        ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
-                                       *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
-                        if (logging_flag) {
-                            Tool.run(newFrontendActionFactory<LoggerFrontendAction>().get());
-                        }
-                        Tool.run(std::unique_ptr<FrontendActionFactory>(
-                                new TransformationFrontendActionFactory(transformation)).get());
-                    }
-                }
-                if (logging_flag) {
-                    logTransfromation(&log_path, &transformation->getName());
-                }
-            }
-            if (logging_flag) {
-                cout << "Last check " << endl;
-                for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
+    for (transform_index = 0; transform_index < n_transformations; ++transform_index) {
+        auto log_path = fs::path(output_path) / fs::path("log_" + to_string(transform_index + 1) + ".txt");
+        if (logging_flag) {
+            string init = "initial";
+            logTransfromation(&log_path, &init);
+        }
+        // Run the Clang Tool, creating a new FrontendAction
+        // The way to create new FrontendAction is similar to newFrontendActionFactory function
+        for (auto transformation : *transformations) {
+            cout << "Transformation " << transformation->getName() << endl;
+            // Constructs a clang tool to run over a list of files.
+            for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
+                if (dis(*gen) < transformation->getProbability()) {
                     printBatch(rewritable_batched_string_paths->at(transform_index)->at(batch_idx), &batch_idx);
+                    for (const auto &batch_file : *rewritable_batched_string_paths->at(transform_index)->at(
+                            batch_idx)) {
+                        if (descr_per_transform[transform_index].find(batch_file)
+                            == descr_per_transform[transform_index].end()) {
+                            descr_per_transform[transform_index][batch_file] = "";
+                        }
+                        descr_per_transform[transform_index][batch_file] +=
+                                "\t\t" + transformation->getName() + "\n";
+                    }
                     ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
                                    *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
-                    Tool.run(newFrontendActionFactory<LoggerFrontendAction>().get());
+                    Tool.appendArgumentsAdjuster(getInsertArgumentAdjuster("-ferror-limit=0"));
+                    if (logging_flag) {
+                        Tool.run(newFrontendActionFactory<LoggerFrontendAction>().get());
+                    }
+                    Tool.run(std::unique_ptr<FrontendActionFactory>(
+                            new TransformationFrontendActionFactory(transformation)).get());
                 }
+            }
+            if (logging_flag) {
+                logTransfromation(&log_path, &transformation->getName());
+            }
+        }
+        if (logging_flag) {
+            cout << "Last check " << endl;
+            for (batch_idx = 0; batch_idx < num_batches; ++batch_idx) {
+                printBatch(rewritable_batched_string_paths->at(transform_index)->at(batch_idx), &batch_idx);
+                ClangTool Tool(option_parsers->at(transform_index)->getCompilations(),
+                               *rewritable_batched_string_paths->at(transform_index)->at(batch_idx));
+                Tool.appendArgumentsAdjuster(getInsertArgumentAdjuster("-ferror-limit=0"));
+                Tool.run(newFrontendActionFactory<LoggerFrontendAction>().get());
             }
         }
     }
 
-    string description;
-    for (const auto &file_descr : descr_per_transform) {
-        description = "";
-        for (const auto &descr : file_descr.second) {
-            description += descr;
+    map<string, string> descr_per_file;
+    for (transform_index = 0; transform_index < n_transformations; ++transform_index) {
+        for (const auto &file_descr : descr_per_transform[transform_index]) {
+            if (descr_per_file.find(file_descr.first) == descr_per_file.end()) {
+                descr_per_file[file_descr.first] = "transformation_" + to_string(transform_index + 1) + "\n";
+            }
+            descr_per_file[file_descr.first] += file_descr.second;
         }
-        createDescriptionFile(file_descr.first, description);
+    }
+    for (const auto &file_descr : descr_per_file) {
+        createDescriptionFile(file_descr.first, file_descr.second);
     }
 }
 
