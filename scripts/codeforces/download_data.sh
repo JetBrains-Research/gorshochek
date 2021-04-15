@@ -2,55 +2,80 @@
 
 DATA_DIR=data
 DATASET_NAME=codeforces
-DUPLICATES_FILE=output-system.txt
 DATA_PATH=${DATA_DIR}/${DATASET_NAME}
-DUPLICATES_STORAGE=${DATA_PATH}/duplicates.txt
+CLONES_FILE=output-system.txt
+CLONES_STORAGE=${DATA_PATH}/clones.txt
 ROUNDS_PATH=anti-plagiarism-datasets-master/rounds
 
-if [ ! -d "$DATA_DIR" ]
-then
-  mkdir "$DATA_DIR"
-fi
+LOAD_PROCESSED=false
 
-if [ ! -f "$DATA_DIR/$DATASET_NAME.zip" ]
-then
-  aws s3 cp s3://datasets.ml.labs.aws.intellij.net/codeforces-code-clone/anti-plagiarism-datasets-master.zip "$DATA_DIR/$DATASET_NAME.zip"
-fi
-
-echo "Unzip dataset"
-
-unzip "$DATA_DIR/$DATASET_NAME.zip" -d $DATA_DIR
-
-mkdir $DATA_PATH
-
-zipped_files=$(find "$DATA_DIR/$ROUNDS_PATH" -name "*.zip" -type f)
-for round in $zipped_files
-do
-  unzip "$round" -d "$DATA_DIR/$ROUNDS_PATH"
-  round_dir="${round%.zip}"
-  mv "$round_dir"/* "$DATA_PATH"/
-  rm -rf "$round_dir"
-  rm "$round"
+while (( "$#" )); do
+  case "$1" in
+    -h|--help)
+      echo "options:"
+      echo "-h, --help                     show brief help"
+      echo "--load_processed               pass it if you want to load already processed dataset, default false"
+      exit 0
+      ;;
+    --load_processed*)
+      LOAD_PROCESSED=true
+      shift
+      ;;
+    *)
+      echo "something went wrong"
+      exit 1
+  esac
 done
-rm -rf $DATA_DIR/anti-plagiarism-datasets-master
 
-if [ -f "$DUPLICATES_STORAGE" ]
+if $LOAD_PROCESSED
 then
-  rm "$DUPLICATES_STORAGE"
-fi
-
-echo "Searching for labeled duplicates in files"
-rounds=$(find "$DATA_PATH" -mindepth 1 -type d)
-for round in $rounds
-do
-  output_file=$(find "$round" -type f -name "$DUPLICATES_FILE")
-  if [ -n "$output_file" ]
+  echo "Processed dataset is currently unavailable"
+else
+  if [ ! -d "$DATA_DIR" ]
   then
-    { basename "$round"; cat "$output_file"; printf "\n"; } >> "$DUPLICATES_STORAGE"
+    mkdir "$DATA_DIR"
   fi
-done
 
-python scripts/codeforces/process_duplicates_file.py --dataset_path="$DATA_PATH"
+  if [ ! -f "$DATA_DIR/$DATASET_NAME.zip" ]
+  then
+    aws s3 cp s3://datasets.ml.labs.aws.intellij.net/codeforces-code-clone/anti-plagiarism-datasets-master.zip "$DATA_DIR/$DATASET_NAME.zip"
+  fi
 
-echo "Deleting not C/C++ files"
-find "$DATA_PATH" -type f ! -name "*.cpp" -and ! -name "*.c" -and ! -name "*duplicates.txt" -delete
+  echo "Unzip dataset"
+
+  unzip "$DATA_DIR/$DATASET_NAME.zip" -d $DATA_DIR
+
+  mkdir $DATA_PATH
+
+  zipped_files=$(find "$DATA_DIR/$ROUNDS_PATH" -name "*.zip" -type f)
+  for round in $zipped_files
+  do
+    unzip "$round" -d "$DATA_DIR/$ROUNDS_PATH"
+    round_dir="${round%.zip}"
+    mv "$round_dir"/* "$DATA_PATH"/
+    rm -rf "$round_dir"
+    rm "$round"
+  done
+  rm -rf $DATA_DIR/anti-plagiarism-datasets-master
+
+  if [ -f "$DUPLICATES_STORAGE" ]
+  then
+    rm "$DUPLICATES_STORAGE"
+  fi
+
+  echo "Searching for labeled clones in files"
+  rounds=$(find "$DATA_PATH" -mindepth 1 -type d)
+  for round in $rounds
+  do
+    output_file=$(find "$round" -type f -name "$CLONES_FILE")
+    if [ -n "$output_file" ]
+    then
+      { basename "$round"; cat "$output_file"; printf "\n"; } >> "$CLONES_STORAGE"
+    fi
+  done
+
+  python scripts/codeforces/process_clones_file.py --dataset_path="$DATA_PATH"
+
+  echo "Deleting non C/C++ files"
+  find "$DATA_PATH" -type f ! -name "*.cpp" -and ! -name "*.c" -and ! -name "*clones.txt" -delete
+fi

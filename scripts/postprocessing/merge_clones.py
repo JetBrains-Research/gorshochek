@@ -4,7 +4,7 @@ from os.path import join
 
 dups_path = "dups.txt"
 
-if __name__ == "__main__":
+def merge_clones():
     with open(dups_path, "r") as f:
         dups = f.read()
 
@@ -18,3 +18,11 @@ if __name__ == "__main__":
         dir_path = join("actual_reduced", dir_)
         if len(listdir(dir_path)) == 1:
             shutil.rmtree(dir_path)
+
+if __name__ == "__main__":
+    arg_parser = ArgumentParser()
+    arg_parser.add_argument("--dataset_path", type=str, default=join("data", "codeforces"))
+    arg_parser.add_argument("--duplicates_file", type=str, default="duplicates.txt")
+    args = arg_parser.parse_args()
+
+    process_duplicates_file(dataset_path=args.dataset_path, duplicates_file=args.duplicates_file)
