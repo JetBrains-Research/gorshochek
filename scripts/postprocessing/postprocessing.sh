@@ -10,6 +10,6 @@ find "$SRC"/* -type d -mindepth 1 -maxdepth 1 -exec cp -r {} "$DST" \;
 echo "Mining duplicates"
 fdupes -r "$DST" | > "dups.txt"
 echo "Deliting duplicates"
-python delete_dups.py
+python scripts/postprocessing/filter_duplicates.py
 echo "Deliting empty dirs"
 find "$DST" -type d -empty -delete

@@ -3,8 +3,8 @@
 DATA_DIR=data
 DATASET_NAME=codeforces
 DUPLICATES_FILE=output-system.txt
-DUPLICATES_STORAGE=duplictes.txt
 DATA_PATH=${DATA_DIR}/${DATASET_NAME}
+DUPLICATES_STORAGE=${DATA_PATH}/duplicates.txt
 ROUNDS_PATH=anti-plagiarism-datasets-master/rounds
 
 if [ ! -d "$DATA_DIR" ]
@@ -34,9 +34,9 @@ do
 done
 rm -rf $DATA_DIR/anti-plagiarism-datasets-master
 
-if [ -f "$DUPLICATES" ]
+if [ -f "$DUPLICATES_STORAGE" ]
 then
-  rm "$DUPLICATES"
+  rm "$DUPLICATES_STORAGE"
 fi
 
 echo "Searching for labeled duplicates in files"
@@ -50,5 +50,7 @@ do
   fi
 done
 
+python scripts/codeforces/process_duplicates_file.py --dataset_path="$DATA_PATH"
+
 echo "Deleting not C/C++ files"
-find data/codeforces -type f ! -name "*.cpp" -and ! -name "*.c" -delete
+find "$DATA_PATH" -type f ! -name "*.cpp" -and ! -name "*.c" -and ! -name "*duplicates.txt" -delete
