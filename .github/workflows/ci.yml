@@ -29,7 +29,7 @@ jobs:
       - name: Install clang
         run: |
           sudo apt update
-          sudo apt install libomp5 libomp-dev
+          sudo apt install libomp5 libomp-dev fdupes
           sh scripts/install_clang.sh
       - name: Lint
         run: |
