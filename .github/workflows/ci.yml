@@ -16,6 +16,8 @@ jobs:
           python-version: 3.8
       - name: Install python requirements
         run: |
+          echo "${ACTUAL_DATA}"
+          echo "${ANTI_PLAGIARISM_DATA}"
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Install clang
