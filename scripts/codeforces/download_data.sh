@@ -38,7 +38,7 @@ else
 
   if [ ! -f "$DATA_DIR/$DATASET_NAME.zip" ]
   then
-    wget https://s3-eu-west-1.amazonaws.com/datasets.ml.labs.aws.intellij.net/codeforces-code-clone/anti-plagiarism-datasets-master.zip
+    wget "${ANTI_PLAGIARISM_DATA}"
     mv anti-plagiarism-datasets-master.zip "$DATA_DIR/$DATASET_NAME.zip"
   fi
 

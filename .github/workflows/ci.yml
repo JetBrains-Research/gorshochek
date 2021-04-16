@@ -14,18 +14,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - name: Show env variables
-        env:
-          ACTUAL_DATA: ${{ secrets.ACTUAL_DATA }}
-          ANTI_PLAGIARISM_DATA: ${{ secrets.ANTI_PLAGIARISM_DATA }}
-        run: |
-          echo "::group::My title"
-          echo "Hello"
-          wget "${ACTUAL_DATA}"
-          wget "${ANTI_PLAGIARISM_DATA}"
-          ls
-          echo "${GITHUB_WORKSPACE}"
-          echo "::endgroup::"
       - name: Install python requirements
         run: |
           python -m pip install --upgrade pip
@@ -47,5 +35,8 @@ jobs:
                 -DCMAKE_CXX_COMPILER="${GITHUB_WORKSPACE}/build/clang+llvm-9/bin/clang++" ..
           cmake --build .
       - name: Test
+        env:
+          ACTUAL_DATA: ${{ secrets.ACTUAL_DATA }}
+          ANTI_PLAGIARISM_DATA: ${{ secrets.ANTI_PLAGIARISM_DATA }}
         run: |
           pytest

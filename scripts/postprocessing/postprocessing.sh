@@ -47,7 +47,7 @@ else
   then
     if [ ! -f "$DATA_DIR"/"$SRC".zip ]
     then
-      wget https://s3-eu-west-1.amazonaws.com/datasets.ml.labs.aws.intellij.net/codeforces-code-clone/actual.zip
+      wget "${ACTUAL_DATA}"
       mv actual.zip "$DATA_DIR"/"$SRC".zip
     fi
     unzip "$DATA_DIR"/"$SRC".zip -d "$DATA_DIR"
