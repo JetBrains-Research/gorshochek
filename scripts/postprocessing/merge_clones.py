@@ -1,7 +1,7 @@
 import shutil
 from argparse import ArgumentParser
-from os import remove, listdir
-from os.path import join, exists, dirname
+from os import listdir
+from os.path import join, exists
 
 
 def get_path(file: str, dataset_path: str) -> str:

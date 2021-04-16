@@ -1,6 +1,6 @@
-import zipfile
 import shutil
 import subprocess
+import zipfile
 from os import path, listdir
 
 import pytest

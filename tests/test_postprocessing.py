@@ -1,7 +1,5 @@
-import zipfile
-import shutil
 import subprocess
-from os import path, listdir, remove, walk
+from os import path, listdir, walk
 
 import pytest
 
