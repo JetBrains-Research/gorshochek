@@ -21,8 +21,9 @@ jobs:
         run: |
           echo "::group::My title"
           echo "Hello"
-          echo "${ACTUAL_DATA}"
-          echo "${ANTI_PLAGIARISM_DATA}"
+          wget "${ACTUAL_DATA}"
+          wget "${ANTI_PLAGIARISM_DATA}"
+          ls
           echo "${GITHUB_WORKSPACE}"
           echo "::endgroup::"
       - name: Install python requirements
