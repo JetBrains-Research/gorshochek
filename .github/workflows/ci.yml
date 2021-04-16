@@ -17,8 +17,9 @@ jobs:
       - name: Show env variables
         run: |
           echo "::group::My title"
-          echo ${ACTUAL_DATA}
-          echo ${ANTI_PLAGIARISM_DATA}
+          echo "Hello"
+          echo "${ACTUAL_DATA}"
+          echo "${ANTI_PLAGIARISM_DATA}"
           echo "::endgroup::"
       - name: Install python requirements
         run: |
