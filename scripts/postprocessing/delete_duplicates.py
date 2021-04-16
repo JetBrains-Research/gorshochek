@@ -25,11 +25,13 @@ def delete_duplicates(duplicates_file_path: str):
             # Remove all duplicates which came from the same origin
             parent_dir = dirname(batch[0])
             # Remove dir if all files are not duplicates of each other
-            if len(listdir(parent_dir)) < len(batch):
+            if len(listdir(parent_dir)) > len(batch):
                 # Leave only single file
                 for file in batch[1:]:
                     if exists(file):
                         remove(file)
+            else:
+                shutil.rmtree(parent_dir)
         else:
             # Remove duplicates came from different origins,
             # leaving only the first one. Later we will move all
@@ -51,7 +53,7 @@ def delete_duplicates(duplicates_file_path: str):
             files_to_move = []
             # Collect the remaining files from the dirs where duplicates were found
             for parent in unique_parents:
-                if listdir(parent):
+                if exists(parent):
                     files_to_move += [join(parent, file) for file in listdir(parent)]
 
             for i, file in enumerate(files_to_move):
