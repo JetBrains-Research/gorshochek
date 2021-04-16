@@ -20,6 +20,7 @@ jobs:
           echo "Hello"
           echo "${ACTUAL_DATA}"
           echo "${ANTI_PLAGIARISM_DATA}"
+          echo "${GITHUB_WORKSPACE}"
           echo "::endgroup::"
       - name: Install python requirements
         run: |
