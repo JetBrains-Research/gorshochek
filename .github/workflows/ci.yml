@@ -25,7 +25,13 @@ jobs:
           sh scripts/install_clang.sh
       - name: Lint
         run: |
-          cpplint --filter=-legal --recursive --exclude=build --exclude=tests/resources --linelength=120 .
+          cpplint \
+          --filter=-legal \
+          --recursive \
+          --exclude=build \
+          --exclude=tests/resources \
+          --exclude=data \
+          --linelength=120 .
       - name: Build
         run: |
           cd build
