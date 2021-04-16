@@ -38,7 +38,8 @@ else
 
   if [ ! -f "$DATA_DIR/$DATASET_NAME.zip" ]
   then
-    aws s3 cp s3://datasets.ml.labs.aws.intellij.net/codeforces-code-clone/anti-plagiarism-datasets-master.zip "$DATA_DIR/$DATASET_NAME.zip"
+    wget https://s3-eu-west-1.amazonaws.com/datasets.ml.labs.aws.intellij.net/codeforces-code-clone/anti-plagiarism-datasets-master.zip
+    mv anti-plagiarism-datasets-master.zip "$DATA_DIR/$DATASET_NAME.zip"
   fi
 
   echo "Unzip dataset"
@@ -78,4 +79,7 @@ else
 
   echo "Deleting non C/C++ files"
   find "$DATA_PATH" -type f ! -name "*.cpp" -and ! -name "*.c" -and ! -name "*clones.txt" -delete
+
+  echo "Deleting empty dirs"
+  find "$DATA_PATH" -type d -empty -delete
 fi

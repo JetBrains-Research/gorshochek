@@ -14,6 +14,11 @@ tmp_data_path = path.join(data_path, "anti-plagiarism-datasets-master")
 rounds_storage_path = path.join(tmp_data_path, "rounds")
 
 
+def in_c_family(file_: str) -> bool:
+    ext = file_.rsplit(".", 1)[1]
+    return ext in ["cpp", "c"]
+
+
 def test_downloading() -> None:
     try:
         subprocess.check_call(["sh", script_path])
@@ -34,13 +39,16 @@ def test_downloading() -> None:
             zip_.extractall(rounds_storage_path)
         round_path = round_zip_path.rsplit(".", 1)[0]
         for task in listdir(round_path):
-            assert path.exists(path.join(cf_data_path, task)), f"Task {task} does not exists in preprocessed dataset"
+            has_c_family_files = False
+            for file in listdir(path.join(round_path, task)):
+                has_c_family_files = has_c_family_files | in_c_family(file)
+            if has_c_family_files:
+                assert path.exists(path.join(cf_data_path, task)), f"Task {task} does not exists in preprocessed dataset"
 
     for task in listdir(cf_data_path):
         task_path = path.join(cf_data_path, task)
         if path.isdir(task_path):
             for file in listdir(task_path):
-                ext = file.rsplit(".", 1)[1]
-                assert ext in ["cpp", "c"]
+                assert in_c_family(file)
 
     shutil.rmtree(data_path)
