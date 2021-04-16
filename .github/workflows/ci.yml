@@ -24,12 +24,12 @@ jobs:
           sudo apt install libomp5 libomp-dev fdupes
           sh scripts/install_clang.sh
       - name: Test
-          env:
-            ACTUAL_DATA: ${{ secrets.ACTUAL_DATA }}
-            ANTI_PLAGIARISM_DATA: ${{ secrets.ANTI_PLAGIARISM_DATA }}
-          run: |
-            pytest tests/test_preprocessing.py
-            pytest tests/test_postprocessing.py
+        env:
+          ACTUAL_DATA: ${{ secrets.ACTUAL_DATA }}
+          ANTI_PLAGIARISM_DATA: ${{ secrets.ANTI_PLAGIARISM_DATA }}
+        run: |
+          pytest tests/test_preprocessing.py
+          pytest tests/test_postprocessing.py
       - name: Lint
         run: |
           cpplint --filter=-legal --recursive --exclude=build --exclude=tests/resources --linelength=120 .
