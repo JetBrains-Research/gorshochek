@@ -15,6 +15,9 @@ jobs:
         with:
           python-version: 3.8
       - name: Show env variables
+        env:
+          ACTUAL_DATA: ${{ secrets.ACTUAL_DATA }}
+          ANTI_PLAGIARISM_DATA: ${{ secrets.ANTI_PLAGIARISM_DATA }}
         run: |
           echo "::group::My title"
           echo "Hello"
