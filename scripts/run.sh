@@ -82,15 +82,3 @@ mv "$OUT_BUFFER"/* "$OUTPUT_PATH"
 rm -rf "$IN_BUFFER"
 rm -rf "$OUT_BUFFER"
 rm -rf "$LOG_BUFFER"
-
-files=$(find "$OUTPUT_PATH"/* -type d)
-for file in $files;
-  do
-    fdupes -dN -r "$file"
-    transformed=$(find "$file" -type f -name "*.cpp")
-    if [[ -z $transformed ]]
-    then
-      echo "remove all"
-      rm -rf "$file"
-    fi
-  done
