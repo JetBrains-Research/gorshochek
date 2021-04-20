@@ -70,7 +70,7 @@ docker run --ipc=host --uts=host \
       -v $PWD/"${IN_BUFFER}":/gorshochek/data/input \
       -v $PWD/"${OUT_BUFFER}":/gorshochek/data/output \
       -i -t gorshochek "${CONFIG_PATH}"
-logs=$(find "${OUT_BUFFER}"/* -type f -maxdepth 0 -name "*.txt")
+logs=$(find "${OUT_BUFFER}"/* -maxdepth 0 -type f -name "*.txt")
 for log in $logs
 do
   cat "$log" >> "$LOG_BUFFER"/"$(basename "$log")"
