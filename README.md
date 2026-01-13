@@ -1,3 +1,6 @@
+Repository archived by abarilo as no longer maintained
+
+
 # gorshochek
 [WIP] A tool for C++ code modification to augment data for clone detection tools
 
